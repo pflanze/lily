@@ -1,3 +1,6 @@
+# -O2
+CFLAGS=-gdwarf-4 -g3
+
 
 all: bin/lily.o tests
 
@@ -8,10 +11,10 @@ t1: bin/test/t1
 	git diff --exit-code test/t1.out
 
 bin/lily.o: bin src/lily.hpp src/lilyConstruct.hpp src/lily.cpp
-	$(CXX) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
+	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
 
 bin/test/t1: src/lilyConstruct.hpp bin/lily.o test/t1.cpp bin/test
-	$(CXX) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o test/t1.cpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o test/t1.cpp
 
 
 bin:
