@@ -14,6 +14,6 @@ int main () {
 	PRINT(CONS(SYMBOL("10"),
 		   CONS(SYMBOL("println!"),
 			SYMBOL("Hello\nWorld, \"all | \\| \\fine\""))));
-	PRINT(CONS(NIL,NIL));
+	PRINT(PRINT(CONS(NIL,NIL)));
 }
 
