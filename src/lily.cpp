@@ -103,7 +103,9 @@ string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
 		       if (c==quoteChar) {
 			       out << '\\' << c;
 		       } else if (c== '\n') {
-			       out << "\n";
+			       out << "\\n";
+		       } else if (c== '\\') {
+			       out << "\\\\";
 		       } else {
 			       out << c;
 			       // XX utf8
@@ -113,7 +115,9 @@ string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
 
 void
 LilyString::onelinePrint(std::ostream& out) {
+	out << '"';
 	string_onelinePrint(string, out, '"');
+	out << '"';
 }
 
 static bool
@@ -122,10 +126,15 @@ betweenIncl (char c, char from, char to) {
 }
 
 static bool
+char_isdigit(char c) {
+	return betweenIncl(c, '0', '9');
+}
+
+static bool
 char_doesNotNeedQuoting (char c) {
 	return (betweenIncl(c, 'a', 'z')
 		|| betweenIncl(c, 'A', 'Z')
-		|| betweenIncl(c, '0', '9')
+		|| char_isdigit(c)
 		|| (c == '!')
 		|| (c == '?')
 		|| (c == '.')
@@ -154,8 +163,12 @@ LilySymbol::onelinePrint(std::ostream& out) {
 			       break;
 		       }
 	       });
-	if (needsQuoting) {
+	if (needsQuoting
+	    || string.length()==0
+	    || char_isdigit(string[0])) {
+		out << '|';
 		string_onelinePrint(string, out, '|');
+		out << '|';
 	} else {
 		out << string;
 	}

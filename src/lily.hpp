@@ -66,7 +66,7 @@ public:
 
 class LilyPair : public LilyObject {
 public:
-	LilyPair(LilyObjectPtr a, LilyListPtr d) : car(a), cdr(d) {}
+	LilyPair(LilyObjectPtr a, LilyObjectPtr d) : car(a), cdr(d) {}
 	LilyObjectPtr car;
 	LilyObjectPtr cdr;
 	virtual void onelinePrint(std::ostream& out);
@@ -94,6 +94,7 @@ public:
 
 class LilyString : public LilyObject {
 public:
+	LilyString(std::string s) : string(s) {}
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
@@ -102,6 +103,7 @@ public:
 
 class LilySymbol : public LilyObject {
 public:
+	LilySymbol(std::string s) : string(s) {}
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
