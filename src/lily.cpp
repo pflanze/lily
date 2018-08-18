@@ -2,17 +2,6 @@
 #include "lilyConstruct.hpp" // oh well, why separate those then?
 #include <sstream>
 
-// XX what was the new syntax?
-#define FOR_IN(var,source,body)			\
-	int ___for_in_len= source.length();	\
-	for (int ___for_in_i=0;			\
-	     ___for_in_i< ___for_in_len;	\
-	     ___for_in_i++) {			\
-	var= source[___for_in_i];		\
-	body;					\
-	}
-
-
 
 LilyObjectPtr
 LilyBoolean::True() {
@@ -111,19 +100,18 @@ LilyVoid::onelinePrint(std::ostream& out) {
 
 static void
 string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
-	FOR_IN(char c, str,
-	       {
-		       if (c==quoteChar) {
-			       out << '\\' << c;
-		       } else if (c== '\n') {
-			       out << "\\n";
-		       } else if (c== '\\') {
-			       out << "\\\\";
-		       } else {
-			       out << c;
-			       // XX utf8
-		       }
-	       });
+	for (char c : str) {
+		if (c==quoteChar) {
+			out << '\\' << c;
+		} else if (c== '\n') {
+			out << "\\n";
+		} else if (c== '\\') {
+			out << "\\\\";
+		} else {
+			out << c;
+			// XX utf8
+		}
+	}
 }
 
 void
@@ -169,13 +157,12 @@ char_doesNotNeedQuoting (char c) {
 void
 LilySymbol::onelinePrint(std::ostream& out) {
 	bool needsQuoting=0;
-	FOR_IN(char c, string,
-	       {
-		       if (!char_doesNotNeedQuoting(c)) {
-			       needsQuoting=1;
-			       break;
-		       }
-	       });
+	for(char c : string) {
+		if (!char_doesNotNeedQuoting(c)) {
+			needsQuoting=1;
+			break;
+		}
+	}
 	if (needsQuoting
 	    || string.length()==0
 	    || char_isdigit(string[0])) {
