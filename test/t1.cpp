@@ -9,8 +9,10 @@ int main () {
 	WRITELN(CONS(INT(10), CONS(INT(20), INT(30))));
 	WRITELN(CONS(INT(10), CONS(STRING("20"), INT(30))));
 	WRITELN(CONS(INT(10), STRING("Hello\nWorld, \"all \\fine\"")));
-	WRITELN(CONS(FALSE, TRUE));
-	WRITELN(CONS(CONS(FALSE, TRUE), TRUE));
+	auto ft= CONS(FALSE, TRUE);
+	auto ft2= CONS(ft, TRUE);
+	WRITELN(ft);
+	WRITELN(ft2);
 	WRITELN(CONS(SYMBOL("10"),
 		     CONS(SYMBOL("println!"),
 			  SYMBOL("Hello\nWorld, \"all | \\| \\fine\""))));
