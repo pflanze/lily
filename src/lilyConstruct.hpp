@@ -14,7 +14,7 @@
 #define SYMBOL(a) LILY_NEW(LilySymbol(a))
 
 static inline
-LilyObjectPtr PRINT(LilyObjectPtr v, std::ostream& out= std::cout) {
+LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {
 	v->onelinePrint(out);
 	out << "\n";
 	return VOID;
