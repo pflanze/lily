@@ -1,4 +1,5 @@
 #include "lily.hpp"
+#include "lilyConstruct.hpp" // oh well, why separate those then?
 #include <sstream>
 
 // XX what was the new syntax?
@@ -235,4 +236,23 @@ LilyObjectPtr
 LilyDouble::eval(LilyObjectPtr v, LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
+
+
+
+
+// utils
+LilyObjectPtr reverse(LilyObjectPtr l) {
+	LilyObjectPtr res= NIL;
+	while (true) {
+		if (LilyPair*p= is_LilyPair(&*l)) {
+			res= CONS(p->car, res);
+			l= p->cdr;
+		} else if (is_LilyNull(&*l)) {
+			break;
+		} else {
+			throw std::logic_error("improper list");
+		}
+	}
+	return res;
+}
 

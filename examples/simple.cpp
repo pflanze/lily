@@ -15,5 +15,6 @@ int main () {
 		     CONS(SYMBOL("println!"),
 			  SYMBOL("Hello\nWorld, \"all | \\| \\fine\""))));
 	WRITELN(WRITELN(CONS(NIL,NIL)));
+	WRITELN(LIST(NIL,FALSE,TRUE,SYMBOL("")));
 }
 

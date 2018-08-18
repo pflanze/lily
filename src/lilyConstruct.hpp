@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdarg>
 
 #define LILY_NEW(classAndArguments) \
 	std::shared_ptr<LilyObject>(new classAndArguments)
@@ -19,4 +20,18 @@ LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {
 	out << "\n";
 	return VOID;
 }
+
+static inline
+LilyObjectPtr _LIST(std::initializer_list<LilyObjectPtr> vs) {
+	LilyObjectPtr res= NIL;
+	// std::initializer_list does not offer reverse() nor rbegin
+	// nor indices in C++11. So use reversion afterwards.
+	for (auto v : vs) {
+		res= CONS(v, res);
+	}
+	return reverse(res);
+}
+
+#define LIST(...) _LIST({ __VA_ARGS__ })
+
 

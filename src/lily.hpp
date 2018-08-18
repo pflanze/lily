@@ -141,3 +141,6 @@ public:
 	virtual ~LilyDouble();
 };
 
+
+// utils
+LilyObjectPtr reverse(LilyObjectPtr l);
