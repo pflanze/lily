@@ -32,11 +32,18 @@ LilyNull::singleton() {
 	return v;
 }
 
+LilyObjectPtr
+LilyVoid::singleton() {
+	static LilyObjectPtr v (new LilyVoid());
+	return v;
+}
+
 
 
 LilyListPair::~LilyListPair() {};
 LilyPair::~LilyPair() {};
-LilyBoolean::~LilyBoolean() {};
+//LilyVoid::~LilyVoid() {};
+//LilyBoolean::~LilyBoolean() {};
 LilyString::~LilyString() {};
 LilySymbol::~LilySymbol() {};
 LilyInt64::~LilyInt64() {};
@@ -93,6 +100,11 @@ LilyPair::onelinePrint(std::ostream& out) {
 void
 LilyBoolean::onelinePrint(std::ostream& out) {
 	out << (value ? "#t" : "#f");
+}
+
+void
+LilyVoid::onelinePrint(std::ostream& out) {
+	out << "#!void";
 }
 
 
@@ -189,6 +201,10 @@ LilyDouble::onelinePrint(std::ostream& out) {
 
 LilyObjectPtr
 LilyNull::eval(LilyObjectPtr v, LilyListPtr ctx) {
+	throw std::logic_error("not implemented yet");
+};
+LilyObjectPtr
+LilyVoid::eval(LilyObjectPtr v, LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr

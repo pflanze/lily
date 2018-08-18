@@ -4,9 +4,6 @@
 #include <ostream>
 
 
-#define LILY_NEW(classAndArguments) \
-	std::shared_ptr<LilyObject>(new classAndArguments)
-
 class LilyObject;
 class LilyList;
 
@@ -80,6 +77,17 @@ static inline LilyPair* is_LilyPair(LilyObject* v) {
 
 // Atoms
 
+class LilyVoid : public LilyObject {
+private:
+	LilyVoid() {};
+public:
+	virtual bool isNull() { return true; }
+	static LilyObjectPtr singleton();
+	virtual void onelinePrint(std::ostream& out);
+	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	// virtual ~LilyVoid();
+};
+
 class LilyBoolean : public LilyObject {
 private:
 	LilyBoolean(bool v) : value(v) {};
@@ -89,7 +97,7 @@ public:
 	static LilyObjectPtr False();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
-	virtual ~LilyBoolean();
+	//virtual ~LilyBoolean();
 };
 
 class LilyString : public LilyObject {
