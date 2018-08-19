@@ -2,7 +2,7 @@
 CFLAGS=-gdwarf-4 -g3
 
 
-all: bin/lily.o tests
+all: dirs bin/lily.o tests
 
 tests: t1 t2
 
@@ -12,25 +12,22 @@ t1: bin/test/t1
 
 t2: bin/test/t2
 
-bin/lily.o: bin src/lily.hpp src/lilyConstruct.hpp src/lily.cpp
+bin/lily.o: src/lily.hpp src/lilyConstruct.hpp src/lily.cpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
 
-bin/lilyParse.o: bin src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp
+bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyParse.cpp -o bin/lilyParse.o
 
-bin/test/t1: bin/lily.o test/t1.cpp bin/test
+bin/test/t1: bin/lily.o test/t1.cpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o test/t1.cpp
 
-bin/test/t2: bin/lily.o bin/lilyParse.o test/t2.cpp bin/test
+bin/test/t2: bin/lily.o bin/lilyParse.o test/t2.cpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lily.o bin/lilyParse.o test/t2.cpp
 
 
+dirs:
+	mkdir -p bin bin/examples bin/test
 
-bin:
-	mkdir bin
-bin/examples:
-	mkdir bin/examples
-bin/test:
-	mkdir bin/test
 clean:
 	rm -rf bin
+	mkdir -p bin bin/examples bin/test
