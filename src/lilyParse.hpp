@@ -5,31 +5,31 @@ betweenIncl (char c, char from, char to) {
 }
 
 static bool
-char_isdigit(char c) {
+isDigit(char c) {
 	return betweenIncl(c, '0', '9');
 }
 
 static bool
-char_isalpha(char c) {
+isAlpha(char c) {
 	return betweenIncl(c, 'a', 'z')
 		|| betweenIncl(c, 'A', 'Z');
 }
 
 static bool
-char_isalphanumeric(char c) {
-	return char_isalpha(c) || char_isdigit(c);
+isAlphanumeric(char c) {
+	return isAlpha(c) || isDigit(c);
 }
 
 static bool
-char_isword(char c) {
-	return char_isalphanumeric(c)
+isWordChar(char c) {
+	return isAlphanumeric(c)
 		|| (c == '_');
 }
 	
 
 static bool
-char_doesNotNeedQuoting (char c) {
-	return (char_isword(c)
+doesNotNeedSymbolQuoting (char c) {
+	return (isWordChar(c)
 		|| (c == '!')
 		|| (c == '?')
 		|| (c == '.')

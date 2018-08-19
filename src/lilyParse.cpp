@@ -174,7 +174,7 @@ S skipUntilEol(S s) {
 
 static
 bool isWordEndBoundary(S s) {
-	return (s.isNull()) || !char_isword(s.first());
+	return (s.isNull()) || !isWordChar(s.first());
 }
 
 static
@@ -274,7 +274,7 @@ ParseResult parseInteger(S s) {
 		isneg= true;
 	} else if (c0=='+') {
 		isneg= false;
-	} else if (char_isdigit(c0)) {
+	} else if (isDigit(c0)) {
 		auto d = c0-'0';
 		res= isneg ? -d : d;
 		isnumber=true;
@@ -287,7 +287,7 @@ ParseResult parseInteger(S s) {
 			break;
 		char c= s.first();
 		s=s.rest();
-		if (char_isdigit(c)) {
+		if (isDigit(c)) {
 			auto d = c-'0';
 			res= res*10;
 			// copypaste of below, XX is this required?
@@ -302,7 +302,7 @@ ParseResult parseInteger(S s) {
 		} else {
 			// equivalent to isWordEndBoundary, isNull
 			// check already done
-			if (char_isword(c))
+			if (isWordChar(c))
 				isnumber=false;
 			break;
 		}
@@ -328,7 +328,7 @@ ParseResult parseSymbol(S s) {
 		if (s.isNull())
 			break;
 		char c= s.first();
-		if (char_doesNotNeedQuoting(c))
+		if (doesNotNeedSymbolQuoting(c))
 			str.push_back(c);
 		else
 			break;
