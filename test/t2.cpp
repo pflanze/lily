@@ -41,6 +41,8 @@ int main () {
 	pr("(\n hi\"there\" ;; all good\n) ");
 	pr("(hi \"there\")3");
 	pr("(hi \"there\"");
-	pr("(hi () ( ;\n) \"there\"");//BUG!
+	pr("(()5())");
+	pr("(hi () ( ;\n) \"there\")");
+	pr("(hi () ( ;\n) \"there\"");
 }
 

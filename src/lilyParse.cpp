@@ -376,7 +376,7 @@ PR parseList(S s) {
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c=s.first();
 	if (c==')')
-		return PR(NIL, s);
+		return PR(NIL, s.rest());
 	if (c=='.') {
 		auto s1=s.rest();
 		if (s1.isNull())
