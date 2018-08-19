@@ -2,6 +2,7 @@
 #include <memory>
 #include <stdexcept>
 #include <ostream>
+#include <assert.h>
 
 
 class LilyObject;
@@ -53,7 +54,10 @@ private:
 	LilyListPtr _rest;
 public:
 	LilyListPair(LilyObjectPtr first, LilyListPtr rest) :
-		_first(first), _rest(rest) {}
+		_first(first), _rest(rest) {
+		assert(first);
+		assert(rest);
+	}
 	virtual LilyObjectPtr first() { return _first; }
 	virtual LilyListPtr rest() { return _rest; }
 	virtual bool isNull() { return false; }
@@ -66,7 +70,10 @@ public:
 
 class LilyPair : public LilyObject {
 public:
-	LilyPair(LilyObjectPtr a, LilyObjectPtr d) : car(a), cdr(d) {}
+	LilyPair(LilyObjectPtr a, LilyObjectPtr d) : car(a), cdr(d) {
+		assert(a);
+		assert(d);
+	}
 	LilyObjectPtr car;
 	LilyObjectPtr cdr;
 	virtual void onelinePrint(std::ostream& out);

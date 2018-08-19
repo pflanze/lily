@@ -1,5 +1,5 @@
-#include <assert.h>
 #include <functional>
+#include <assert.h>
 #include "lily.hpp"
 #include "lilyConstruct.hpp"
 #include "lilyParse.hpp"
@@ -89,7 +89,9 @@ private:
 class ParseResult {
 public:
 	ParseResult(LilyObjectPtr result, StringCursor remainder)
-		: _result(result), _remainder(remainder) {}
+		: _result(result), _remainder(remainder) {
+		assert(result);
+	}
 	LilyObjectPtr value() {
 		return _result;
 	}

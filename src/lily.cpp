@@ -1,6 +1,6 @@
+#include <sstream>
 #include "lily.hpp"
 #include "lilyConstruct.hpp" // oh well, why separate those then?
-#include <sstream>
 #include "lilyParse.hpp"
 
 LilyObjectPtr
