@@ -299,8 +299,8 @@ ParseResult parseInteger(S s) {
 		if (s.isNull())
 			break;
 		char c= s.first();
-		s=s.rest();
 		if (isDigit(c)) {
+			s=s.rest();
 			auto d = c-'0';
 			res= res*10;
 			// copypaste of below, XX is this required?
