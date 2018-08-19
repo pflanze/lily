@@ -4,6 +4,7 @@
 #include "lilyConstruct.hpp"
 #include "lilyParse.hpp"
 
+#define WARN(e) std::cerr<< e <<"\n"
 
 enum class ParseResultCode : char {
 	Success = 0,
@@ -51,7 +52,7 @@ public:
 	StringCursor rest () {
 		uint32_t pos1= _position+1;
 		assert(pos1 > 0);
-		if (pos1 < _string->length()) {
+		if (pos1 <= _string->length()) {
 			return StringCursor(_string, pos1, _error);
 		} else {
 			throw std::logic_error("end of input");
@@ -71,6 +72,9 @@ public:
 	}
 	uint32_t position() {
 		return _position;
+	}
+	std::string& string() {
+		return *_string;
 	}
 private:
 	std::string* _string;
@@ -282,19 +286,21 @@ ParseResult parseInteger(S s) {
 		char c= s.first();
 		s=s.rest();
 		if (char_isdigit(c)) {
-			auto d = c0-'0';
+			auto d = c-'0';
 			res= res*10;
 			// copypaste of below, XX is this required?
 			if ((isneg && (res>0)) ||
 			    ((!isneg) && (res<0)))
 				return parseError(s, ParseResultCode::Int64Overflow);
-			res= isneg ? res-d : res+d;
+			res= isneg ? res - d : res + d;
 			if ((isneg && (res>0)) ||
 			    ((!isneg) && (res<0)))
 				return parseError(s, ParseResultCode::Int64Overflow);
 			isnumber=true;
 		} else {
-			if (!isWordEndBoundary(s))
+			// equivalent to isWordEndBoundary, isNull
+			// check already done
+			if (char_isword(c))
 				isnumber=false;
 			break;
 		}
@@ -376,11 +382,10 @@ LilyObjectPtr lilyParse (std::string s) {
 		// exception? error result? Or s-expression for
 		// producing the error? :
 		ParseResultCode code= r.error();
-		return LIST(SYMBOL("error"),
-			    STRING("parse error:"),
+		return LIST(SYMBOL("parse-error"),
 			    // INT(code),  XX how can I convert it?
 			    STRING(ParseResultCode_string(code)),
-			    SYMBOL("pos:"),
+			    // SYMBOL("pos:"),
 			    INT(r.remainder().position()));
 	}
 }

@@ -1,0 +1,17 @@
+String: "Hi,\nand\n \"you"
+Int64: 7
+Int64: 1
+Int64: 0
+Int64: 1
+Int64: -1
+Int64: 12
+Int64: 12
+Pair: (parse-error "NotAnInteger" 4)
+Pair: (parse-error "NotAnInteger" 3)
+Int64: 3
+Int64: -3
+Int64: -4
+Pair: (parse-error "Int64Overflow" 19)
+Int64: 9223372036854775807
+Pair: (parse-error "Int64Overflow" 20)
+Int64: -9223372036854775808

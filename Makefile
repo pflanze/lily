@@ -11,6 +11,8 @@ t1: bin/test/t1
 	git diff --exit-code test/t1.out
 
 t2: bin/test/t2
+	bin/test/t2 > test/t2.out
+	git diff --exit-code test/t2.out
 
 bin/lily.o: src/lily.hpp src/lilyConstruct.hpp src/lily.cpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
