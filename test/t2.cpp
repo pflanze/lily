@@ -35,12 +35,12 @@ int main () {
 	pr("(hi . x)");
 	pr("(hi .x");
 	pr("(hi . x");
-	pr("(hi .x())"); //XX uh should fail!! wy the hell parsed as sym!!!
+	pr("(hi .x())");
 	pr("(hi . x())");
-	pr("(\n hi\"there\" ) ");//XX (i there ||) gosh  multiwrong.
-	pr("(\n hi\"there\" ;; all good\n) ");//
+	pr("(\n hi\"there\" ) ");
+	pr("(\n hi\"there\" ;; all good\n) ");// BUG!
 	pr("(hi \"there\")3");
 	pr("(hi \"there\"");
-	pr("(hi () ( ;\n) \"there\"");
+	pr("(hi () ( ;\n) \"there\"");//BUG!
 }
 
