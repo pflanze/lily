@@ -413,7 +413,6 @@ PR parseList(S s) {
 	} else {
 		// parse an item, then the remainder of the list
 		PR res= lilyParse(s);
-		//XX from here copy-paste from above!
 		if (!res.success())
 			return res;
 		auto tail= parseList(res.remainder());
