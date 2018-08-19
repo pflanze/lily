@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <functional>
 #include "lily.hpp"
-#include "lilyParse.hpp"
 #include "lilyConstruct.hpp"
+#include "lilyParse.hpp"
 
 
 enum class ParseResultCode : char {
@@ -14,6 +14,8 @@ enum class ParseResultCode : char {
 		UnknownBangSpecial,
 		UnknownSpecial,
 		UnexpectedString,
+		NotAnInteger,
+		Int64Overflow,
 };
 
 const char* ParseResultCode_string (ParseResultCode c) {
@@ -26,6 +28,8 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::UnknownBangSpecial: return "UnknownBangSpecial";
 	case ParseResultCode::UnknownSpecial: return "UnknownSpecial";
 	case ParseResultCode::UnexpectedString: return "UnexpectedString";
+	case ParseResultCode::NotAnInteger: return "NotAnInteger";
+	case ParseResultCode::Int64Overflow: return "Int64Overflow";
 	}
 	// how can I make the compiler warn about missing cases but
 	// otherwise be silent, without the throw ?
@@ -60,7 +64,7 @@ public:
 		return _error;
 	}
 	bool success () {
-		return !(_error==ParseResultCode::Success);
+		return (_error==ParseResultCode::Success);
 	}
 	StringCursor setError (ParseResultCode error) {
 		return StringCursor(_string, _position, error);
@@ -252,8 +256,63 @@ ParseResult parseStringLike(S s, char quoteChar,
 ParseResult parseList(S s) {
 	throw std::logic_error("unfinished");
 }
+
+ParseResult parseInteger(S s) {
+	int64_t res=0;
+	if (s.isNull())
+		return parseError(s, ParseResultCode::MissingInput);
+	char c0= s.first();
+	bool isneg= false;
+	bool isnumber= false;
+	if (c0=='-') {
+		isneg= true;
+	} else if (c0=='+') {
+		isneg= false;
+	} else if (char_isdigit(c0)) {
+		auto d = c0-'0';
+		res= isneg ? -d : d;
+		isnumber=true;
+	} else {
+		return parseError(s, ParseResultCode::NotAnInteger);
+	}
+	s=s.rest();
+	while (true) {
+		if (s.isNull())
+			break;
+		char c= s.first();
+		s=s.rest();
+		if (char_isdigit(c)) {
+			auto d = c0-'0';
+			res= res*10;
+			// copypaste of below, XX is this required?
+			if ((isneg && (res>0)) ||
+			    ((!isneg) && (res<0)))
+				return parseError(s, ParseResultCode::Int64Overflow);
+			res= isneg ? res-d : res+d;
+			if ((isneg && (res>0)) ||
+			    ((!isneg) && (res<0)))
+				return parseError(s, ParseResultCode::Int64Overflow);
+			isnumber=true;
+		} else {
+			if (!isWordEndBoundary(s))
+				isnumber=false;
+			break;
+		}
+	}
+	if (isnumber) {
+		return ParseResult(INT(res), s);
+	} else {
+		return parseError(s, ParseResultCode::NotAnInteger);
+	}
+}
+
 ParseResult parseNumber(S s) {
-	throw std::logic_error("unfinished");
+	auto num= parseInteger(s);
+	if (num.success())
+		return num;
+	// num= p.. XX
+	//throw std::logic_error("unfinished");
+	return num;
 }
 ParseResult parseSymbol(S s) {
 	throw std::logic_error("unfinished");
@@ -298,6 +357,7 @@ ParseResult lilyParse (S s) {
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
+		return v; // XXXXX
 		if (v.success())
 			return v;
 		v= parseSymbol(s);
@@ -307,7 +367,8 @@ ParseResult lilyParse (S s) {
 	}
 }
 
-LilyObjectPtr lilyParse (std::string& s) {
+// convenience function
+LilyObjectPtr lilyParse (std::string s) {
 	ParseResult r= lilyParse(StringCursor(&s, 0));
 	if (r.success()) {
 		return r.value();

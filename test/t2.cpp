@@ -2,9 +2,19 @@
 #include <lilyConstruct.hpp>
 #include <lilyParse.hpp>
 
+void pr(const char* s) {
+	WRITELN(lilyParse(std::string(s)));
+}
+
 int main () {
-	auto s= std::string(" \"Hi\" 123");
-	LilyObjectPtr o1= lilyParse(s);
-	WRITELN(o1);
+	pr(" \n \"Hi,\nand\\n \\\"you\" 123");
+	pr(" 12 3");
+	// pr(" + 3");
+	// pr(" +3");
+	// pr(" -3");
+	// pr("-4 ");
+	// pr("134");
+	// pr("-12345667790213458123190");
+	// pr("12345667790213458123190");
 }
 

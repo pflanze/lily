@@ -48,4 +48,4 @@ char_doesNotNeedQuoting (char c) {
 		);
 }
 
-LilyObjectPtr lilyParse (std::string& s);
+LilyObjectPtr lilyParse (std::string s);
