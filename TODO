@@ -1,2 +1,3 @@
 - handle unicode
 - check \0 handling
+- proper \r\n handling

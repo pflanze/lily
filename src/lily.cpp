@@ -1,7 +1,7 @@
 #include "lily.hpp"
 #include "lilyConstruct.hpp" // oh well, why separate those then?
 #include <sstream>
-
+#include "lilyParse.hpp"
 
 LilyObjectPtr
 LilyBoolean::True() {
@@ -119,39 +119,6 @@ LilyString::onelinePrint(std::ostream& out) {
 	out << '"';
 	string_onelinePrint(string, out, '"');
 	out << '"';
-}
-
-static bool
-betweenIncl (char c, char from, char to) {
-	return ((from <= c) && (c <= to));
-}
-
-static bool
-char_isdigit(char c) {
-	return betweenIncl(c, '0', '9');
-}
-
-static bool
-char_doesNotNeedQuoting (char c) {
-	return (betweenIncl(c, 'a', 'z')
-		|| betweenIncl(c, 'A', 'Z')
-		|| char_isdigit(c)
-		|| (c == '!')
-		|| (c == '?')
-		|| (c == '.')
-		|| (c == ':')
-		|| (c == '/')
-		|| (c == '%')
-		|| (c == '$')
-		|| (c == '-')
-		|| (c == '+')
-		|| (c == '*')
-		|| (c == '_')
-		|| (c == '&')
-		|| (c == '=')
-		|| (c == '<')
-		|| (c == '>')
-		);
 }
 
 void
