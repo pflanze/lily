@@ -120,6 +120,7 @@ ParseResult parseError(S s, ParseResultCode error) {
 	return ParseResult(VOID, s.setError(error));
 }
 
+typedef ParseResult PR;
 
 // ----------------------------------------------------------------
 
@@ -145,19 +146,6 @@ S skipWhitespace (S s) {
 	return s;
 }
 
-// return the position after c, or eof (always successful)
-// static
-// S skipUntil (S s, char c) {
-// 	while (!s.isNull()) {
-// 		char c1= s.first();
-// 		s= s.rest();
-// 		if (c1 == c) {
-// 			return s;
-// 		}
-// 	}
-// 	return s;
-// }
-
 // return the position after the end of this line, or eof (always
 // successful)
 static
@@ -181,6 +169,32 @@ S skipUntilEol(S s) {
 }
 
 static
+S skipWhitespaceAndComments (S s) {
+	s= skipWhitespace(s);
+	if (s.isNull())
+		return s;
+	char c= s.first();
+	if (c == ';')
+		return skipWhitespaceAndComments(skipUntilEol(s));
+	else
+		return s;
+}
+
+
+// return the position after c, or eof (always successful)
+// static
+// S skipUntil (S s, char c) {
+// 	while (!s.isNull()) {
+// 		char c1= s.first();
+// 		s= s.rest();
+// 		if (c1 == c) {
+// 			return s;
+// 		}
+// 	}
+// 	return s;
+// }
+
+static
 bool isWordEndBoundary(S s) {
 	return (s.isNull()) || !isWordChar(s.first());
 }
@@ -202,7 +216,7 @@ S expectString(S s, const char* str) {
 
 // s is after '#'
 static
-ParseResult parseBooleanOrSpecial(S s) {
+PR parseBooleanOrSpecial(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c1= s.first();
@@ -211,15 +225,15 @@ ParseResult parseBooleanOrSpecial(S s) {
 		r= expectString(r, "void");
 		if (r.success()) {
 			if (isWordEndBoundary(r))
-				return ParseResult(VOID, r);
+				return PR(VOID, r);
 		}
 		return parseError(r, ParseResultCode::UnknownBangSpecial);
 	} else {
 		if (isWordEndBoundary(r)) {
 			if (c1 == 'f') {
-				return ParseResult(FALSE, r);
+				return PR(FALSE, r);
 			} else if (c1 == 't') {
-				return ParseResult(TRUE, r);
+				return PR(TRUE, r);
 			} else {
 				return parseError(s, ParseResultCode::UnknownSpecial);
 			}
@@ -231,7 +245,7 @@ ParseResult parseBooleanOrSpecial(S s) {
 
 // s is after '"' or '|'
 static
-ParseResult parseStringLike(S s, char quoteChar,
+PR parseStringLike(S s, char quoteChar,
 			    std::function<LilyObjectPtr(const std::string&)>
 			    constructor) {
 	std::string str;
@@ -241,7 +255,7 @@ ParseResult parseStringLike(S s, char quoteChar,
 		char c= s.first();
 		s= s.rest();
 		if (c == quoteChar)
-			return ParseResult(constructor(str), s);
+			return PR(constructor(str), s);
 		if (c == '\\') {
 			if (s.isNull())
 				return parseError(s, ParseResultCode::UnexpectedEof);
@@ -268,7 +282,7 @@ ParseResult parseStringLike(S s, char quoteChar,
 }
 
 
-ParseResult parseInteger(S s) {
+PR parseInteger(S s) {
 	int64_t res=0;
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
@@ -320,13 +334,13 @@ ParseResult parseInteger(S s) {
 		if (isoverflow)
 			return parseError(s, ParseResultCode::Int64Overflow);
 		else
-			return ParseResult(INT(res), s);
+			return PR(INT(res), s);
 	} else {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
 }
 
-ParseResult parseNumber(S s) {
+PR parseNumber(S s) {
 	auto num= parseInteger(s);
 	if (num.success())
 		return num;
@@ -334,7 +348,7 @@ ParseResult parseNumber(S s) {
 	//throw std::logic_error("unfinished");
 	return num;
 }
-ParseResult parseSymbol(S s) {
+PR parseSymbol(S s) {
 	std::string str;
 	while (true) {
 		if (s.isNull())
@@ -350,37 +364,37 @@ ParseResult parseSymbol(S s) {
 	if ((str.length() == 1) && str[0] == '.')
 		return parseError(s, ParseResultCode::NotASymbol);
 	else
-		return ParseResult(SYMBOL(str), s);
+		return PR(SYMBOL(str), s);
 }
 
-ParseResult lilyParse (S s); // XX move to header file? but then also need to move the above classes.
+PR lilyParse (S s); // XX move to header file? but then also need to move the above classes.
 
 // s is after the '('
-ParseResult parseList(S s) {
-	s= skipWhitespace(s);
+PR parseList(S s) {
+	s= skipWhitespaceAndComments(s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c=s.first();
 	if (c==')')
-		return ParseResult(NIL, s);
+		return PR(NIL, s);
 	if (c=='.') {
 		auto s1=s.rest();
 		if (s1.isNull())
 			return parseError(s1, ParseResultCode::UnexpectedEof);
 		c=s1.first();
 		// whitespace,  or " ( |  would all be valid after real dot. Otherwise symbol. XXUH
-		if (isWhitespace(c)) {
+		if (isWhitespace(c)) { //XX isWhitespaceOrComment ?
 			// dotted pair, expect 1 element then ")"
 			auto r1= lilyParse(s1);
 			if (!r1.success())
 				return r1; // XX cutting away all the stored stuff. OK?
 			auto s2= r1.remainder();
-			s2= skipWhitespace(s2);
+			s2= skipWhitespaceAndComments(s2);
 			if (s2.isNull())
 				return parseError(s1, ParseResultCode::UnexpectedEof);
 			char c2= s2.first();
 			if (c2 == ')')
-				return ParseResult(r1.value(), s2.rest());
+				return PR(r1.value(), s2.rest());
 			else
 				return parseError(s2, ParseResultCode::InvalidDottedList);
 		} else {
@@ -400,7 +414,7 @@ ParseResult parseList(S s) {
 		}
 	} else {
 		// parse an item, then the remainder of the list
-		ParseResult res= lilyParse(s);
+		PR res= lilyParse(s);
 		//XX from here copy-paste from above!
 		if (!res.success())
 			return res;
@@ -424,8 +438,8 @@ LilyObjectPtr newSymbol(const std::string& str) {
 }
 
 
-ParseResult lilyParse (S s) {
-	s= skipWhitespace (s);
+PR lilyParse (S s) {
+	s= skipWhitespaceAndComments (s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
@@ -469,7 +483,7 @@ ParseResult lilyParse (S s) {
 
 // convenience function
 LilyObjectPtr lilyParse (std::string s) {
-	ParseResult r= lilyParse(StringCursor(&s, 0));
+	PR r= lilyParse(StringCursor(&s, 0));
 	if (r.success()) {
 		return r.value();
 	} else {

@@ -38,7 +38,7 @@ int main () {
 	pr("(hi .x())");
 	pr("(hi . x())");
 	pr("(\n hi\"there\" ) ");
-	pr("(\n hi\"there\" ;; all good\n) ");// BUG!
+	pr("(\n hi\"there\" ;; all good\n) ");
 	pr("(hi \"there\")3");
 	pr("(hi \"there\"");
 	pr("(hi () ( ;\n) \"there\"");//BUG!
