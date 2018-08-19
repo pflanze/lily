@@ -30,7 +30,7 @@ int main () {
 	pr("  (1 2 3)");
 	pr("hi:all there");
 	pr("(hi \"there\")");
-	pr("(hi .)"); // (parse-error "NotASymbol" 5), well, InvalidDottedList ? XX
+	pr("(hi .)");
 	pr("(hi .x)");
 	pr("(hi . x)");
 	pr("(hi .x");

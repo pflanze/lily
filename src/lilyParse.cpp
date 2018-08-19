@@ -386,8 +386,12 @@ ParseResult parseList(S s) {
 		} else {
 			// must be a symbol starting with a dot, right?  XX
 			auto res= parseSymbol(s);
-			if (!res.success())
-				return res; // ditto cutting away
+			if (!res.success()) {
+				if (res.error() == ParseResultCode::NotASymbol)
+					return parseError(s1, ParseResultCode::InvalidDottedList);
+				else
+					return res; // ditto cutting away
+			}
 			auto tail= parseList(res.remainder());
 			if (!tail.success())
 				return tail; // ditto, and, this is our 'failure monad'

@@ -19,7 +19,7 @@ Symbol: |922337203685477580844A|
 Pair: (1 2 3)
 Symbol: hi:all
 Pair: (hi "there")
-Pair: (parse-error "NotASymbol" 5)
+Pair: (parse-error "InvalidDottedList" 5)
 Pair: (hi .x)
 Pair: (hi . x)
 Pair: (parse-error "UnexpectedEof" 6)
