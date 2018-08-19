@@ -27,5 +27,12 @@ int main () {
 	pr("-9223372036854775809");
 	pr("-9223372036854775808");
 	pr("922337203685477580844A"); // symbol, not number overflow error
+	pr("hi:all there");
+	// pr("(hi \"there\")");
+	// pr("(\n hi\"there\" ) ");
+	// pr("(\n hi\"there\" ;; all good\n) ");
+	// pr("(hi \"there\")3");
+	// pr("(hi \"there\"");
+	// pr("(hi () ( ;\n) \"there\"");
 }
 

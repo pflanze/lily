@@ -270,6 +270,7 @@ ParseResult parseInteger(S s) {
 	char c0= s.first();
 	bool isneg= false;
 	bool isnumber= false;
+	bool isoverflow= false;
 	if (c0=='-') {
 		isneg= true;
 	} else if (c0=='+') {
@@ -282,6 +283,13 @@ ParseResult parseInteger(S s) {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
 	s=s.rest();
+	auto checkOverflow= [&]() {
+		if (isoverflow)
+			return;
+		if ((isneg && (res>0)) ||
+		    ((!isneg) && (res<0)))
+			isoverflow=true;
+	};
 	while (true) {
 		if (s.isNull())
 			break;
@@ -291,13 +299,9 @@ ParseResult parseInteger(S s) {
 			auto d = c-'0';
 			res= res*10;
 			// copypaste of below, XX is this required?
-			if ((isneg && (res>0)) ||
-			    ((!isneg) && (res<0)))
-				return parseError(s, ParseResultCode::Int64Overflow);
+			checkOverflow();
 			res= isneg ? res - d : res + d;
-			if ((isneg && (res>0)) ||
-			    ((!isneg) && (res<0)))
-				return parseError(s, ParseResultCode::Int64Overflow);
+			checkOverflow();
 			isnumber=true;
 		} else {
 			// equivalent to isWordEndBoundary, isNull
@@ -308,7 +312,10 @@ ParseResult parseInteger(S s) {
 		}
 	}
 	if (isnumber) {
-		return ParseResult(INT(res), s);
+		if (isoverflow)
+			return parseError(s, ParseResultCode::Int64Overflow);
+		else
+			return ParseResult(INT(res), s);
 	} else {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
@@ -334,6 +341,7 @@ ParseResult parseSymbol(S s) {
 			break;
 		s=s.rest();
 	}
+	// XX also check that the last character isn't a : (keyword)
 	if ((str.length() == 1) && str[0] == '.')
 		return parseError(s, ParseResultCode::NotASymbol);
 	else
@@ -381,6 +389,12 @@ ParseResult lilyParse (S s) {
 		auto v= parseNumber(s);
 		if (v.success())
 			return v;
+		// if it was a proper number but just overflowed,
+		// return it as such:
+		if (v.error() == ParseResultCode::Int64Overflow)
+			return v;
+		// not parseable as a number (even potentially
+		// bignum), try symbol:
 		v= parseSymbol(s);
 		if (v.success())
 			return v;
