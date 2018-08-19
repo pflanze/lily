@@ -358,7 +358,7 @@ ParseResult parseList(S s) {
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c=s.first();
 	if (c==')')
-		return ParseResult(NULL, s);
+		return ParseResult(NIL, s);
 	if (c=='.') {
 		auto s1=s.rest();
 		if (s1.isNull())
