@@ -317,8 +317,7 @@ PR parseInteger(S s) {
 			s=s.rest();
 			auto d = c-'0';
 			res= res*10;
-			// copypaste of below, XX is this required?
-			checkOverflow();
+			checkOverflow(); // this one required?
 			res= isneg ? res - d : res + d;
 			checkOverflow();
 			isnumber=true;
@@ -381,17 +380,16 @@ PR parseList(S s) {
 		auto s1=s.rest();
 		if (s1.isNull())
 			return parseError(s1, ParseResultCode::UnexpectedEof);
-		c=s1.first();
-		// whitespace,  or " ( |  would all be valid after real dot. Otherwise symbol. XXUH
-		if (isWhitespace(c)) { //XX isWhitespaceOrComment ?
-			// dotted pair, expect 1 element then ")"
-			auto r1= lilyParse(s1);
+		auto s2= skipWhitespaceAndComments(s1);
+		if (s2.position() > s1.position()) {
+			// dot stands by itself, i.e. dotted pair; expect 1 element then ")"
+			auto r1= lilyParse(s2);
 			if (!r1.success())
 				return r1; // XX cutting away all the stored stuff. OK?
 			auto s2= r1.remainder();
 			s2= skipWhitespaceAndComments(s2);
 			if (s2.isNull())
-				return parseError(s1, ParseResultCode::UnexpectedEof);
+				return parseError(s2, ParseResultCode::UnexpectedEof);
 			char c2= s2.first();
 			if (c2 == ')')
 				return PR(r1.value(), s2.rest());
@@ -402,7 +400,7 @@ PR parseList(S s) {
 			auto res= parseSymbol(s);
 			if (!res.success()) {
 				if (res.error() == ParseResultCode::NotASymbol)
-					return parseError(s1, ParseResultCode::InvalidDottedList);
+					return parseError(s2, ParseResultCode::InvalidDottedList);
 				else
 					return res; // ditto cutting away
 			}

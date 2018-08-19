@@ -44,5 +44,7 @@ int main () {
 	pr("(()5())");
 	pr("(hi () ( ;\n) \"there\")");
 	pr("(hi () ( ;\n) \"there\"");
+	pr("(hi . ; \n x)");
+	pr("(hi .; \n x)");
 }
 
