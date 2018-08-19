@@ -17,6 +17,7 @@ enum class ParseResultCode : char {
 		UnexpectedString,
 		NotAnInteger,
 		Int64Overflow,
+		NotASymbol,
 };
 
 const char* ParseResultCode_string (ParseResultCode c) {
@@ -31,6 +32,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::UnexpectedString: return "UnexpectedString";
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
+	case ParseResultCode::NotASymbol: return "NotASymbol";
 	}
 	// how can I make the compiler warn about missing cases but
 	// otherwise be silent, without the throw ?
@@ -316,12 +318,26 @@ ParseResult parseNumber(S s) {
 	auto num= parseInteger(s);
 	if (num.success())
 		return num;
-	// num= p.. XX
+	// num= p.. XXX
 	//throw std::logic_error("unfinished");
 	return num;
 }
 ParseResult parseSymbol(S s) {
-	throw std::logic_error("unfinished");
+	std::string str;
+	while (true) {
+		if (s.isNull())
+			break;
+		char c= s.first();
+		if (char_doesNotNeedQuoting(c))
+			str.push_back(c);
+		else
+			break;
+		s=s.rest();
+	}
+	if ((str.length() == 1) && str[0] == '.')
+		return parseError(s, ParseResultCode::NotASymbol);
+	else
+		return ParseResult(SYMBOL(str), s);
 }
 
 // XX move?
@@ -363,7 +379,6 @@ ParseResult lilyParse (S s) {
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
-		return v; // XXXXXç
 		if (v.success())
 			return v;
 		v= parseSymbol(s);
