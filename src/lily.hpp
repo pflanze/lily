@@ -13,6 +13,7 @@ typedef std::shared_ptr<LilyList> LilyListPtr;
 class LilyObject {
 public:
 	std::string onelineString();
+	virtual const char* typeName()=0;
 	virtual void onelinePrint(std::ostream& out)=0;
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx)=0;
 };
@@ -39,6 +40,7 @@ public:
 	virtual bool isNull() { return true; }
 	static LilyObjectPtr singleton();
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	// virtual ~LilyNull();
 };
 static inline LilyNull* is_LilyNull(LilyObject* v) {
@@ -56,6 +58,7 @@ public:
 	virtual LilyListPtr rest() { return _rest; }
 	virtual bool isNull() { return false; }
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilyListPair();
 };
 // / type-enforced proper lists
@@ -68,6 +71,7 @@ public:
 	LilyObjectPtr cdr;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilyPair();
 };
 static inline LilyPair* is_LilyPair(LilyObject* v) {
@@ -85,6 +89,7 @@ public:
 	static LilyObjectPtr singleton();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	// virtual ~LilyVoid();
 };
 
@@ -97,6 +102,7 @@ public:
 	static LilyObjectPtr False();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	//virtual ~LilyBoolean();
 };
 
@@ -106,6 +112,7 @@ public:
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilyString();
 };
 
@@ -115,6 +122,7 @@ public:
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilySymbol();
 };
 
@@ -130,6 +138,7 @@ public:
 	int64_t value;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilyInt64();
 };
 
@@ -138,6 +147,7 @@ public:
 	double value;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual const char* typeName();
 	virtual ~LilyDouble();
 };
 

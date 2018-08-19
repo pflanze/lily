@@ -192,6 +192,15 @@ LilyDouble::eval(LilyObjectPtr v, LilyListPtr ctx) {
 };
 
 
+const char* LilyNull::typeName() {return "Null";}
+const char* LilyVoid::typeName() {return "Void";}
+const char* LilyListPair::typeName() {return "ListPair";}
+const char* LilyPair::typeName() {return "Pair";}
+const char* LilyBoolean::typeName() {return "Boolean";}
+const char* LilyString::typeName() {return "String";}
+const char* LilySymbol::typeName() {return "Symbol";}
+const char* LilyInt64::typeName() {return "Int64";}
+const char* LilyDouble::typeName() {return "Double";}
 
 
 // utils

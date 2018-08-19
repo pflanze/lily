@@ -357,7 +357,7 @@ ParseResult lilyParse (S s) {
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
-		return v; // XXXXX
+		return v; // XXXXXç
 		if (v.success())
 			return v;
 		v= parseSymbol(s);

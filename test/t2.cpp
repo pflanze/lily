@@ -3,7 +3,9 @@
 #include <lilyParse.hpp>
 
 void pr(const char* s) {
-	WRITELN(lilyParse(std::string(s)));
+	auto v= lilyParse(std::string(s));
+	std::cout << v->typeName() << ": ";
+	WRITELN(v);
 }
 
 int main () {
