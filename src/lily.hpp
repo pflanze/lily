@@ -16,7 +16,7 @@ public:
 	std::string onelineString();
 	virtual const char* typeName()=0;
 	virtual void onelinePrint(std::ostream& out)=0;
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx)=0;
+	virtual LilyObjectPtr eval(LilyListPtr ctx)=0;
 };
 
 
@@ -40,7 +40,7 @@ public:
 	};
 	virtual bool isNull() { return true; }
 	static LilyObjectPtr singleton();
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	// virtual ~LilyNull();
 };
@@ -61,7 +61,7 @@ public:
 	virtual LilyObjectPtr first() { return _first; }
 	virtual LilyListPtr rest() { return _rest; }
 	virtual bool isNull() { return false; }
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyListPair();
 };
@@ -77,7 +77,7 @@ public:
 	LilyObjectPtr car;
 	LilyObjectPtr cdr;
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyPair();
 };
@@ -95,7 +95,7 @@ public:
 	virtual bool isNull() { return true; }
 	static LilyObjectPtr singleton();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	// virtual ~LilyVoid();
 };
@@ -108,7 +108,7 @@ public:
 	static LilyObjectPtr True();
 	static LilyObjectPtr False();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	//virtual ~LilyBoolean();
 };
@@ -118,7 +118,7 @@ public:
 	LilyString(std::string s) : string(s) {}
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyString();
 };
@@ -128,14 +128,14 @@ public:
 	LilySymbol(std::string s) : string(s) {}
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilySymbol();
 };
 
 class LilyNumber : public LilyObject {
 public:
-	// virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	// virtual LilyObjectPtr eval(LilyListPtr ctx);
 	// virtual ~LilyNumber();
 };
 
@@ -144,7 +144,7 @@ public:
 	LilyInt64(int64_t v) : value(v) {};
 	int64_t value;
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyInt64();
 };
@@ -153,7 +153,7 @@ class LilyDouble : public LilyNumber {
 public:
 	double value;
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr eval(LilyObjectPtr v, LilyListPtr ctx);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyDouble();
 };

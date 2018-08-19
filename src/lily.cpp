@@ -155,39 +155,39 @@ LilyDouble::onelinePrint(std::ostream& out) {
 
 
 LilyObjectPtr
-LilyNull::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyNull::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyVoid::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyVoid::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyListPair::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyListPair::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyPair::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyPair::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyBoolean::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyBoolean::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyString::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyString::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilySymbol::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilySymbol::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyInt64::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyInt64::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyDouble::eval(LilyObjectPtr v, LilyListPtr ctx) {
+LilyDouble::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 
