@@ -17,3 +17,13 @@ Pair: (parse-error "Int64Overflow" 20)
 Int64: -9223372036854775808
 Symbol: |922337203685477580844A|
 Symbol: hi:all
+Pair: (i there ||)
+Pair: (parse-error "NotASymbol" 5)
+Pair: (i .x)
+Pair: (i . x)
+Pair: (parse-error "UnexpectedEof" 6)
+Pair: (parse-error "UnexpectedEof" 5)
+Pair: (i .x ||)
+Pair: (parse-error "InvalidDottedList" 7)
+Pair: (i there ||)
+Pair: (i there ||)

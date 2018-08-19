@@ -28,9 +28,16 @@ int main () {
 	pr("-9223372036854775808");
 	pr("922337203685477580844A"); // symbol, not number overflow error
 	pr("hi:all there");
-	// pr("(hi \"there\")");
-	// pr("(\n hi\"there\" ) ");
-	// pr("(\n hi\"there\" ;; all good\n) ");
+	pr("(hi \"there\")");
+	pr("(hi .)"); // (parse-error "NotASymbol" 5), well, InvalidDottedList ? XX
+	pr("(hi .x)");
+	pr("(hi . x)");
+	pr("(hi .x");
+	pr("(hi . x");
+	pr("(hi .x())"); //XX uh should fail!! wy the hell parsed as sym!!!
+	pr("(hi . x())");
+	pr("(\n hi\"there\" ) ");//XX (i there ||) gosh  multiwrong.
+	pr("(\n hi\"there\" ;; all good\n) ");//
 	// pr("(hi \"there\")3");
 	// pr("(hi \"there\"");
 	// pr("(hi () ( ;\n) \"there\"");

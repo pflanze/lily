@@ -18,6 +18,7 @@ enum class ParseResultCode : char {
 		NotAnInteger,
 		Int64Overflow,
 		NotASymbol,
+		InvalidDottedList,
 };
 
 const char* ParseResultCode_string (ParseResultCode c) {
@@ -33,6 +34,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
 	case ParseResultCode::NotASymbol: return "NotASymbol";
+	case ParseResultCode::InvalidDottedList: return "InvalidDottedList";
 	}
 	// how can I make the compiler warn about missing cases but
 	// otherwise be silent, without the throw ?
@@ -259,9 +261,6 @@ ParseResult parseStringLike(S s, char quoteChar,
 	}
 }
 
-ParseResult parseList(S s) {
-	throw std::logic_error("unfinished");
-}
 
 ParseResult parseInteger(S s) {
 	int64_t res=0;
@@ -347,6 +346,62 @@ ParseResult parseSymbol(S s) {
 	else
 		return ParseResult(SYMBOL(str), s);
 }
+
+ParseResult lilyParse (S s); // XX move to header file? but then also need to move the above classes.
+
+// s is after the '('
+ParseResult parseList(S s) {
+	s= skipWhitespace(s);
+	if (s.isNull())
+		return parseError(s, ParseResultCode::UnexpectedEof);
+	char c=s.first();
+	if (c==')')
+		return ParseResult(NULL, s);
+	if (c=='.') {
+		auto s1=s.rest();
+		if (s1.isNull())
+			return parseError(s1, ParseResultCode::UnexpectedEof);
+		c=s1.first();
+		// whitespace,  or " ( |  would all be valid after real dot. Otherwise symbol. XXUH
+		if (isWhitespace(c)) {
+			// dotted pair, expect 1 element then ")"
+			auto r1= lilyParse(s1);
+			if (!r1.success())
+				return r1; // XX cutting away all the stored stuff. OK?
+			auto s2= r1.remainder();
+			s2= skipWhitespace(s2);
+			if (s2.isNull())
+				return parseError(s1, ParseResultCode::UnexpectedEof);
+			char c2= s2.first();
+			if (c2 == ')')
+				return ParseResult(r1.value(), s2.rest());
+			else
+				return parseError(s2, ParseResultCode::InvalidDottedList);
+		} else {
+			// must be a symbol starting with a dot, right?  XX
+			auto res= parseSymbol(s);
+			if (!res.success())
+				return res; // ditto cutting away
+			auto tail= parseList(res.remainder());
+			if (!tail.success())
+				return tail; // ditto, and, this is our 'failure monad'
+			return ParseResult(CONS(res.value(), tail.value()),
+					   tail.remainder());
+		}
+	} else {
+		// parse an item, then the remainder of the list
+		auto res= lilyParse(s.rest());
+		//XX from here copy-paste from above!
+		if (!res.success())
+			return res;
+		auto tail= parseList(res.remainder());
+		if (!tail.success())
+			return tail;
+		return ParseResult(CONS(res.value(), tail.value()),
+				   tail.remainder());
+	}
+}
+
 
 // XX move?
 static
