@@ -46,5 +46,6 @@ int main () {
 	pr("(hi () ( ;\n) \"there\"");
 	pr("(hi . ; \n x)");
 	pr("(hi .; \n x)");
+	pr("(+ 10 ; \n  20)");
 }
 
