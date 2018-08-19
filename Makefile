@@ -14,10 +14,10 @@ t2: bin/test/t2
 	bin/test/t2 > test/t2.out
 	git diff --exit-code test/t2.out
 
-bin/lily.o: src/lily.hpp src/lilyConstruct.hpp src/lily.cpp
+bin/lily.o: src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
 
-bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp
+bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyParse.cpp -o bin/lilyParse.o
 
 bin/test/t1: bin/lily.o test/t1.cpp

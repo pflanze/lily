@@ -2,6 +2,7 @@
 #include "lily.hpp"
 #include "lilyConstruct.hpp" // oh well, why separate those then?
 #include "lilyParse.hpp"
+#include "lilyUtil.hpp"
 
 LilyObjectPtr
 LilyBoolean::True() {
@@ -97,22 +98,6 @@ LilyVoid::onelinePrint(std::ostream& out) {
 	out << "#!void";
 }
 
-
-static void
-string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
-	for (char c : str) {
-		if (c==quoteChar) {
-			out << '\\' << c;
-		} else if (c== '\n') {
-			out << "\\n";
-		} else if (c== '\\') {
-			out << "\\\\";
-		} else {
-			out << c;
-			// XX utf8
-		}
-	}
-}
 
 void
 LilyString::onelinePrint(std::ostream& out) {

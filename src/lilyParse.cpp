@@ -3,6 +3,7 @@
 #include "lily.hpp"
 #include "lilyConstruct.hpp"
 #include "lilyParse.hpp"
+#include "lilyUtil.hpp"
 
 #define WARN(e) std::cerr<< e <<"\n"
 
@@ -79,6 +80,9 @@ public:
 	}
 	std::string& string() {
 		return *_string;
+	}
+	std::string show() {
+		return string_onelineString(_string->substr(_position, _string->length() - _position));
 	}
 private:
 	std::string* _string;
@@ -392,7 +396,7 @@ ParseResult parseList(S s) {
 		}
 	} else {
 		// parse an item, then the remainder of the list
-		auto res= lilyParse(s.rest());
+		ParseResult res= lilyParse(s);
 		//XX from here copy-paste from above!
 		if (!res.success())
 			return res;
