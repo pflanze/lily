@@ -18,13 +18,16 @@ string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
 	}
 }
 
-static
-std::string
-string_onelineString(std::string str) {
-	std::ostringstream out;
-	out << '"';
-	string_onelinePrint(str, out, '"');
-	out << '"';
-	return out.str();
-}
+
+// would be useful to immplement show(LilyObjectPtr):
+
+// static
+// std::string
+// string_onelineString(std::string str) {
+// 	std::ostringstream out;
+// 	out << '"';
+// 	string_onelinePrint(str, out, '"');
+// 	out << '"';
+// 	return out.str();
+// }
 

@@ -6,15 +6,18 @@
 #include "lilyUtil.hpp"
 
 enum class ParseResultCode : char {
+	// the ones hard-coded in parse.cpp
 	Success=0,
+	UnexpectedEof=1,
+	UnexpectedString=2,
+
 	Whitespace, // parser found whitespace at point, not object
 	MissingInput,
-	UnexpectedEof,
 	Unimplemented,
+
 	UnknownSyntax,
 	UnknownBangSpecial,
 	UnknownSpecial,
-	UnexpectedString,
 	NotAnInteger,
 	Int64Overflow,
 	NotASymbol,
@@ -24,13 +27,16 @@ enum class ParseResultCode : char {
 const char* ParseResultCode_string (ParseResultCode c) {
 	switch (c) {
 	case ParseResultCode::Success: return "Success";
-	case ParseResultCode::MissingInput: return "MissingInput";
 	case ParseResultCode::UnexpectedEof: return "UnexpectedEof";
+	case ParseResultCode::UnexpectedString: return "UnexpectedString";
+
+	case ParseResultCode::Whitespace: return "Whitespace"; // shouldn't happen, meta
+	case ParseResultCode::MissingInput: return "MissingInput";
 	case ParseResultCode::Unimplemented: return "Unimplemented";
+
 	case ParseResultCode::UnknownSyntax: return "UnknownSyntax";
 	case ParseResultCode::UnknownBangSpecial: return "UnknownBangSpecial";
 	case ParseResultCode::UnknownSpecial: return "UnknownSpecial";
-	case ParseResultCode::UnexpectedString: return "UnexpectedString";
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
 	case ParseResultCode::NotASymbol: return "NotASymbol";
@@ -41,158 +47,27 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	throw std::logic_error("missing case");
 }
 
-// StringCursor can also represent parse errors (including the
-// location of their appearance)
 
-// XX this is optimized for 64 bit architectures.
-class StringCursor {
-public:
-	StringCursor(std::string* string, uint32_t position,
-		     ParseResultCode error= ParseResultCode::Success)
-		: _string(string), _error(error), _position(position) {}
-	char first () {
-		return (*_string)[_position];
-	}
-	StringCursor rest () {
-		uint32_t pos1= _position+1;
-		assert(pos1 > 0);
-		if (pos1 <= _string->length()) {
-			return StringCursor(_string, pos1, _error);
-		} else {
-			throw std::logic_error("end of input");
-		}
-	}
-	bool isNull () {
-		return !(_position < _string->length());
-	}
-	ParseResultCode error () {
-		return _error;
-	}
-	bool success () {
-		return (_error==ParseResultCode::Success);
-	}
-	StringCursor setError (ParseResultCode error) {
-		return StringCursor(_string, _position, error);
-	}
-	uint32_t position() {
-		return _position;
-	}
-	std::string& string() {
-		return *_string;
-	}
-	std::string show() {
-		return string_onelineString(_string->substr(_position, _string->length() - _position));
-	}
-private:
-	std::string* _string;
-	ParseResultCode _error;
-	uint32_t _position;
-};
-
-class ParseResult {
-public:
-	ParseResult(LilyObjectPtr result, StringCursor remainder)
-		: _result(result), _remainder(remainder) {
-		assert(result);
-	}
-	LilyObjectPtr value() {
-		return _result;
-	}
-	ParseResultCode error () {
-		return _remainder.error();
-	}
-	bool success() {
-		return _remainder.success();
-	}
-	StringCursor remainder() {
-		return _remainder;
-	}
-private:
-	LilyObjectPtr _result;	
-	StringCursor _remainder;
-};
-
-typedef StringCursor S;
-
-static
-ParseResult parseError(S s, ParseResultCode error) {
-	return ParseResult(VOID, s.setError(error));
-}
-
-typedef ParseResult PR;
-
-// ----------------------------------------------------------------
-
-static
-bool isWhitespace (char c) {
-	return ((c == ' ')
-		|| (c == '\n')
-		|| (c == '\r')
-		|| (c == '\t')
-		|| (c == '\f')
+bool doesNotNeedSymbolQuoting (char c) {
+	return (isWordChar(c)
+		|| (c == '!')
+		|| (c == '?')
+		|| (c == '.')
+		|| (c == ':')
+		|| (c == '/')
+		|| (c == '%')
+		|| (c == '$')
+		|| (c == '-')
+		|| (c == '+')
+		|| (c == '*')
+		|| (c == '_')
+		|| (c == '&')
+		|| (c == '=')
+		|| (c == '<')
+		|| (c == '>')
 		);
 }
 
-
-static
-S skipWhitespaceOnly (S s) {
-	while (!s.isNull()) {
-		if (!isWhitespace(s.first())) {
-			return s;
-		}
-		s= s.rest();
-	}
-	return s;
-}
-
-// return the position after the end of this line, or eof (always
-// successful)
-static
-S skipUntilAfterEol(S s) {
-	while (!s.isNull()) {
-		char c= s.first();
-		s= s.rest();
-		if (c == '\r') {
-			if (s.isNull())
-				return s; // odd though
-			c= s.first();
-			s= s.rest();
-		}
-		if ((c == '\n')
-		    // page feed without newline, XX correct?
-		    || (c == '\f')) {
-			return s;
-		}
-	}
-	return s;
-}
-
-// return the position after the first occurrence of str, or eof error
-// (naive algorithm)
-static
-S skipUntil (S s, const char* str, bool after=false) {
-	while (!s.isNull()) {
-		const char* _str= str;
-		auto _s=s;
-		while (true) {
-			char _c= *_str;
-			if (!_c)
-				return after ? _s : s;
-			if (_c != _s.first())
-				return _s;
-			_s=_s.rest();
-			if (_s.isNull())
-				goto eof; // not break, since str wouldn't fit
-		}
-		s= s.rest();
-	}
-eof:
-	return s.setError(ParseResultCode::UnexpectedEof);
-}
-static
-S skipUntilAfter (S s, const char* str) {
-	return skipUntil(s, str, true);
-}
 
 static
 S skipWhitespaceAndComments (S s) {
@@ -211,24 +86,14 @@ S skipWhitespaceAndComments (S s) {
 	}
 }
 
-static
-bool isWordEndBoundary(S s) {
-	return (s.isNull()) || !isWordChar(s.first());
-}
+
+typedef ParseResult<LilyObjectPtr> PR;
 
 static
-S expectString(S s, const char* str) {
-	const char* p= str;
-	while (true) {
-		if (!*p)
-			return s;
-		if (s.isNull())
-			return s.setError(ParseResultCode::UnexpectedEof);
-		if (!(s.first() == *p))
-			return s.setError(ParseResultCode::UnexpectedString);
-		s= s.rest();
-	}
+PR parseError(S s, ParseResultCode error) {
+	return PR(VOID, s.setError(error));
 }
+
 
 
 // s is after '#'
@@ -369,6 +234,7 @@ PR parseNumber(S s) {
 	//throw std::logic_error("unfinished");
 	return num;
 }
+
 PR parseSymbol(S s) {
 	std::string str;
 	while (true) {
@@ -429,8 +295,8 @@ PR parseList(S s) {
 			auto tail= parseList(res.remainder());
 			if (!tail.success())
 				return tail; // ditto, and, this is our 'failure monad'
-			return ParseResult(CONS(res.value(), tail.value()),
-					   tail.remainder());
+			return PR(CONS(res.value(), tail.value()),
+				  tail.remainder());
 		}
 	} else {
 		// parse an item, then the remainder of the list
@@ -440,8 +306,8 @@ PR parseList(S s) {
 		auto tail= parseList(res.remainder());
 		if (!tail.success())
 			return tail;
-		return ParseResult(CONS(res.value(), tail.value()),
-				   tail.remainder());
+		return PR(CONS(res.value(), tail.value()),
+			  tail.remainder());
 	}
 }
 
@@ -501,7 +367,7 @@ PR lilyParse (S s) {
 
 // convenience function
 LilyObjectPtr lilyParse (std::string s) {
-	PR r= lilyParse(StringCursor(&s, 0));
+	PR r= lilyParse(StringCursor(&s));
 	if (r.success()) {
 		return r.value();
 	} else {
