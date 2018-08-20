@@ -26,10 +26,9 @@ void weirdtest(LilyListPtr mylist) {
 		mylistp= LIST_UNWRAP(mylistp->rest());
 	}
 
+	WRITELN(BOOLEAN((new LilyPair(INT(33), INT(444)))-> isPair()));
 
-	WARN((new LilyPair(INT(33), INT(444)))-> isPair());
-
-	WARN((new LilyNull())-> isPair());
+	WRITELN(BOOLEAN((new LilyNull())-> isPair()));
 }
 
 #define IS(type, var)  !!dynamic_cast<type*>(&*(var))

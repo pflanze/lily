@@ -21,6 +21,7 @@
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LILY_NEW(LilySymbol(a))
+#define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define FUNCTION(a) LILY_NEW(LilyFunction(a))
 
 static inline
