@@ -30,7 +30,10 @@ S skipUntilAfterEol(S s) {
 			if (s.isNull())
 				return s; // odd though
 			c= s.first();
-			s= s.rest();
+			if (c == '\n')
+				return s.rest();
+			else
+				return s;
 		}
 		if ((c == '\n')
 		    // page feed without newline, XX correct?
@@ -51,11 +54,12 @@ S skipUntil (S s, const char* str, bool after) {
 			char _c= *_str;
 			if (!_c)
 				return after ? _s : s;
-			if (_c != _s.first())
-				return _s;
-			_s=_s.rest();
 			if (_s.isNull())
 				goto eof; // not break, since str wouldn't fit
+			if (_c != _s.first())
+				break;
+			_s=_s.rest();
+			_str++;
 		}
 		s= s.rest();
 	}
@@ -77,6 +81,7 @@ S expectString(S s, const char* str) {
 		if (!(s.first() == *p))
 			return s.setError(ParseResultCode_UnexpectedString);
 		s= s.rest();
+		p++;
 	}
 }
 
