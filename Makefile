@@ -18,7 +18,10 @@ t3: bin/test/t3
 	bin/test/t3 > test/t3.out
 	git diff --exit-code test/t3.out
 
-bin/lily.o: src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp
+bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp
+	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyUtil.cpp -o bin/lilyUtil.o
+
+bin/lily.o: src/lily.cpp src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o
 
 bin/parse.o: src/parse.cpp src/parse.hpp 
@@ -32,14 +35,14 @@ bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvi
 
 
 # t1 needs a symbol from lilyParse.o which needs parse.o
-bin/test/t1: bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp src/lilyConstruct.hpp
-	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp
+bin/test/t1: test/t1.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.hpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp
 
-bin/test/t2: bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp src/lilyConstruct.hpp
-	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp
+bin/test/t2: test/t2.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.hpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp
 
-bin/test/t3: bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp src/lilyConstruct.hpp
-	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t3 bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp
+bin/test/t3: test/t3.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o src/lilyConstruct.hpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t3 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp
 
 
 dirs:
