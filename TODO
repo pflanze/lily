@@ -1,3 +1,4 @@
 - handle unicode
 - check \0 handling
 - proper \r\n handling
+- protect against stack overflows during parsing and pretty-printing?

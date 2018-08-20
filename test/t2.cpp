@@ -8,6 +8,10 @@ void pr(const char* s) {
 	WRITELN(v);
 }
 
+void note(const char* s) {
+	std::cout << "---- " << s << " ----\n";
+}
+
 int main () {
 	pr(" \n \"Hi,\nand\\n \\\"you\" 123");
 	pr("7");
@@ -46,6 +50,17 @@ int main () {
 	pr("(hi () ( ;\n) \"there\"");
 	pr("(hi . ; \n x)");
 	pr("(hi .; \n x)");
+	note("range comments");
+	pr(" #|hi|# there");
+	pr("(hi .#||#x)"); // Gambit parses .#| as invalid token!
+	pr("(hi .#||; |\n||# x)");
+	pr(".#a"); // symbol
+	pr("#a"); // UnknownSpecial; Gambit: invalid token
+	pr("..");
+	pr("(a ..)");
+	pr("(a ...)");
+	pr("(a . ..)");
+	pr("(a .. .)");
 	pr("(+ 10 ; \n  20)");
 }
 

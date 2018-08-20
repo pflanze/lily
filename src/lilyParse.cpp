@@ -6,18 +6,19 @@
 #include "lilyUtil.hpp"
 
 enum class ParseResultCode : char {
-	Success = 0,
-		MissingInput,
-		UnexpectedEof,
-		Unimplemented,
-		UnknownSyntax,
-		UnknownBangSpecial,
-		UnknownSpecial,
-		UnexpectedString,
-		NotAnInteger,
-		Int64Overflow,
-		NotASymbol,
-		InvalidDottedList,
+	Success=0,
+	Whitespace, // parser found whitespace at point, not object
+	MissingInput,
+	UnexpectedEof,
+	Unimplemented,
+	UnknownSyntax,
+	UnknownBangSpecial,
+	UnknownSpecial,
+	UnexpectedString,
+	NotAnInteger,
+	Int64Overflow,
+	NotASymbol,
+	InvalidDottedList,
 };
 
 const char* ParseResultCode_string (ParseResultCode c) {
@@ -134,7 +135,7 @@ bool isWhitespace (char c) {
 
 
 static
-S skipWhitespace (S s) {
+S skipWhitespaceOnly (S s) {
 	while (!s.isNull()) {
 		if (!isWhitespace(s.first())) {
 			return s;
@@ -147,7 +148,7 @@ S skipWhitespace (S s) {
 // return the position after the end of this line, or eof (always
 // successful)
 static
-S skipUntilEol(S s) {
+S skipUntilAfterEol(S s) {
 	while (!s.isNull()) {
 		char c= s.first();
 		s= s.rest();
@@ -166,31 +167,49 @@ S skipUntilEol(S s) {
 	return s;
 }
 
+// return the position after the first occurrence of str, or eof error
+// (naive algorithm)
+static
+S skipUntil (S s, const char* str, bool after=false) {
+	while (!s.isNull()) {
+		const char* _str= str;
+		auto _s=s;
+		while (true) {
+			char _c= *_str;
+			if (!_c)
+				return after ? _s : s;
+			if (_c != _s.first())
+				return _s;
+			_s=_s.rest();
+			if (_s.isNull())
+				goto eof; // not break, since str wouldn't fit
+		}
+		s= s.rest();
+	}
+eof:
+	return s.setError(ParseResultCode::UnexpectedEof);
+}
+static
+S skipUntilAfter (S s, const char* str) {
+	return skipUntil(s, str, true);
+}
+
 static
 S skipWhitespaceAndComments (S s) {
-	s= skipWhitespace(s);
+	s= skipWhitespaceOnly(s);
 	if (s.isNull())
 		return s;
 	char c= s.first();
-	if (c == ';')
-		return skipWhitespaceAndComments(skipUntilEol(s));
-	else
-		return s;
+	if (c == ';') {
+		return skipWhitespaceAndComments(skipUntilAfterEol(s));
+	} else {
+		auto rest= s.rest();
+		if ((c == '#') && (! rest.isNull()) && (rest.first() == '|'))
+			return skipUntilAfter(rest.rest(), "|#");
+		else
+			return s;
+	}
 }
-
-
-// return the position after c, or eof (always successful)
-// static
-// S skipUntil (S s, char c) {
-// 	while (!s.isNull()) {
-// 		char c1= s.first();
-// 		s= s.rest();
-// 		if (c1 == c) {
-// 			return s;
-// 		}
-// 	}
-// 	return s;
-// }
 
 static
 bool isWordEndBoundary(S s) {
@@ -214,18 +233,23 @@ S expectString(S s, const char* str) {
 
 // s is after '#'
 static
-PR parseBooleanOrSpecial(S s) {
+PR parseHashitem(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c1= s.first();
 	auto r= s.rest();
 	if (c1 == '!') {
+		// special object
 		r= expectString(r, "void");
 		if (r.success()) {
 			if (isWordEndBoundary(r))
 				return PR(VOID, r);
 		}
 		return parseError(r, ParseResultCode::UnknownBangSpecial);
+	} else if (c1 == '|') {
+		// skipWhitespaceAndComments should have eliminated
+		// this case
+		throw std::logic_error("bug");
 	} else {
 		if (isWordEndBoundary(r)) {
 			if (c1 == 'f') {
@@ -442,8 +466,7 @@ PR lilyParse (S s) {
 	if (c=='(') {
 		return parseList(r);
 	} else if (c=='#') {
-		// XX also handle ranged ("multi-line") comments
-		return parseBooleanOrSpecial(r);
+		return parseHashitem(r);
 	} else if (c=='"') {
 		return parseStringLike(r, '"', newString);
 	} else if (c=='|') {
@@ -451,7 +474,7 @@ PR lilyParse (S s) {
 	} else if (c==';') {
 		// until the end of the line; if s is 1 line then that
 		// will be eof, but make it generic so actually check:
-		return lilyParse(skipUntilEol(r));
+		return lilyParse(skipUntilAfterEol(r));
 	} else if (c=='\'') {
 		return parseError(s, ParseResultCode::Unimplemented);
 	} else if (c=='`') {

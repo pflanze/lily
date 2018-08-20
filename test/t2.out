@@ -35,4 +35,15 @@ Pair: (hi () () "there")
 Pair: (parse-error "UnexpectedEof" 20)
 Pair: (hi . x)
 Pair: (hi . x)
+---- range comments ----
+Symbol: hi
+Pair: (parse-error "UnknownSpecial" 9)
+Pair: (parse-error "InvalidDottedList" 14)
+Pair: (parse-error "UnknownSyntax" 0)
+Pair: (parse-error "UnknownSpecial" 1)
+Symbol: ..
+Pair: (a ..)
+Pair: (a ...)
+Pair: (a . ..)
+Pair: (parse-error "InvalidDottedList" 7)
 Pair: (+ 10 20)
