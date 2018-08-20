@@ -5,8 +5,6 @@
 #include "lilyParse.hpp"
 #include "lilyUtil.hpp"
 
-#define WARN(e) std::cerr<< e <<"\n"
-
 enum class ParseResultCode : char {
 	Success = 0,
 		MissingInput,

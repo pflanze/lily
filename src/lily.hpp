@@ -1,9 +1,13 @@
+#ifndef _LILY_HPP
+#define _LILY_HPP
+
 #include <string>
 #include <memory>
 #include <stdexcept>
 #include <ostream>
+#include <functional>
 #include <assert.h>
-
+ 
 
 class LilyObject;
 class LilyList;
@@ -21,25 +25,31 @@ public:
 
 
 // -- type-enforced proper lists
+
+class LilyNull;
+class LilyPair;
+
 class LilyList : public LilyObject {
 public:
 	virtual LilyObjectPtr first() = 0;
-	virtual LilyListPtr rest() = 0;
+	virtual LilyObjectPtr rest() = 0;
 	virtual bool isNull() = 0;
+	virtual bool isPair() = 0;
 	virtual void onelinePrint(std::ostream& out);
-	// virtual ~();
+	// virtual ~LilyList();
 };
 
-class LilyNull : public LilyList {
+struct LilyNull : public LilyList {
 public:
 	virtual LilyObjectPtr first() {
 		throw std::logic_error("end of list");
 	};
-	virtual LilyListPtr rest() {
+	virtual LilyObjectPtr rest() {
 		throw std::logic_error("end of list");
 	};
 	virtual bool isNull() { return true; }
-	static LilyObjectPtr singleton();
+	virtual bool isPair() { return false; }
+	static LilyListPtr singleton();
 	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	// virtual ~LilyNull();
@@ -48,38 +58,27 @@ static inline LilyNull* is_LilyNull(LilyObject* v) {
 	return dynamic_cast<LilyNull*>(v);
 }
 
-class LilyListPair : public LilyList {
-private:
-	LilyObjectPtr _first;
-	LilyListPtr _rest;
-public:
-	LilyListPair(LilyObjectPtr first, LilyListPtr rest) :
-		_first(first), _rest(rest) {
-		assert(first);
-		assert(rest);
-	}
-	virtual LilyObjectPtr first() { return _first; }
-	virtual LilyListPtr rest() { return _rest; }
-	virtual bool isNull() { return false; }
-	virtual LilyObjectPtr eval(LilyListPtr ctx);
-	virtual const char* typeName();
-	virtual ~LilyListPair();
-};
-// / type-enforced proper lists
 
-
-class LilyPair : public LilyObject {
+struct LilyPair : public LilyList {
 public:
 	LilyPair(LilyObjectPtr a, LilyObjectPtr d) : car(a), cdr(d) {
 		assert(a);
 		assert(d);
 	}
-	LilyObjectPtr car;
-	LilyObjectPtr cdr;
+	virtual LilyObjectPtr first() { return car; }
+	virtual LilyObjectPtr rest() {
+		assert(dynamic_cast<LilyList*>(&*(cdr)));
+		return cdr;
+	}
+	//^ XX evil?...
+	virtual bool isNull() { return false; }
+	virtual bool isPair() { return true; }
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyListPtr ctx);
 	virtual const char* typeName();
 	virtual ~LilyPair();
+	LilyObjectPtr car;
+	LilyObjectPtr cdr;
 };
 static inline LilyPair* is_LilyPair(LilyObject* v) {
 	return dynamic_cast<LilyPair*>(v);
@@ -158,6 +157,30 @@ public:
 	virtual ~LilyDouble();
 };
 
+typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyFunction_t;
+
+struct LilyFunction : public LilyObject {
+public:
+	LilyFunction(LilyFunction_t function)
+		: _function(function) {}
+	LilyFunction_t function() { return _function; }
+	virtual const char* typeName();
+	virtual void onelinePrint(std::ostream& out);
+	virtual LilyObjectPtr eval(LilyListPtr ctx);
+	LilyFunction_t _function;
+};
+
 
 // utils
-LilyObjectPtr reverse(LilyObjectPtr l);
+LilyListPtr reverse(LilyObjectPtr l);
+
+// casting that also unwraps it from the shared_ptr
+#define UNWRAP_AS(t, e) dynamic_cast<t*>(&*(e))
+#define UNWRAP(e) UNWRAP_AS(LilyObject,e)
+#define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
+
+#define WARN(e) std::cerr<< e <<"\n"
+
+
+#endif
+

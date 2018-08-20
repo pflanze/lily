@@ -17,9 +17,9 @@ LilyBoolean::False() {
 }
 
 
-LilyObjectPtr
+LilyListPtr
 LilyNull::singleton() {
-	static LilyObjectPtr v (new LilyNull());
+	static LilyListPtr v (new LilyNull());
 	return v;
 }
 
@@ -31,7 +31,6 @@ LilyVoid::singleton() {
 
 
 
-LilyListPair::~LilyListPair() {};
 LilyPair::~LilyPair() {};
 //LilyVoid::~LilyVoid() {};
 //LilyBoolean::~LilyBoolean() {};
@@ -56,7 +55,7 @@ LilyList::onelinePrint(std::ostream& out) {
 	bool isNull= p->isNull();
 	while (!isNull) {
 		p->first()->onelinePrint(out);
-		p= &(*(p->rest()));
+		p= dynamic_cast<LilyList*>(&*(p->rest()));
 		isNull= p->isNull();
 		if (isNull) {
 			out << " ";
@@ -137,6 +136,11 @@ LilyDouble::onelinePrint(std::ostream& out) {
 	out << value;
 }
 
+void
+LilyFunction::onelinePrint(std::ostream& out) {
+	out << "#<function>"; // XX decide how to handle these
+}
+
 
 
 LilyObjectPtr
@@ -145,10 +149,6 @@ LilyNull::eval(LilyListPtr ctx) {
 };
 LilyObjectPtr
 LilyVoid::eval(LilyListPtr ctx) {
-	throw std::logic_error("not implemented yet");
-};
-LilyObjectPtr
-LilyListPair::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
@@ -175,25 +175,29 @@ LilyObjectPtr
 LilyDouble::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
+LilyObjectPtr
+LilyFunction::eval(LilyListPtr ctx) {
+	throw std::logic_error("not implemented yet");
+};
 
 
 const char* LilyNull::typeName() {return "Null";}
 const char* LilyVoid::typeName() {return "Void";}
-const char* LilyListPair::typeName() {return "ListPair";}
 const char* LilyPair::typeName() {return "Pair";}
 const char* LilyBoolean::typeName() {return "Boolean";}
 const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
+const char* LilyFunction::typeName() {return "Function";}
 
 
 // utils
-LilyObjectPtr reverse(LilyObjectPtr l) {
-	LilyObjectPtr res= NIL;
+LilyListPtr reverse(LilyObjectPtr l) {
+	LilyListPtr res= NIL;
 	while (true) {
 		if (LilyPair*p= is_LilyPair(&*l)) {
-			res= CONS(p->car, res);
+			res= LIST_CONS(p->car, res);
 			l= p->cdr;
 		} else if (is_LilyNull(&*l)) {
 			break;

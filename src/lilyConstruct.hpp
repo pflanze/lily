@@ -4,7 +4,15 @@
 #define LILY_NEW(classAndArguments) \
 	std::shared_ptr<LilyObject>(new classAndArguments)
 
+#define LILY_LIST_NEW(classAndArguments)				\
+	std::shared_ptr<LilyList>(new classAndArguments)
+
 #define CONS(a,b) LILY_NEW(LilyPair(a,b))
+#define LIST_CONS(a,b) LILY_LIST_NEW(LilyPair(a,b))
+// provide both or rename?
+#define PAIR(a,b) LILY_NEW(LilyPair(a,b))
+#define LIST_PAIR(a,b) LILY_LIST_NEW(LilyPair(a,b))
+// /both
 #define NIL LilyNull::singleton()
 #define TRUE LilyBoolean::True()
 #define FALSE LilyBoolean::False()
@@ -13,6 +21,7 @@
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LILY_NEW(LilySymbol(a))
+#define FUNCTION(a) LILY_NEW(LilyFunction(a))
 
 static inline
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {
@@ -22,12 +31,12 @@ LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {
 }
 
 static inline
-LilyObjectPtr _LIST(std::initializer_list<LilyObjectPtr> vs) {
-	LilyObjectPtr res= NIL;
+LilyListPtr _LIST(std::initializer_list<LilyObjectPtr> vs) {
+	LilyListPtr res= NIL;
 	// std::initializer_list does not offer reverse() nor rbegin
 	// nor indices in C++11. So use reversion afterwards.
 	for (auto v : vs) {
-		res= CONS(v, res);
+		res= LIST_CONS(v, res);
 	}
 	return reverse(res);
 }
