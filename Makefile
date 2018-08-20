@@ -31,13 +31,14 @@ bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvi
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyDefaultEnvironment.cpp -o bin/lilyDefaultEnvironment.o
 
 
-bin/test/t1: bin/lily.o test/t1.cpp
-	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o test/t1.cpp
+# t1 needs a symbol from lilyParse.o which needs parse.o
+bin/test/t1: bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp src/lilyConstruct.hpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp
 
-bin/test/t2: bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp
+bin/test/t2: bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp src/lilyConstruct.hpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp
 
-bin/test/t3: bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp
+bin/test/t3: bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp src/lilyConstruct.hpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t3 bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o test/t3.cpp
 
 
