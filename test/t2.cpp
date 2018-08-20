@@ -26,6 +26,8 @@ int main () {
 	pr(" +3");
 	pr(" -3");
 	pr("-4 ");
+
+	note("overflow");
 	pr("9223372036854775808"); // 2^63
 	pr("9223372036854775807"); // 2^63-1
 	pr("-9223372036854775809");
@@ -40,27 +42,46 @@ int main () {
 	pr("(hi .x");
 	pr("(hi . x");
 	pr("(hi .x())");
-	pr("(hi . x())");
+	pr("(hi . x())"); // InvalidDottedList
 	pr("(\n hi\"there\" ) ");
+	pr("(a b . (c))"); // (a b c)
+
+	note("line comments");
 	pr("(\n hi\"there\" ;; all good\n) ");
 	pr("(hi \"there\")3");
-	pr("(hi \"there\"");
+	pr("(hi \"there\""); // UnexpectedEof
 	pr("(()5())");
 	pr("(hi () ( ;\n) \"there\")");
-	pr("(hi () ( ;\n) \"there\"");
+	pr("(hi () ( ;\n) \"there\""); // UnexpectedEof
 	pr("(hi . ; \n x)");
 	pr("(hi .; \n x)");
-	note("range comments");
-	pr(" #|hi|# there");
+
+	note("in-line comments"); // or 'range comments' or whatever
+	pr(" #|hi|# there"); // "there"
+	pr(" #| |# 234"); // 234
+	pr(" #| |#| 234|"); // | 234|
+	pr(" #| |#  234|"); // 234
+	pr("  234|"); // 234
+
+	note("  all: (hi . x)");
 	pr("(hi .#||#x)"); // Gambit parses .#| as invalid token!
+	pr("(hi .#|||#x)");
+	pr("(hi .#||\\|#x)"); // Gambit does not allow escaping of the end marker
+	pr("(hi .#|\n|#x)");
 	pr("(hi .#||; |\n||# x)");
+
+	note("symbol, unknown special, symbols:");
 	pr(".#a"); // symbol
+	pr("(1 .#a)"); // len 2
 	pr("#a"); // UnknownSpecial; Gambit: invalid token
 	pr("..");
 	pr("(a ..)");
 	pr("(a ...)");
 	pr("(a . ..)");
-	pr("(a .. .)");
+	pr("(a .. .)"); // invalid dotted list
+	pr("(#!void #f #t)");
+	pr("(#!void#f #t)"); // XX currently same as above; Gambit: Invalid '#!' name: "void#f"
+	pr("(#t#f)"); // XX currently accepted as 2 values; Gambit: invalid token
 	pr("(+ 10 ; \n  20)");
 }
 

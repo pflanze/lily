@@ -11,6 +11,7 @@ Symbol: +
 Int64: 3
 Int64: -3
 Int64: -4
+---- overflow ----
 Pair: (parse-error "Int64Overflow" 19)
 Int64: 9223372036854775807
 Pair: (parse-error "Int64Overflow" 20)
@@ -27,6 +28,8 @@ Pair: (parse-error "UnexpectedEof" 7)
 Pair: (hi .x ())
 Pair: (parse-error "InvalidDottedList" 7)
 Pair: (hi "there")
+Pair: (a b c)
+---- line comments ----
 Pair: (hi "there")
 Pair: (hi "there")
 Pair: (parse-error "UnexpectedEof" 11)
@@ -35,15 +38,28 @@ Pair: (hi () () "there")
 Pair: (parse-error "UnexpectedEof" 20)
 Pair: (hi . x)
 Pair: (hi . x)
----- range comments ----
-Symbol: hi
-Pair: (parse-error "UnknownSpecial" 9)
-Pair: (parse-error "InvalidDottedList" 14)
-Pair: (parse-error "UnknownSyntax" 0)
+---- in-line comments ----
+Symbol: there
+Int64: 234
+Symbol: | 234|
+Int64: 234
+Int64: 234
+----   all: (hi . x) ----
+Pair: (hi . x)
+Pair: (hi . x)
+Pair: (hi . x)
+Pair: (hi . x)
+Pair: (hi . x)
+---- symbol, unknown special, symbols: ----
+Symbol: .#a
+Pair: (1 .#a)
 Pair: (parse-error "UnknownSpecial" 1)
 Symbol: ..
 Pair: (a ..)
 Pair: (a ...)
 Pair: (a . ..)
 Pair: (parse-error "InvalidDottedList" 7)
+Pair: (#!void #f #t)
+Pair: (#!void #f #t)
+Pair: (#t #f)
 Pair: (+ 10 20)
