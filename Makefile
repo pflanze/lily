@@ -4,11 +4,15 @@ CFLAGS=-gdwarf-4 -g3
 
 all: dirs tests
 
-tests: t1 t2 t3
+tests: t1 t_parse t2 t3
 
 t1: bin/test/t1
 	bin/test/t1 > test/t1.out
 	git diff --exit-code test/t1.out
+
+t_parse: bin/test/t_parse
+	bin/test/t_parse > test/t_parse.out
+	git diff --exit-code test/t_parse.out
 
 t2: bin/test/t2
 	bin/test/t2 > test/t2.out
@@ -37,6 +41,9 @@ bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvi
 # t1 needs a symbol from lilyParse.o which needs parse.o
 bin/test/t1: test/t1.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.hpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o test/t1.cpp
+
+bin/test/t_parse: test/t_parse.cpp bin/lilyUtil.o bin/parse.o
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t_parse bin/lilyUtil.o bin/parse.o test/t_parse.cpp
 
 bin/test/t2: test/t2.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.hpp
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o test/t2.cpp
