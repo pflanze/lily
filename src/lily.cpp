@@ -109,7 +109,7 @@ void
 LilySymbol::onelinePrint(std::ostream& out) {
 	bool needsQuoting=0;
 	for(char c : string) {
-		if (!doesNotNeedSymbolQuoting(c)) {
+		if (needsSymbolQuoting(c)) {
 			needsQuoting=1;
 			break;
 		}

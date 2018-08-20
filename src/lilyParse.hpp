@@ -1,7 +1,7 @@
 
 #include "parse.hpp"
 
-bool doesNotNeedSymbolQuoting (char c);
+bool needsSymbolQuoting (char c);
 
 LilyObjectPtr lilyParse (std::string s);
 

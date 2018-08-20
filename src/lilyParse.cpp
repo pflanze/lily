@@ -48,23 +48,23 @@ const char* ParseResultCode_string (ParseResultCode c) {
 }
 
 
-bool doesNotNeedSymbolQuoting (char c) {
-	return (isWordChar(c)
-		|| (c == '!')
-		|| (c == '?')
-		|| (c == '.')
-		|| (c == ':')
-		|| (c == '/')
-		|| (c == '%')
-		|| (c == '$')
-		|| (c == '-')
-		|| (c == '+')
-		|| (c == '*')
-		|| (c == '_')
-		|| (c == '&')
-		|| (c == '=')
-		|| (c == '<')
-		|| (c == '>')
+bool needsSymbolQuoting (char c) {
+	return !(isWordChar(c)
+		 || (c == '!')
+		 || (c == '?')
+		 || (c == '.')
+		 || (c == ':')
+		 || (c == '/')
+		 || (c == '%')
+		 || (c == '$')
+		 || (c == '-')
+		 || (c == '+')
+		 || (c == '*')
+		 || (c == '_')
+		 || (c == '&')
+		 || (c == '=')
+		 || (c == '<')
+		 || (c == '>')
 		);
 }
 
@@ -241,7 +241,7 @@ PR parseSymbol(S s) {
 		if (s.isNull())
 			break;
 		char c= s.first();
-		if (doesNotNeedSymbolQuoting(c))
+		if (!needsSymbolQuoting(c))
 			str.push_back(c);
 		else
 			break;
