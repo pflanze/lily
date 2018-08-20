@@ -65,6 +65,7 @@ bool needsSymbolQuoting (char c) {
 		 || (c == '=')
 		 || (c == '<')
 		 || (c == '>')
+		 || (c == '#')
 		);
 }
 
