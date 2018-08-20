@@ -38,4 +38,5 @@ int main () {
 	p(skipUntilAfter(SC("Hello"), "llom")); // fail
 	p(skipUntilAfter(SC("Hello"), "la")); // fail
 	p(skipUntilAfter(SC("Hello"), "x")); // fail
+	p(skipUntilAfter(SC(" #| |# 234"), "|#"));
 }
