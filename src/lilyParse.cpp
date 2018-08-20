@@ -81,7 +81,8 @@ S skipWhitespaceAndComments (S s) {
 	} else {
 		auto rest= s.rest();
 		if ((c == '#') && (! rest.isNull()) && (rest.first() == '|'))
-			return skipUntilAfter(rest.rest(), "|#");
+			return skipWhitespaceAndComments
+				(skipUntilAfter(rest.rest(), "|#"));
 		else
 			return s;
 	}
