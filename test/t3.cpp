@@ -43,8 +43,23 @@ int main () {
 		WRITELN(LIST(s1,s4,BOOLEAN(s1==s4)));
 	}
 
-	note("addition");
+	note("literals");
+	e("1233");
+	e(" \"1233\" ");
+	e("#t");
+	e("#!void");
+
+	note("variable reference");
+	e(" q "); // undefined variable
+	e(" + "); // Primitive
+
+	note("invalid");
+	e("()"); // empty call
+
+	note("calls");
 	e("(+)"); // 0
 	e("(+ 10 20)"); // 30
-	e("(+ 10 . 20)"); // error
+	e("(+ 10 . 20)"); // improper argument list error
+	e("(10 20)"); // not a function error
+	e("(+ (* 10 3) 4)"); // 34
 }
