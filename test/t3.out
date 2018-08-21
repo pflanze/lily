@@ -6,4 +6,9 @@
 (Hello Hello #t)
 (Hello Hello #t)
 (Hello Hello2 #f)
----- addition ----
+---- literals ----
+Int64: 1233
+String: "1233"
+Boolean: #t
+Void: #!void
+---- variable reference ----

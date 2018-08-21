@@ -169,7 +169,7 @@ LilyNull::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
 };
 LilyObjectPtr
 LilyVoid::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
+	return v;
 };
 LilyObjectPtr
 LilyPair::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
@@ -177,11 +177,11 @@ LilyPair::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
 };
 LilyObjectPtr
 LilyBoolean::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
+	return v;
 };
 LilyObjectPtr
 LilyString::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
+	return v;
 };
 LilyObjectPtr
 LilySymbol::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
@@ -189,7 +189,7 @@ LilySymbol::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
 };
 LilyObjectPtr
 LilyInt64::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
+	return v;
 };
 LilyObjectPtr
 LilyDouble::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
