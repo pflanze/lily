@@ -2,3 +2,4 @@
 - check \0 handling
 - proper \r\n handling
 - protect against stack overflows during parsing and pretty-printing?
+- lilyParse: report begin of erroneous elements instead of end
