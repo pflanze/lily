@@ -250,13 +250,15 @@ PR parseSymbol(S s) {
 		s=s.rest();
 	}
 	// XX also check that the last character isn't a : (keyword)
-	if ((str.length() == 1) && str[0] == '.')
+	auto len= str.length();
+	if ((len == 1) && str[0] == '.')
 		return parseError(s, ParseResultCode::NotASymbol);
 	else
 		return PR(SYMBOL(str), s);
 }
 
-PR lilyParse (S s); // XX move to header file? but then also need to move the above classes.
+// move to header file? but then also need to move the above classes.
+PR lilyParse (S s);
 
 // s is after the '('
 PR parseList(S s) {
@@ -275,7 +277,7 @@ PR parseList(S s) {
 			// dot stands by itself, i.e. dotted pair; expect 1 element then ")"
 			auto r1= lilyParse(s2);
 			if (!r1.success())
-				return r1; // XX cutting away all the stored stuff. OK?
+				return r1; // cutting away all the stored stuff. OK?
 			auto s2= r1.remainder();
 			s2= skipWhitespaceAndComments(s2);
 			if (s2.isNull())
@@ -314,7 +316,6 @@ PR parseList(S s) {
 }
 
 
-// XX move?
 static
 LilyObjectPtr newString(const std::string& str) {
 	return STRING(str);
@@ -377,9 +378,7 @@ LilyObjectPtr lilyParse (std::string s) {
 		// producing the error? :
 		ParseResultCode code= r.error();
 		return LIST(SYMBOL("parse-error"),
-			    // INT(code),  XX how can I convert it?
 			    STRING(ParseResultCode_string(code)),
-			    // SYMBOL("pos:"),
 			    INT(r.remainder().position()));
 	}
 }
