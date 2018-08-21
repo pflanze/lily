@@ -82,6 +82,16 @@ int main () {
 	pr("(#!void #f #t)");
 	pr("(#!void#f #t)"); // XX currently same as above; Gambit: Invalid '#!' name: "void#f"
 	pr("(#t#f)"); // XX currently accepted as 2 values; Gambit: invalid token
+
+	note("keywords (not implemented)");
+	pr("foo:bar");
+	pr("foo: bar");
+	pr("(foo :bar)");
+	pr("(|foo:||:bar|)");
+	pr(" : ");
+	pr(" :: "); // Yes, Gambit parses this as a keyword
+
+	note("demo");
 	pr("(+ 10 ; \n  20)");
 }
 

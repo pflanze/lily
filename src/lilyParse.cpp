@@ -249,10 +249,12 @@ PR parseSymbol(S s) {
 			break;
 		s=s.rest();
 	}
-	// XX also check that the last character isn't a : (keyword)
 	auto len= str.length();
 	if ((len == 1) && str[0] == '.')
 		return parseError(s, ParseResultCode::NotASymbol);
+	else if ((len > 1) && ((str[0] == ':') || (str[len-1] == ':')))
+		// keywords
+		return parseError(s, ParseResultCode::Unimplemented);
 	else
 		return PR(SYMBOL(str), s);
 }
@@ -364,7 +366,12 @@ PR lilyParse (S s) {
 		v= parseSymbol(s);
 		if (v.success())
 			return v;
-		return parseError(s, ParseResultCode::UnknownSyntax);
+		// return parseError(s, ParseResultCode::UnknownSyntax);
+
+		// actually return the symbol parsing error since
+		// symbol is what it remains to be interpreted as
+		// anyway?
+		return v;
 	}
 }
 

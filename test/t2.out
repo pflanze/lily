@@ -62,4 +62,12 @@ Pair: (parse-error "InvalidDottedList" 7)
 Pair: (#!void #f #t)
 Pair: (#!void #f #t)
 Pair: (#t #f)
+---- keywords (not implemented) ----
+Symbol: foo:bar
+Pair: (parse-error "Unimplemented" 4)
+Pair: (parse-error "Unimplemented" 9)
+Pair: (foo: :bar)
+Symbol: :
+Pair: (parse-error "Unimplemented" 3)
+---- demo ----
 Pair: (+ 10 20)
