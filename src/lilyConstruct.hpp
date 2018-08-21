@@ -20,7 +20,7 @@
 #define INT(a) LILY_NEW(LilyInt64(a))
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
-#define SYMBOL(a) LILY_NEW(LilySymbol(a))
+#define SYMBOL(a) LilySymbol::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define PRIMITIVE(a) LILY_NEW(LilyPrimitive(a))
 

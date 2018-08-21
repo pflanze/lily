@@ -125,6 +125,7 @@ public:
 class LilySymbol : public LilyObject {
 public:
 	LilySymbol(std::string s) : string(s) {}
+	static LilyObjectPtr intern(std::string s);
 	std::string string;
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyListPtr ctx);

@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include <sstream>
 #include "lily.hpp"
 #include "lilyConstruct.hpp" // oh well, why separate those then?
@@ -29,6 +30,25 @@ LilyVoid::singleton() {
 	return v;
 }
 
+
+// XX careful threads! danger?
+std::unordered_map<std::string, LilyObjectPtr> lilySymbolTable {};
+
+// XX currently does not free unused symbols. Periodic sweep? Weak
+// somehow, how? (Special table needed, or weak will wrapper.)
+LilyObjectPtr
+LilySymbol::intern(std::string s) {
+	auto it= lilySymbolTable.find(s);
+	if (it != lilySymbolTable.end()) {
+		return it->second;
+		// why 'is this a tuple and iterator at same time?'?
+		// Overloaded dereference, right? (Uh?)
+	} else {
+		auto v= LILY_NEW(LilySymbol(s));
+		lilySymbolTable[s]= v;
+		return v;
+	}
+}
 
 
 LilyPair::~LilyPair() {};
