@@ -1,0 +1,9 @@
+---- string and symbol pointer comparison ----
+("Hello" "Hello" #t)
+("Hello" "Hello" #f)
+("Hello" "Hello" #f)
+(Hello Hello #t)
+(Hello Hello #t)
+(Hello Hello #t)
+(Hello Hello2 #f)
+---- addition ----
