@@ -5,6 +5,10 @@
 
 auto environment= lilyDefaultEnvironment();
 
+void note(const char* s) {
+	std::cout << "---- " << s << " ----\n";
+}
+
 void e(const char* codestring) {
 	auto codeobject= lilyParse(std::string(codestring));
 	auto result= codeobject->eval(environment);
@@ -52,10 +56,12 @@ void weirdtest(LilyListPtr mylist) {
 
 
 int main () {
+	note("weirdtest"); // whatever name
 	weirdtest(LIST_PAIR(INT(22),
 			    LIST_PAIR(INT(23),
 				      LIST_PAIR(INT(23445),
 						NIL))));
+	note("addition");
 	e("(+)"); // 0
 	e("(+ 10 20)"); // 30
 	e("(+ 10 . 20)"); // error
