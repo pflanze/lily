@@ -1,6 +1,5 @@
 # -O2
-CFLAGS=-gdwarf-4 -g3
-
+CFLAGS=-gdwarf-4 -g3 -fdiagnostics-color=always
 
 all: dirs tests
 
