@@ -90,8 +90,8 @@ LilyPair::onelinePrint(std::ostream& out) {
 	LilyPair* p= this;
 	out << "(";
 	while (true) {
-		p->car->onelinePrint(out);
-		LilyObject* d= &(*(p->cdr));
+		p->_car->onelinePrint(out);
+		LilyObject* d= &(*(p->_cdr));
 		if ((p= is_LilyPair(d))) {
 			out << " ";
 		} else if (is_LilyNull(d)) {
@@ -161,44 +161,12 @@ LilyPrimitive::onelinePrint(std::ostream& out) {
 	out << "#<function>"; // XX decide how to handle these
 }
 
-
-
-LilyObjectPtr
-LilyNull::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
-};
-LilyObjectPtr
-LilyVoid::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	return v;
-};
-LilyObjectPtr
-LilyPair::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
-};
-LilyObjectPtr
-LilyBoolean::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	return v;
-};
-LilyObjectPtr
-LilyString::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	return v;
-};
-LilyObjectPtr
-LilySymbol::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
-};
-LilyObjectPtr
-LilyInt64::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	return v;
-};
-LilyObjectPtr
-LilyDouble::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
-};
-LilyObjectPtr
-LilyPrimitive::eval(LilyObjectPtr& v, LilyListPtr ctx, LilyListPtr cont) {
-	throw std::logic_error("not implemented yet");
-};
+// and yeah, decided to make it LilyObject, so now have to define the
+// stuff that might be user accessed
+void
+LilyContinuationFrame::onelinePrint(std::ostream& out) {
+	out << "#<continuation-frame>"; // XX decide how to handle these
+}
 
 
 const char* LilyNull::typeName() {return "Null";}
@@ -210,6 +178,76 @@ const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
 const char* LilyPrimitive::typeName() {return "Primitive";}
+const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
+
+
+
+LilyObjectPtr
+LilyPrimitive::call(LilyListPtr args) {
+	return _primitive(args);
+}
+
+
+LilyObjectPtr eval(LilyObjectPtr& code,
+		   LilyListPtr ctx,
+		   LilyListPtr cont) {
+	LilyObjectPtr acc;
+	while (true) {
+		switch (code->evalId) {
+		case LilyEvalOpcode::Null:
+			throw std::logic_error("empty call");
+			break;
+		case LilyEvalOpcode::Void:
+			acc= code;
+			break;
+		case LilyEvalOpcode::Pair:
+			throw std::logic_error("not implemented yet");
+			break;
+		case LilyEvalOpcode::Boolean:
+			acc= code;
+			break;
+		case LilyEvalOpcode::String:
+			acc= code;
+			break;
+		case LilyEvalOpcode::Symbol:
+			throw std::logic_error("not implemented yet");
+			break;
+		case LilyEvalOpcode::Int64:
+			acc= code;
+			break;
+		case LilyEvalOpcode::Double:
+			acc= code;
+			break;
+		case LilyEvalOpcode::Primitive:
+			acc= code;
+			break;
+		default:
+			throw std::logic_error("invalid opcode");
+		}
+		if (cont->isNull()) {
+			return acc;
+		} else {
+			LET_AS_U(frame, LilyContinuationFrame, cont->first());
+			LET_AS_U(expressions, LilyList, frame->expressions());
+
+			LilyListPtr rvalues1= LIST_CONS(acc, frame->rvalues());
+			if (expressions->isNull()) {
+				// ready to call the continuation
+				LilyListPtr values= reverse(frame->rvalues());
+				LET_AS_U(f, LilyCallable, values->first());
+				acc= f->call(values->rest());
+				cont= cont->rest();
+			} else {
+				// update continuation
+				cont= LIST_CONS(FRAME(rvalues1,
+						      expressions->rest()),
+						cont->rest());
+				code= expressions->first();
+			}
+		}
+	}
+}
+
 
 
 // utils
@@ -217,8 +255,8 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	LilyListPtr res= NIL;
 	while (true) {
 		if (LilyPair*p= is_LilyPair(&*l)) {
-			res= LIST_CONS(p->car, res);
-			l= p->cdr;
+			res= LIST_CONS(p->_car, res);
+			l= p->_cdr;
 		} else if (is_LilyNull(&*l)) {
 			break;
 		} else {

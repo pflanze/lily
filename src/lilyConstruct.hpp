@@ -23,6 +23,7 @@
 #define SYMBOL(a) LilySymbol::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define PRIMITIVE(a) LILY_NEW(LilyPrimitive(a))
+#define FRAME(vs,es) LILY_NEW(LilyContinuationFrame(vs,es))
 
 static inline
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {

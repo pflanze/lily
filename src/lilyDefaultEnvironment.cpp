@@ -7,9 +7,9 @@ LilyObjectPtr lilyAdd(LilyObjectPtr vs) {
 	LilyObject* p= UNWRAP(vs);
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(p)) {
-			if (auto num=  UNWRAP_AS(LilyInt64, pair->car)) {
+			if (auto num=  UNWRAP_AS(LilyInt64, pair->_car)) {
 				total+= num->value; // XX check for overflow!
-				p= UNWRAP(pair->cdr);
+				p= UNWRAP(pair->_cdr);
 			} else {
 				throw std::logic_error("not an integer");
 			}
