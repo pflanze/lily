@@ -44,8 +44,9 @@ bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvi
 bin/test/t1: test/t1.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.o
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t1 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.o test/t1.cpp
 
+# lily.o needs lilyParse.o -- XX change so that it doesn't
 bin/test/t_parse: test/t_parse.cpp bin/lilyUtil.o bin/parse.o
-	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t_parse bin/lilyUtil.o bin/lily.o bin/parse.o src/lilyConstruct.o test/t_parse.cpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t_parse bin/lilyUtil.o bin/lilyParse.o bin/lily.o bin/parse.o src/lilyConstruct.o test/t_parse.cpp
 
 bin/test/t2: test/t2.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.o
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/test/t2 bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.o test/t2.cpp
