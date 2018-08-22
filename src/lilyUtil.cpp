@@ -1,4 +1,3 @@
-
 #include "lilyUtil.hpp"
 
 
@@ -32,4 +31,5 @@ std::string show(std::string str) {
 	out << '"';
 	return out.str();
 }
+
 

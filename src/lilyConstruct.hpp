@@ -1,3 +1,6 @@
+#ifndef _LILYCONSTRUCT_HPP
+#define _LILYCONSTRUCT_HPP
+
 #include <iostream>
 #include <cstdarg>
 #include "lily.hpp"
@@ -35,3 +38,4 @@ LilyListPtr _LIST(std::initializer_list<LilyObjectPtr> vs);
 #define LIST(...) _LIST({ __VA_ARGS__ })
 
 
+#endif
