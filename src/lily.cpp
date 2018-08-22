@@ -95,15 +95,14 @@ LilyPair::onelinePrint(std::ostream& out) {
 		if ((p= is_LilyPair(d))) {
 			out << " ";
 		} else if (is_LilyNull(d)) {
-			out << ")";
 			break;
 		} else {
 			out << " . ";
 			d->onelinePrint(out);
-			out << ")";
 			break;
 		}
 	}
+	out << ")";
 }
 
 
