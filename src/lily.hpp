@@ -241,8 +241,8 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define UNWRAP(e) UNWRAP_AS(LilyObject,e)
 #define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
 // let unwrapped
-#define LET_AS_U(var, t, e) t* var= UNWRAP_AS(t, e)
-#define LET_U(var, e) LET_AS_U(var, LilyObject, e)
+#define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
+#define LETU(var, e) LETU_AS(var, LilyObject, e)
 
 #define WARN(e) std::cerr<< e <<"\n"
 

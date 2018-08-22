@@ -191,7 +191,7 @@ LilyPrimitive::call(LilyListPtr args) {
 LilyObjectPtr
 alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
 	while (! l->isNull()) {
-		LET_AS_U(p, LilyPair, l->first());
+		LETU_AS(p, LilyPair, l->first());
 		if (p->car() == key)
 			return p->cdr();
 		l= l->rest();
@@ -241,14 +241,14 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 		if (cont->isNull()) {
 			return acc;
 		} else {
-			LET_AS_U(frame, LilyContinuationFrame, cont->first());
-			LET_AS_U(expressions, LilyList, frame->expressions());
+			LETU_AS(frame, LilyContinuationFrame, cont->first());
+			LETU_AS(expressions, LilyList, frame->expressions());
 
 			LilyListPtr rvalues1= LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				LilyListPtr values= reverse(frame->rvalues());
-				LET_AS_U(f, LilyCallable, values->first());
+				LETU_AS(f, LilyCallable, values->first());
 				acc= f->call(values->rest());
 				cont= cont->rest();
 			} else {
