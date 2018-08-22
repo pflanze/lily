@@ -158,7 +158,7 @@ LilyDouble::onelinePrint(std::ostream& out) {
 
 void
 LilyPrimitive::onelinePrint(std::ostream& out) {
-	out << "#<function>"; // XX decide how to handle these
+	out << "#<primitive "<< _name <<">";
 }
 
 // and yeah, decided to make it LilyObject, so now have to define the
@@ -188,6 +188,19 @@ LilyPrimitive::call(LilyListPtr args) {
 }
 
 
+// returns NULL on failure
+LilyObjectPtr
+alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
+	while (! l->isNull()) {
+		LET_AS_U(p, LilyPair, l->first());
+		if (p->car() == key)
+			return p->cdr();
+		l= l->rest();
+	}
+	return NULL;
+}
+
+
 LilyObjectPtr eval(LilyObjectPtr& code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont) {
@@ -201,7 +214,7 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 			acc= code;
 			break;
 		case LilyEvalOpcode::Pair:
-			throw std::logic_error("not implemented yet");
+			throw std::logic_error("pair eval not implemented yet");
 			break;
 		case LilyEvalOpcode::Boolean:
 			acc= code;
@@ -210,7 +223,9 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 			acc= code;
 			break;
 		case LilyEvalOpcode::Symbol:
-			throw std::logic_error("not implemented yet");
+			acc= alistMaybeGet(ctx, code);
+			if (!acc)
+				throw std::logic_error("variable not bound");
 			break;
 		case LilyEvalOpcode::Int64:
 			acc= code;

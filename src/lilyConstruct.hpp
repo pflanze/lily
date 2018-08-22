@@ -22,7 +22,7 @@
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LilySymbol::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
-#define PRIMITIVE(a) LILY_NEW(LilyPrimitive(a))
+#define PRIMITIVE(a, name) LILY_NEW(LilyPrimitive(a, name))
 #define FRAME(vs,es) LILY_NEW(LilyContinuationFrame(vs,es))
 
 static inline

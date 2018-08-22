@@ -22,9 +22,11 @@ enum class LilyEvalOpcode : char {
 
 class LilyObject;
 class LilyList;
+// class LilySymbol;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
+// typedef std::shared_ptr<LilyList> LilySymbolPtr;
 
 class LilyObject {
 public:
@@ -199,8 +201,9 @@ typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyPrimitive_t;
 
 struct LilyPrimitive : public LilyCallable {
 public:
-	LilyPrimitive(LilyPrimitive_t primitive)
-		: _primitive(primitive) {
+	LilyPrimitive(LilyPrimitive_t primitive,
+		      const char* name)
+		: _primitive(primitive), _name(name) {
 		evalId= LilyEvalOpcode::Primitive;
 	}
 	LilyPrimitive_t primitive() { return _primitive; }
@@ -208,6 +211,7 @@ public:
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr args);
 	LilyPrimitive_t _primitive;
+	const char* _name;
 };
 
 struct LilyContinuationFrame : public LilyObject {
@@ -238,6 +242,7 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
 // let unwrapped
 #define LET_AS_U(var, t, e) t* var= UNWRAP_AS(t, e)
+#define LET_U(var, e) LET_AS_U(var, LilyObject, e)
 
 #define WARN(e) std::cerr<< e <<"\n"
 
