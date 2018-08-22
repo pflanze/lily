@@ -24,7 +24,7 @@ LilyObjectPtr lilyAdd(LilyObjectPtr vs) {
 
 LilyListPtr lilyDefaultEnvironment() {
 	LilyListPtr env= LIST(
-		PAIR(SYMBOL("+"), FUNCTION(lilyAdd)),
+		PAIR(SYMBOL("+"), PRIMITIVE(lilyAdd)),
 		);
 	return env;
 }

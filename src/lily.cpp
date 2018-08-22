@@ -137,7 +137,7 @@ LilyDouble::onelinePrint(std::ostream& out) {
 }
 
 void
-LilyFunction::onelinePrint(std::ostream& out) {
+LilyPrimitive::onelinePrint(std::ostream& out) {
 	out << "#<function>"; // XX decide how to handle these
 }
 
@@ -176,7 +176,7 @@ LilyDouble::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 LilyObjectPtr
-LilyFunction::eval(LilyListPtr ctx) {
+LilyPrimitive::eval(LilyListPtr ctx) {
 	throw std::logic_error("not implemented yet");
 };
 
@@ -189,7 +189,7 @@ const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
-const char* LilyFunction::typeName() {return "Function";}
+const char* LilyPrimitive::typeName() {return "Primitive";}
 
 
 // utils

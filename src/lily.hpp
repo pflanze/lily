@@ -157,17 +157,17 @@ public:
 	virtual ~LilyDouble();
 };
 
-typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyFunction_t;
+typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyPrimitive_t;
 
-struct LilyFunction : public LilyObject {
+struct LilyPrimitive : public LilyObject {
 public:
-	LilyFunction(LilyFunction_t function)
-		: _function(function) {}
-	LilyFunction_t function() { return _function; }
+	LilyPrimitive(LilyPrimitive_t primitive)
+		: _primitive(primitive) {}
+	LilyPrimitive_t primitive() { return _primitive; }
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr eval(LilyListPtr ctx);
-	LilyFunction_t _function;
+	LilyPrimitive_t _primitive;
 };
 
 

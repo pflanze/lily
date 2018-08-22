@@ -22,7 +22,7 @@
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LILY_NEW(LilySymbol(a))
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
-#define FUNCTION(a) LILY_NEW(LilyFunction(a))
+#define PRIMITIVE(a) LILY_NEW(LilyPrimitive(a))
 
 static inline
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out= std::cout) {
