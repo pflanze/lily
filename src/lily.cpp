@@ -223,8 +223,11 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 			break;
 		case LilyEvalOpcode::Symbol:
 			acc= alistMaybeGet(ctx, code);
-			if (!acc)
-				throw std::logic_error("variable not bound");
+			if (!acc) {
+				std::ostringstream msg;
+				msg << "variable not bound: " << show(code);
+				throw std::logic_error(msg.str());
+			}
 			break;
 		case LilyEvalOpcode::Int64:
 			acc= code;
