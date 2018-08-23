@@ -21,7 +21,7 @@ t3: bin/test/t3
 	bin/test/t3 > test/t3.actual.out
 	sbin/tdiff test/t3.out
 
-bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp
+bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyConstruct.cpp -o bin/lilyConstruct.o
 
 bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp
@@ -36,7 +36,7 @@ bin/parse.o: src/parse.cpp src/parse.hpp
 bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyParse.cpp -o bin/lilyParse.o
 
-bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvironment.hpp src/lilyConstruct.hpp src/lily.hpp
+bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvironment.hpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyDefaultEnvironment.cpp -o bin/lilyDefaultEnvironment.o
 
 

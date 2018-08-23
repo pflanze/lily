@@ -7,6 +7,8 @@
 #include <ostream>
 #include <functional>
 #include <assert.h>
+#include "lilyUtil.hpp"
+
 
 enum class LilyEvalOpcode : char {
 	Null,
@@ -28,6 +30,11 @@ class LilyList;
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
 // typedef std::shared_ptr<LilyList> LilySymbolPtr;
+
+
+// move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
+std::string show(const LilyObjectPtr& v);
+
 
 class LilyObject {
 public:
@@ -93,8 +100,12 @@ public:
 	}
 	virtual LilyObjectPtr first() { return _car; }
 	virtual LilyListPtr rest() {
-		assert(dynamic_cast<LilyList*>(&*_cdr));
-		return *((LilyListPtr*)(&_cdr));
+		if (dynamic_cast<LilyList*>(&*_cdr)) {
+			return *((LilyListPtr*)(&_cdr));
+		} else {
+			throw std::logic_error(STR("improper list: " <<
+						   show(_cdr)));
+		}
 	}
 	virtual LilyObjectPtr car() { return _car; }
 	virtual LilyObjectPtr cdr() { return _cdr; }
@@ -253,9 +264,6 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define LETU(var, e) LETU_AS(var, LilyObject, e)
 
 #define WARN(e) std::cerr<< e <<"\n"
-
-// move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
-std::string show(const LilyObjectPtr& v);
 
 #endif
 
