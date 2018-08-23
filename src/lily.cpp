@@ -261,11 +261,11 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			LETU_AS(frame, LilyContinuationFrame, cont->first());
 			LETU_AS(expressions, LilyList, frame->expressions());
 
-			LilyListPtr rvalues1= LIST_CONS(acc, frame->rvalues());
+			LilyListPtr rvalues= LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				WARN("ready to call the continuation");
-				LilyListPtr values= reverse(rvalues1);
+				LilyListPtr values= reverse(rvalues);
 				const LilyObjectPtr& first= values->first();
 				LETU_AS(f, LilyCallable, first);
 				if (!f)
@@ -277,7 +277,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// update continuation (XX optim:
 				// mutate if refcount is 1? and no
 				// weak refs?)
-				cont= LIST_CONS(FRAME(rvalues1,
+				cont= LIST_CONS(FRAME(rvalues,
 						      expressions->rest()),
 						cont->rest());
 				code= expressions->first();
