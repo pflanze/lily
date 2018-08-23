@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=
+
+usage () {
+    echo "usage: $0 outputfile.out"
+    echo "  compare outputfile.out against outputfile.actual.out,"
+    echo "  the former being part of the project repository, "
+    echo "  the latter the actual output from a test. Report "
+    echo "  test failure via diff and exit code."
+    false
+}
+
+if [ $# -ne 1 ]; then usage; fi
+
+outputfile_out="$1"
+outputfile=$(echo "$outputfile_out" | sed 's/\.out$//')
+
+exec diff --color -u "$outputfile_out" "$outputfile.actual.out"
+

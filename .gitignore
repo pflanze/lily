@@ -1,3 +1,4 @@
 *.o
 /bin
 .gdb_history
+*.actual.out

@@ -6,20 +6,20 @@ all: dirs tests
 tests: t1 t_parse t2 t3
 
 t1: bin/test/t1
-	bin/test/t1 > test/t1.out
-	git diff --exit-code test/t1.out
+	bin/test/t1 > test/t1.actual.out
+	sbin/tdiff test/t1.out
 
 t_parse: bin/test/t_parse
-	bin/test/t_parse > test/t_parse.out
-	git diff --exit-code test/t_parse.out
+	bin/test/t_parse > test/t_parse.actual.out
+	sbin/tdiff test/t_parse.out
 
 t2: bin/test/t2
-	bin/test/t2 > test/t2.out
-	git diff --exit-code test/t2.out
+	bin/test/t2 > test/t2.actual.out
+	sbin/tdiff test/t2.out
 
 t3: bin/test/t3
-	bin/test/t3 > test/t3.out
-	git diff --exit-code test/t3.out
+	bin/test/t3 > test/t3.actual.out
+	sbin/tdiff test/t3.out
 
 bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyConstruct.cpp -o bin/lilyConstruct.o
