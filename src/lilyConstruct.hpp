@@ -32,6 +32,8 @@
 
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out);
 LilyObjectPtr WRITELN(LilyObjectPtr v);
+// for GDB, since it doesn't recognize the return type of those above:
+void wr(LilyObjectPtr v);
 
 LilyListPtr _LIST(std::initializer_list<LilyObjectPtr> vs);
 

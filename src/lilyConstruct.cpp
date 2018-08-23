@@ -10,6 +10,10 @@ LilyObjectPtr WRITELN(LilyObjectPtr v) {
 	return WRITELN(v, std::cout);
 }
 
+void wr(LilyObjectPtr v) {
+	WRITELN(v, std::cout);
+}
+
 
 LilyListPtr _LIST(std::initializer_list<LilyObjectPtr> vs) {
 	LilyListPtr res= NIL;
