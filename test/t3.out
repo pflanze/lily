@@ -12,3 +12,6 @@ String: "1233"
 Boolean: #t
 Void: #!void
 ---- variable reference ----
+Primitive: #<primitive +>
+---- invalid ----
+---- calls ----

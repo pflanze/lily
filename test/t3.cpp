@@ -50,11 +50,11 @@ int main () {
 	e("#!void");
 
 	note("variable reference");
-	e(" q "); // undefined variable
+	// e(" q "); // undefined variable
 	e(" + "); // Primitive
 
 	note("invalid");
-	e("()"); // empty call
+	// e("()"); // empty call
 
 	note("calls");
 	e("(+)"); // 0
