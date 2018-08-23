@@ -164,12 +164,21 @@ LilyPrimitive::onelinePrint(std::ostream& out) {
 // stuff that might be user accessed
 void
 LilyContinuationFrame::onelinePrint(std::ostream& out) {
-	(out << "#<continuation-frame 0x"
-	 << std::hex
-	 << _rvalues << " 0x"
-	 << _expressions
-	 << std::dec
-	 << ">");
+	bool deep=1;
+	if (deep) {
+		(out << "#<continuation-frame "
+		 << show(_rvalues) // XX use onelinePrint directly please..
+		 << " "
+		 << show(_expressions)
+		 << ">");
+	} else {
+		(out << "#<continuation-frame 0x"
+		 << std::hex
+		 << _rvalues << " 0x"
+		 << _expressions
+		 << std::dec
+		 << ">");
+	}
 }
 
 
