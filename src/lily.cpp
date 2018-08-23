@@ -283,3 +283,8 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	return res;
 }
 
+std::string show(LilyObjectPtr& v) {
+	std::ostringstream s;
+	v->onelinePrint(s);
+	return s.str();
+}

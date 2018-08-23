@@ -246,6 +246,8 @@ LilyListPtr reverse(LilyObjectPtr l);
 
 #define WARN(e) std::cerr<< e <<"\n"
 
+// move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
+std::string show(LilyObjectPtr& v);
 
 #endif
 
