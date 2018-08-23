@@ -266,10 +266,11 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// ready to call the continuation
 				WARN("ready to call the continuation");
 				LilyListPtr values= reverse(rvalues1);
-				LETU_AS(f, LilyCallable, values->first());
+				const LilyObjectPtr& first= values->first();
+				LETU_AS(f, LilyCallable, first);
 				if (!f)
 					throw std::logic_error(STR("not a function: " <<
-								   show(values->first())));
+								   show(first)));
 				acc= f->call(values->rest());
 				cont= cont->rest();
 			} else {
