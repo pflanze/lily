@@ -264,9 +264,11 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		default:
 			throw std::logic_error("invalid opcode");
 		}
+		// who do we pass the value to?
 		if (cont->isNull()) {
-			return acc;
+			break;
 		} else {
+		next_cont:
 			LETU_AS(frame, LilyContinuationFrame, cont->first());
 			LETU_AS(expressions, LilyList, frame->expressions());
 
@@ -281,7 +283,15 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					throw std::logic_error(STR("not a function: " <<
 								   show(first)));
 				acc= f->call(values->rest());
+				WARN("after finishing the continuation frame, acc="
+				     << show(acc));
 				cont= cont->rest();
+				// what's next?
+				if (cont->isNull()) {
+					break;
+				} else {
+					goto next_cont;
+				}
 			} else {
 				// update continuation (XX optim:
 				// mutate if refcount is 1? and no
@@ -293,6 +303,8 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			}
 		}
 	}
+	WARN("eval is finished, returning " << show(acc));
+	return acc;
 }
 
 
