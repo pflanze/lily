@@ -17,7 +17,8 @@ enum class LilyEvalOpcode : char {
 	Symbol,
 	Int64,
 	Double,
-	Primitive
+	Primitive,
+	InvalidIsFrame
 };
 
 class LilyObject;
@@ -217,7 +218,11 @@ public:
 struct LilyContinuationFrame : public LilyObject {
 public:
 	LilyContinuationFrame(LilyListPtr rvalues, LilyListPtr expressions)
-		: _rvalues(rvalues), _expressions(expressions) {}
+		: _rvalues(rvalues), _expressions(expressions) {
+		assert(rvalues);
+		assert(expressions);
+		evalId= LilyEvalOpcode::InvalidIsFrame;
+	}
 	LilyListPtr rvalues() { return _rvalues; }
 	LilyListPtr expressions() { return _expressions; }
 private: // XX make struct readonly?
@@ -228,13 +233,16 @@ private: // XX make struct readonly?
 };
 
 
-// utils
-
+// direct s-expr evaluator; ctx is the lexical context, cont the
+// dynamic context
 LilyObjectPtr eval(LilyObjectPtr& code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont= LilyNull::singleton());
 
+
 LilyListPtr reverse(LilyObjectPtr l);
+
+// utils
 
 // casting that also unwraps it from the shared_ptr
 #define UNWRAP_AS(t, e) dynamic_cast<t*>(&*(e))

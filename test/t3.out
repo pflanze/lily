@@ -15,3 +15,5 @@ Void: #!void
 Primitive: #<primitive +>
 ---- invalid ----
 ---- calls ----
+Primitive: #<primitive +>
+Int64: 20

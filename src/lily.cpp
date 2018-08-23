@@ -164,7 +164,12 @@ LilyPrimitive::onelinePrint(std::ostream& out) {
 // stuff that might be user accessed
 void
 LilyContinuationFrame::onelinePrint(std::ostream& out) {
-	out << "#<continuation-frame>"; // XX decide how to handle these
+	(out << "#<continuation-frame 0x"
+	 << std::hex
+	 << _rvalues << " 0x"
+	 << _expressions
+	 << std::dec
+	 << ">");
 }
 
 
@@ -205,6 +210,8 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 		   LilyListPtr cont) {
 	LilyObjectPtr acc;
 	while (true) {
+	redo:
+		WARN("eval: "<< show(code) << " in: " << show(cont));
 		switch (code->evalId) {
 		case LilyEvalOpcode::Null:
 			throw std::logic_error("empty call");
@@ -212,9 +219,16 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 		case LilyEvalOpcode::Void:
 			acc= code;
 			break;
-		case LilyEvalOpcode::Pair:
-			throw std::logic_error("pair eval not implemented yet");
-			break;
+		case LilyEvalOpcode::Pair: {
+			// function application
+			LETU_AS(p, LilyPair, code);
+			cont= LIST_CONS(FRAME(NIL, p->rest()), cont);
+			code= p->first();
+			// need to look at code again, but don't have
+			// acc to use from this iteration, hence short
+			// it:
+			goto redo;
+		}
 		case LilyEvalOpcode::Boolean:
 			acc= code;
 			break;
@@ -250,12 +264,15 @@ LilyObjectPtr eval(LilyObjectPtr& code,
 			LilyListPtr rvalues1= LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
-				LilyListPtr values= reverse(frame->rvalues());
+				WARN("ready to call the continuation");
+				LilyListPtr values= reverse(rvalues1);
 				LETU_AS(f, LilyCallable, values->first());
 				acc= f->call(values->rest());
 				cont= cont->rest();
 			} else {
-				// update continuation
+				// update continuation (XX optim:
+				// mutate if refcount is 1? and no
+				// weak refs?)
 				cont= LIST_CONS(FRAME(rvalues1,
 						      expressions->rest()),
 						cont->rest());
