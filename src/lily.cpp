@@ -205,7 +205,7 @@ alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
 }
 
 
-LilyObjectPtr eval(LilyObjectPtr& code,
+LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont) {
 	LilyObjectPtr acc;
@@ -300,7 +300,7 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	return res;
 }
 
-std::string show(LilyObjectPtr& v) {
+std::string show(const LilyObjectPtr& v) {
 	std::ostringstream s;
 	v->onelinePrint(s);
 	return s.str();

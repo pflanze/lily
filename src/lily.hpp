@@ -235,7 +235,7 @@ private: // XX make struct readonly?
 
 // direct s-expr evaluator; ctx is the lexical context, cont the
 // dynamic context
-LilyObjectPtr eval(LilyObjectPtr& code,
+LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont= LilyNull::singleton());
 
@@ -255,7 +255,7 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define WARN(e) std::cerr<< e <<"\n"
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
-std::string show(LilyObjectPtr& v);
+std::string show(const LilyObjectPtr& v);
 
 #endif
 
