@@ -13,7 +13,7 @@ Boolean: #t
 Void: #!void
 ---- variable reference ----
 Primitive: #<primitive +>
-undefined variable
+ERR: variable not bound: q
 ---- calls ----
 Int64: 0
 Int64: 30
@@ -22,6 +22,6 @@ Int64: 17
 Int64: 34
 Int64: 3
 ---- invalid ----
-empty call
-improper argument list error
-not a function error
+ERR: empty call
+ERR: improper argument list
+ERR: not a function

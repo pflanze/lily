@@ -11,8 +11,12 @@ void note(const char* s) {
 
 void e(const char* codestring) {
 	auto codeobject= lilyParse(std::string(codestring));
-	auto result= eval(codeobject, environment);
-	std::cout << result->typeName() << ": "; WRITELN(result);
+	try {
+		auto result= eval(codeobject, environment);
+		std::cout << result->typeName() << ": "; WRITELN(result);
+	} catch (std::logic_error& e) {
+		std::cout << "ERR: " << e.what() << std::endl;
+	}
 }
 
 int main () {
