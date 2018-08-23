@@ -34,6 +34,7 @@ typedef std::shared_ptr<LilyList> LilyListPtr;
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
 std::string show(const LilyObjectPtr& v);
+std::string show(LilyObject* v);
 
 
 class LilyObject {

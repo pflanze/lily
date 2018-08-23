@@ -330,3 +330,10 @@ std::string show(const LilyObjectPtr& v) {
 	v->onelinePrint(s);
 	return s.str();
 }
+
+// XX completely stupid copy-paste; use templates?
+std::string show(LilyObject* v) {
+	std::ostringstream s;
+	v->onelinePrint(s);
+	return s.str();
+}
