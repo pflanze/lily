@@ -76,6 +76,7 @@ LilyList::onelinePrint(std::ostream& out) {
 	while (!isNull) {
 		p->first()->onelinePrint(out);
 		p= dynamic_cast<LilyList*>(&*(p->rest()));
+		assert(p); // normal pointer, XX mess, also use LETU_AS -- change LETU_AS to throw exception
 		isNull= p->isNull();
 		if (isNull) {
 			out << " ";
@@ -267,6 +268,9 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				WARN("ready to call the continuation");
 				LilyListPtr values= reverse(rvalues1);
 				LETU_AS(f, LilyCallable, values->first());
+				if (!f)
+					throw std::logic_error(STR("not a function: " <<
+								   show(values->first())));
 				acc= f->call(values->rest());
 				cont= cont->rest();
 			} else {

@@ -13,7 +13,15 @@ Boolean: #t
 Void: #!void
 ---- variable reference ----
 Primitive: #<primitive +>
----- invalid ----
+undefined variable
 ---- calls ----
-Primitive: #<primitive +>
-Int64: 20
+Int64: 0
+Int64: 30
+Int64: 17
+Int64: 17
+Int64: 34
+Int64: 3
+---- invalid ----
+empty call
+improper argument list error
+not a function error

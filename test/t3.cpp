@@ -50,16 +50,19 @@ int main () {
 	e("#!void");
 
 	note("variable reference");
-	// e(" q "); // undefined variable
 	e(" + "); // Primitive
-
-	note("invalid");
-	// e("()"); // empty call
+	e(" q "); // undefined variable
 
 	note("calls");
 	e("(+)"); // 0
 	e("(+ 10 20)"); // 30
+	e("(+ 10 3 4)"); // 17
+	e("(+ (+ 10 3) 4)"); // 17
+	e("(+ (* 10 3) 4)"); // 34
+	e("(/ 10 3)"); // 3 XX ?  quotient ?
+
+	note("invalid");
+	e("()"); // empty call
 	e("(+ 10 . 20)"); // improper argument list error
 	e("(10 20)"); // not a function error
-	e("(+ (* 10 3) 4)"); // 34
 }
