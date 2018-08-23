@@ -67,6 +67,6 @@ int main () {
 
 	note("invalid");
 	e("()"); // empty call
-	e("(+ 10 . 20)"); // improper argument list error
+	e("(+ 10 . 20)"); // improper list -- XX say 'argument list'
 	e("(10 20)"); // not a function error
 }

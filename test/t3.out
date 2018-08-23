@@ -23,5 +23,5 @@ Int64: 34
 Int64: 3
 ---- invalid ----
 ERR: empty call
-ERR: improper argument list
-ERR: not a function
+ERR: improper list: 20
+ERR: not a function: 10
