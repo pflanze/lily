@@ -75,8 +75,7 @@ LilyList::onelinePrint(std::ostream& out) {
 	bool isNull= p->isNull();
 	while (!isNull) {
 		p->first()->onelinePrint(out);
-		p= dynamic_cast<LilyList*>(&*(p->rest()));
-		assert(p); // normal pointer, XX mess, also use LETU_AS -- change LETU_AS to throw exception
+		p= LIST_UNWRAP(p->rest());
 		isNull= p->isNull();
 		if (isNull) {
 			out << " ";
