@@ -91,6 +91,17 @@ int main () {
 	pr(" : ");
 	pr(" :: "); // Yes, Gambit parses this as a keyword
 
+	note("syntactic sugar");
+	pr("'a"); // 'a
+	pr("(quote a)"); // 'a
+	pr("'()"); // '()
+	pr("  ' ; \r\n \t(;\n)"); // '()
+	pr(" ` ( , ; \n a )"); // `(,a)
+	pr(" ` #| asdf \n wew |# (a . ,b)"); // `(a unquote b)
+	pr("(quasiquote)");
+	pr("(quasiquote a b)");
+	pr("(quasiquote a)");
+
 	note("demo");
 	pr("(+ 10 ; \n  20)");
 }

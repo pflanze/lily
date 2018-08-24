@@ -69,5 +69,15 @@ Pair: (parse-error "Unimplemented" 9)
 Pair: (foo: :bar)
 Symbol: :
 Pair: (parse-error "Unimplemented" 3)
+---- syntactic sugar ----
+Pair: 'a
+Pair: 'a
+Pair: '()
+Pair: '()
+Pair: `(,a)
+Pair: `(a unquote b)
+Pair: (quasiquote)
+Pair: (quasiquote a b)
+Pair: `a
 ---- demo ----
 Pair: (+ 10 20)
