@@ -265,9 +265,14 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 #define LETU(var, e) LETU_AS(var, LilyObject, e)
 
-// Same thing but throws an exception on cast errors.  Careful, uses e
-// multiple times (use a lambda instead?)
-#define XUNWRAP_AS(t, e) ((dynamic_cast<t*>(&*(e))) || throw std::logic_error("can't unwrap " #e " as " #t))
+// Same thing but throws an exception on cast errors.
+#define XUNWRAP_AS(t, e)						\
+	([&]() -> t* {							\
+		t* _XUNWRAP_AS_v= dynamic_cast<t*>(&*(e));		\
+		if (! _XUNWRAP_AS_v)					\
+			throw std::logic_error("can't unwrap ");	\
+		return  _XUNWRAP_AS_v;					\
+	})()
 #define XLIST_UNWRAP(e) XUNWRAP_AS(LilyList,e)
 // let unwrapped
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
