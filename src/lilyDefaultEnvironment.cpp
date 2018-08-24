@@ -78,20 +78,39 @@ LilyObjectPtr lilyCons(LilyObjectPtr vs) {
 }
 
 static
-LilyObjectPtr lilyCar(LilyObjectPtr vs) {
+LilyObjectPtr apply1ary(const char* procname,
+			std::function<LilyObjectPtr(LilyObjectPtr)> proc,
+			LilyObjectPtr vs) {
 	LETU_AS(vs0, LilyPair, vs);
 	if (vs0) {
 		LETU_AS(vs1, LilyNull, vs0->_cdr);
 		if (vs1) {
-			LETU_AS(p, LilyPair, vs0->_car);
+			return proc(vs0->_car);
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 1 argument"));
+}
+
+static LilyObjectPtr lilyCar(LilyObjectPtr vs) {
+	return apply1ary("car", [](LilyObjectPtr v) {
+			LETU_AS(p, LilyPair, v);
 			if (p)
 				return p->_car;
 			else
 				throw std::logic_error(STR("not a pair: "
-							   << show(vs0->_car)));
-		}
-	}
-	throw std::logic_error("car needs 1 argument");
+							   << show(v)));
+		}, vs);
+}
+
+static LilyObjectPtr lilyCdr(LilyObjectPtr vs) {
+	return apply1ary("cdr", [](LilyObjectPtr v) {
+			LETU_AS(p, LilyPair, v);
+			if (p)
+				return p->_cdr;
+			else
+				throw std::logic_error(STR("not a pair: "
+							   << show(v)));
+		}, vs);
 }
 
 LilyListPtr lilyDefaultEnvironment() {
@@ -104,6 +123,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		// PAIR(SYMBOL("integer./"), PRIMITIVE(lilyDiv, "integer./")),
 		PAIR(SYMBOL("cons"), PRIMITIVE(lilyCons, "cons")),
 		PAIR(SYMBOL("car"), PRIMITIVE(lilyCar, "car")),
+		PAIR(SYMBOL("cdr"), PRIMITIVE(lilyCdr, "cdr")),
 		);
 	return env;
 }
