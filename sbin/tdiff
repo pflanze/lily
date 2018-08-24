@@ -19,5 +19,18 @@ outputfile=$(echo "$outputfile_out" | sed 's/\.out$//')
 
 # like in g++ call in Makefile, force color so that it is maintained
 # when piping to less
-exec diff --color=always -u "$outputfile_out" "$outputfile.actual.out"
 
+# With HACK to revert the green and red coloring (couldn't figure out
+# how to use the --palette argument, man man).
+
+diff --color=always -u "$outputfile_out" "$outputfile.actual.out" | \
+    perl -wne '
+BEGIN {
+    $red= "\x1b\x5b\x33\x31\x6d";
+    $tmp= "gqn3qpzggn".rand;
+    $green= "\x1b\x5b\x33\x32\x6d";
+}
+s/\Q$red/$tmp/sg;
+s/\Q$green/$red/sg;
+s/\Q$tmp/$green/sg;
+print or die $!'
