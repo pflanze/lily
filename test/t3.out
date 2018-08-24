@@ -23,6 +23,7 @@ Int64: 17
 Int64: 17
 Int64: 34
 Pair: (15 . hey)
+ERR: not a pair: 13
 Int64: 3
 Int64: -3
 Int64: -1
