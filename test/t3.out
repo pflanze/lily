@@ -30,4 +30,5 @@ Pair: (10 11 12 ())
 ---- invalid ----
 ERR: empty call
 ERR: improper list: 20
+ERR: improper list: 10
 ERR: not a function: 10
