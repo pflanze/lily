@@ -17,5 +17,7 @@ if [ $# -ne 1 ]; then usage; fi
 outputfile_out="$1"
 outputfile=$(echo "$outputfile_out" | sed 's/\.out$//')
 
-exec diff --color -u "$outputfile_out" "$outputfile.actual.out"
+# like in g++ call in Makefile, force color so that it is maintained
+# when piping to less
+exec diff --color=always -u "$outputfile_out" "$outputfile.actual.out"
 
