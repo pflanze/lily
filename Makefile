@@ -1,5 +1,10 @@
 # -O2
-CFLAGS=-gdwarf-4 -g3 -fdiagnostics-color=always
+
+ifndef INSIDE_EMACS
+	CFLAGS_COLOR=-fdiagnostics-color=always
+endif
+
+CFLAGS=-gdwarf-4 -g3 $(CFLAGS_COLOR)
 
 all: dirs tests
 
