@@ -333,19 +333,19 @@ PR lilyParse (S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
-	auto r= s.rest();
+	auto s1= s.rest();
 	if (c=='(') {
-		return parseList(r);
+		return parseList(s1);
 	} else if (c=='#') {
-		return parseHashitem(r);
+		return parseHashitem(s1);
 	} else if (c=='"') {
-		return parseStringLike(r, '"', newString);
+		return parseStringLike(s1, '"', newString);
 	} else if (c=='|') {
-		return parseStringLike(r, '|', newSymbol);
+		return parseStringLike(s1, '|', newSymbol);
 	} else if (c==';') {
 		// until the end of the line; if s is 1 line then that
 		// will be eof, but make it generic so actually check:
-		return lilyParse(skipUntilAfterEol(r));
+		return lilyParse(skipUntilAfterEol(s1));
 	} else if (c=='\'') {
 		return parseError(s, ParseResultCode::Unimplemented);
 	} else if (c=='`') {
