@@ -19,8 +19,8 @@ enum class LilyEvalOpcode : char {
 	Symbol,
 	Int64,
 	Double,
-	Primitive,
-	PrimitiveMacroexpander,
+	NativeProcedure,
+	NativeMacroexpander,
 	Evaluator,
 	InvalidIsFrame
 };
@@ -213,20 +213,19 @@ public:
 	virtual LilyObjectPtr call(LilyListPtr args) = 0;
 };
 
-typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyPrimitive_t;
+typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyNative_t;
 
-struct LilyPrimitive : public LilyCallable {
+struct LilyNativeProcedure : public LilyCallable {
 public:
-	LilyPrimitive(LilyPrimitive_t primitive,
-		      const char* name)
-		: _primitive(primitive), _name(name) {
-		evalId= LilyEvalOpcode::Primitive;
+	LilyNativeProcedure(LilyNative_t proc,
+			    const char* name)
+		: _proc(proc), _name(name) {
+		evalId= LilyEvalOpcode::NativeProcedure;
 	}
-	LilyPrimitive_t primitive() { return _primitive; }
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr args);
-	LilyPrimitive_t _primitive;
+	LilyNative_t _proc;
 	const char* _name;
 };
 
@@ -237,22 +236,22 @@ class LilyMacroexpander : public LilyCallable {
 };
 
 
-struct LilyPrimitiveMacroexpander : public LilyMacroexpander {
+struct LilyNativeMacroexpander : public LilyMacroexpander {
 public:
-	LilyPrimitiveMacroexpander(LilyPrimitive_t expander,
+	LilyNativeMacroexpander(LilyNative_t expander,
 				   const char* name)
 		: _expander(expander), _name(name) {
-		evalId= LilyEvalOpcode::PrimitiveMacroexpander;
+		evalId= LilyEvalOpcode::NativeMacroexpander;
 		// ^ but can't use this to dispatch in eval, as the
 		// pair around it is the dispatch point (and then it's
 		// hidden behind a symbol first, too; and then in the
 		// future in another context)
 	}
-	LilyPrimitive_t expander() { return _expander; }
+	LilyNative_t expander() { return _expander; }
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr args);
-	LilyPrimitive_t _expander;
+	LilyNative_t _expander;
 	const char* _name;
 };
 

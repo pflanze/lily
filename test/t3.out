@@ -12,7 +12,7 @@ String: "1233"
 Boolean: #t
 Void: #!void
 ---- variable reference ----
-Primitive: #<primitive +>
+NativeProcedure: #<native-procedure +>
 ERR: variable not bound: q
 ---- calls ----
 Int64: 0

@@ -24,7 +24,7 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 	}
 }
 
-#define DEF_UP_PRIMITIVE(name, LilyT, T, OP, START)			\
+#define DEF_FOLD_UP_NATIVE(name, LilyT, T, OP, START)			\
 	static								\
 	LilyObjectPtr name(LilyObjectPtr vs) {				\
 		return LILY_NEW						\
@@ -37,10 +37,10 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 				START)));				\
 	}
 
-DEF_UP_PRIMITIVE(lilyAdd, LilyInt64, int64_t, +, 0);
-DEF_UP_PRIMITIVE(lilyMult, LilyInt64, int64_t, *, 1);
+DEF_FOLD_UP_NATIVE(lilyAdd, LilyInt64, int64_t, +, 0);
+DEF_FOLD_UP_NATIVE(lilyMult, LilyInt64, int64_t, *, 1);
 
-#define DEF_DOWN_PRIMITIVE(name, LilyT, T, OP)				\
+#define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP)				\
 	static								\
 	LilyObjectPtr name(LilyObjectPtr vs) {				\
 		LilyList* _vs= XLIST_UNWRAP(vs);			\
@@ -54,11 +54,11 @@ DEF_UP_PRIMITIVE(lilyMult, LilyInt64, int64_t, *, 1);
 				XUNWRAP_AS(LilyT, _vs->first())->value))); \
 	}
 
-DEF_DOWN_PRIMITIVE(lilySub, LilyInt64, int64_t, -);
-DEF_DOWN_PRIMITIVE(lilyQuotient, LilyInt64, int64_t, /);
-DEF_DOWN_PRIMITIVE(lilyRemainder, LilyInt64, int64_t, %);
+DEF_FOLD_DOWN_NATIVE(lilySub, LilyInt64, int64_t, -);
+DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, int64_t, /);
+DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %);
 
-// DEF_PRIMITIVE(lilyDiv, LilyInt64, int64_t, /); // generic
+// DEF_NATIVE(lilyDiv, LilyInt64, int64_t, /); // generic
 
 
 static
@@ -101,15 +101,15 @@ static LilyObjectPtr lilyCdr(LilyObjectPtr vs) {
 
 LilyListPtr lilyDefaultEnvironment() {
 	LilyListPtr env= LIST(
-		PAIR(SYMBOL("+"), PRIMITIVE(lilyAdd, "+")),
-		PAIR(SYMBOL("*"), PRIMITIVE(lilyMult, "*")),
-		PAIR(SYMBOL("-"), PRIMITIVE(lilySub, "-")),
-		PAIR(SYMBOL("quotient"), PRIMITIVE(lilyQuotient, "quotient")),
-		PAIR(SYMBOL("remainder"), PRIMITIVE(lilyRemainder, "remainder")),
-		// PAIR(SYMBOL("integer./"), PRIMITIVE(lilyDiv, "integer./")),
-		PAIR(SYMBOL("cons"), PRIMITIVE(lilyCons, "cons")),
-		PAIR(SYMBOL("car"), PRIMITIVE(lilyCar, "car")),
-		PAIR(SYMBOL("cdr"), PRIMITIVE(lilyCdr, "cdr")),
+		PAIR(SYMBOL("+"), NATIVE_PROCEDURE(lilyAdd, "+")),
+		PAIR(SYMBOL("*"), NATIVE_PROCEDURE(lilyMult, "*")),
+		PAIR(SYMBOL("-"), NATIVE_PROCEDURE(lilySub, "-")),
+		PAIR(SYMBOL("quotient"), NATIVE_PROCEDURE(lilyQuotient, "quotient")),
+		PAIR(SYMBOL("remainder"), NATIVE_PROCEDURE(lilyRemainder, "remainder")),
+		// PAIR(SYMBOL("integer./"), NATIVE_PROCEDURE(lilyDiv, "integer./")),
+		PAIR(SYMBOL("cons"), NATIVE_PROCEDURE(lilyCons, "cons")),
+		PAIR(SYMBOL("car"), NATIVE_PROCEDURE(lilyCar, "car")),
+		PAIR(SYMBOL("cdr"), NATIVE_PROCEDURE(lilyCdr, "cdr")),
 		);
 	return env;
 }

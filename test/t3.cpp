@@ -54,7 +54,7 @@ int main () {
 	e("#!void");
 
 	note("variable reference");
-	e(" + "); // Primitive
+	e(" + "); // NativeProcedure
 	e(" q "); // undefined variable
 
 	note("calls");

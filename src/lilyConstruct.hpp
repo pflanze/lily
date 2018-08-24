@@ -26,7 +26,7 @@
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LilySymbol::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
-#define PRIMITIVE(a, name) LILY_NEW(LilyPrimitive(a, name))
+#define NATIVE_PROCEDURE(a, name) LILY_NEW(LilyNativeProcedure(a, name))
 #define FRAME(maybeHead,rvalues,expressions) LILY_NEW(LilyContinuationFrame(maybeHead,rvalues,expressions))
 
 

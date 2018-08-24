@@ -174,13 +174,13 @@ LilyDouble::onelinePrint(std::ostream& out) {
 // could output addresses, but then testing via stringification
 // becomes non-deterministic
 void
-LilyPrimitive::onelinePrint(std::ostream& out) {
-	out << "#<primitive "<< _name <<">";
+LilyNativeProcedure::onelinePrint(std::ostream& out) {
+	out << "#<native-procedure "<< _name <<">";
 }
 
 void
-LilyPrimitiveMacroexpander::onelinePrint(std::ostream& out) {
-	out << "#<primitive-macro-expander "<< _name <<">";
+LilyNativeMacroexpander::onelinePrint(std::ostream& out) {
+	out << "#<native-macro-expander "<< _name <<">";
 }
 
 void
@@ -218,16 +218,16 @@ const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
-const char* LilyPrimitive::typeName() {return "Primitive";}
-const char* LilyPrimitiveMacroexpander::typeName() {return "PrimitiveMacroexpander";}
+const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
+const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyEvaluator::typeName() {return "Evaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 
 
 
 LilyObjectPtr
-LilyPrimitive::call(LilyListPtr args) {
-	return _primitive(args);
+LilyNativeProcedure::call(LilyListPtr args) {
+	return _proc(args);
 }
 
 
@@ -318,7 +318,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		case LilyEvalOpcode::Double:
 			acc= code;
 			break;
-		case LilyEvalOpcode::Primitive:
+		case LilyEvalOpcode::NativeProcedure:
 			acc= code;
 			break;
 		default:
