@@ -347,11 +347,17 @@ PR lilyParse (S s) {
 		// will be eof, but make it generic so actually check:
 		return lilyParse(skipUntilAfterEol(s1));
 	} else if (c=='\'') {
-		return parseError(s, ParseResultCode::Unimplemented);
+		auto r= lilyParse(s1);
+		return PR(CONS(SYMBOL("quote"), CONS(r.value(), NIL)),
+			  r.remainder());
 	} else if (c=='`') {
-		return parseError(s, ParseResultCode::Unimplemented);
+		auto r= lilyParse(s1);
+		return PR(CONS(SYMBOL("quasiquote"), CONS(r.value(), NIL)),
+			  r.remainder());
 	} else if (c==',') {
-		return parseError(s, ParseResultCode::Unimplemented);
+		auto r= lilyParse(s1);
+		return PR(CONS(SYMBOL("unquote"), CONS(r.value(), NIL)),
+			  r.remainder());
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
