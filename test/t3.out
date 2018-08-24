@@ -17,11 +17,15 @@ ERR: variable not bound: q
 ---- calls ----
 Int64: 0
 Int64: 30
+Int64: -10
+Int64: -5
 Int64: 17
 Int64: 17
 Int64: 34
 Pair: (15 . hey)
 Int64: 3
+Int64: -3
+Int64: 2
 Double: 3.33333333333333
 Int64: 3
 ERR: not a double: 10
