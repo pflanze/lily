@@ -334,6 +334,7 @@ PR lilyParse (S s) {
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
 	auto s1= s.rest();
+	const char* special_name;
 	if (c=='(') {
 		return parseList(s1);
 	} else if (c=='#') {
@@ -347,17 +348,11 @@ PR lilyParse (S s) {
 		// will be eof, but make it generic so actually check:
 		return lilyParse(skipUntilAfterEol(s1));
 	} else if (c=='\'') {
-		auto r= lilyParse(s1);
-		return PR(CONS(SYMBOL("quote"), CONS(r.value(), NIL)),
-			  r.remainder());
+		special_name="quote"; goto special;
 	} else if (c=='`') {
-		auto r= lilyParse(s1);
-		return PR(CONS(SYMBOL("quasiquote"), CONS(r.value(), NIL)),
-			  r.remainder());
+		special_name="quasiquote"; goto special;
 	} else if (c==',') {
-		auto r= lilyParse(s1);
-		return PR(CONS(SYMBOL("unquote"), CONS(r.value(), NIL)),
-			  r.remainder());
+		special_name="unquote"; goto special;
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
@@ -379,6 +374,11 @@ PR lilyParse (S s) {
 		// anyway?
 		return v;
 	}
+	throw std::logic_error("unreachable");
+special:
+	auto r= lilyParse(s1);
+	return PR(CONS(SYMBOL(special_name), CONS(r.value(), NIL)),
+		  r.remainder());
 }
 
 // convenience function
