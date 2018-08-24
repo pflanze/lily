@@ -61,6 +61,39 @@ DEF_DOWN_PRIMITIVE(lilyRemainder, LilyInt64, int64_t, %);
 // DEF_PRIMITIVE(lilyDiv, LilyInt64, int64_t, /); // generic
 
 
+static
+LilyObjectPtr lilyCons(LilyObjectPtr vs) {
+	// WARN("cons: "<<show(vs));
+	LETU_AS(vs0, LilyPair, vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyPair, vs0->_cdr);
+		if (vs1) {
+			LETU_AS(vs2, LilyNull, vs1->_cdr);
+			if (vs2) {
+				return CONS(vs0->_car, vs1->_car);
+			}
+		}
+	}
+	throw std::logic_error("cons needs 2 arguments");
+}
+
+static
+LilyObjectPtr lilyCar(LilyObjectPtr vs) {
+	LETU_AS(vs0, LilyPair, vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyNull, vs0->_cdr);
+		if (vs1) {
+			LETU_AS(p, LilyPair, vs0->_car);
+			if (p)
+				return p->_car;
+			else
+				throw std::logic_error(STR("not a pair: "
+							   << show(vs0->_car)));
+		}
+	}
+	throw std::logic_error("car needs 1 argument");
+}
+
 LilyListPtr lilyDefaultEnvironment() {
 	LilyListPtr env= LIST(
 		PAIR(SYMBOL("+"), PRIMITIVE(lilyAdd, "+")),
@@ -69,6 +102,8 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("quotient"), PRIMITIVE(lilyQuotient, "quotient")),
 		PAIR(SYMBOL("remainder"), PRIMITIVE(lilyRemainder, "remainder")),
 		// PAIR(SYMBOL("integer./"), PRIMITIVE(lilyDiv, "integer./")),
+		PAIR(SYMBOL("cons"), PRIMITIVE(lilyCons, "cons")),
+		PAIR(SYMBOL("car"), PRIMITIVE(lilyCar, "car")),
 		);
 	return env;
 }
