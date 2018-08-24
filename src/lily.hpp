@@ -256,13 +256,19 @@ LilyListPtr reverse(LilyObjectPtr l);
 
 // utils
 
-// casting that also unwraps it from the shared_ptr
+// casting that also unwraps it from the shared_ptr; NOTE: returns
+// NULL if invalid
 #define UNWRAP_AS(t, e) dynamic_cast<t*>(&*(e))
 #define UNWRAP(e) UNWRAP_AS(LilyObject,e)
 #define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
 // let unwrapped
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 #define LETU(var, e) LETU_AS(var, LilyObject, e)
+
+// Same thing but throws an exception on cast errors.  Careful, uses e
+// multiple times (use a lambda instead?)
+#define XUNWRAP_AS(t, e) ((dynamic_cast<t*>(&*(e))) || throw std::logic_error("can't unwrap " #e " as " #t))
+
 
 #define WARN(e) std::cerr<< e <<"\n"
 
