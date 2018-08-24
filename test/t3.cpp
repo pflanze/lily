@@ -68,7 +68,8 @@ int main () {
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
 	e("(quotient 10 3)"); // 3
 	e("(quotient -10 3)"); // -3
-	e("(modulo -10 3)"); // 2
+	e("(remainder -10 3)"); // 2
+	// e("(modulo -10 3)"); // 2
 	e("(/ 10 3)"); // 3.33333 ?
 	e("(integer./ 10 3)"); // 3
 	e("(double./ 10 3)"); // error

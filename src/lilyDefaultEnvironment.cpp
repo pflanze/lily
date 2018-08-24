@@ -56,7 +56,7 @@ DEF_UP_PRIMITIVE(lilyMult, LilyInt64, int64_t, *, 1);
 
 DEF_DOWN_PRIMITIVE(lilySub, LilyInt64, int64_t, -);
 DEF_DOWN_PRIMITIVE(lilyQuotient, LilyInt64, int64_t, /);
-DEF_DOWN_PRIMITIVE(lilyModulo, LilyInt64, int64_t, %);
+DEF_DOWN_PRIMITIVE(lilyRemainder, LilyInt64, int64_t, %);
 
 // DEF_PRIMITIVE(lilyDiv, LilyInt64, int64_t, /); // generic
 
@@ -67,7 +67,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("*"), PRIMITIVE(lilyMult, "*")),
 		PAIR(SYMBOL("-"), PRIMITIVE(lilySub, "-")),
 		PAIR(SYMBOL("quotient"), PRIMITIVE(lilyQuotient, "quotient")),
-		PAIR(SYMBOL("modulo"), PRIMITIVE(lilyModulo, "modulo")),
+		PAIR(SYMBOL("remainder"), PRIMITIVE(lilyRemainder, "remainder")),
 		// PAIR(SYMBOL("integer./"), PRIMITIVE(lilyDiv, "integer./")),
 		);
 	return env;
