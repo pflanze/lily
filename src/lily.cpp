@@ -84,9 +84,24 @@ LilyList::onelinePrint(std::ostream& out) {
 	out << ")";
 }
 
+static auto quote= SYMBOL("quote");
+static auto quasiquote= SYMBOL("quasiquote");
+static auto unquote= SYMBOL("unquote");
 
 void
 LilyPair::onelinePrint(std::ostream& out) {
+	LETU_AS(cdr, LilyPair, _cdr);
+	if (cdr && is_LilyNull(&*(cdr->_cdr))) {
+		if (_car==quote) { out << "'";  goto end_special; }
+		else if (_car==quasiquote) { out << "`";  goto end_special; }
+		else if (_car==unquote) { out << ",";  goto end_special; }
+		else {goto otherwise; }
+	end_special:
+		cdr->_car->onelinePrint(out);
+		return;
+	}
+otherwise:
+	// list or improper list
 	LilyPair* p= this;
 	out << "(";
 	while (true) {
