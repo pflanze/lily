@@ -84,6 +84,7 @@ LilyList::onelinePrint(std::ostream& out) {
 	out << ")";
 }
 
+// XX const? can we bring it into the program segment?
 static auto quote= SYMBOL("quote");
 static auto quasiquote= SYMBOL("quasiquote");
 static auto unquote= SYMBOL("unquote");
@@ -170,13 +171,25 @@ LilyDouble::onelinePrint(std::ostream& out) {
 	out << value;
 }
 
+// could output addresses, but then testing via stringification
+// becomes non-deterministic
 void
 LilyPrimitive::onelinePrint(std::ostream& out) {
 	out << "#<primitive "<< _name <<">";
 }
 
-// and yeah, decided to make it LilyObject, so now have to define the
-// stuff that might be user accessed
+void
+LilyPrimitiveMacroexpander::onelinePrint(std::ostream& out) {
+	out << "#<primitive-macro-expander "<< _name <<">";
+}
+
+void
+LilyEvaluator::onelinePrint(std::ostream& out) {
+	out << "#<evaluator "<< _name <<">";
+}
+
+// and yeah, decided to make it a LilyObject, so now have to define
+// the stuff that might be user accessed
 void
 LilyContinuationFrame::onelinePrint(std::ostream& out) {
 	bool deep=1;
@@ -206,6 +219,8 @@ const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
 const char* LilyPrimitive::typeName() {return "Primitive";}
+const char* LilyPrimitiveMacroexpander::typeName() {return "PrimitiveMacroexpander";}
+const char* LilyEvaluator::typeName() {return "Evaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 
 
@@ -229,6 +244,22 @@ alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
 }
 
 
+LilyObjectPtr
+apply1ary(const char* procname,
+	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
+	  LilyObjectPtr vs) {
+	LETU_AS(vs0, LilyPair, vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyNull, vs0->_cdr);
+		if (vs1) {
+			return proc(vs0->_car);
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 1 argument"));
+}
+
+
+
 LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont) {
@@ -244,8 +275,22 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			acc= code;
 			break;
 		case LilyEvalOpcode::Pair: {
-			// function application
 			LETU_AS(p, LilyPair, code);
+			// function, macro or syntax application; the
+			// type of the head element determines which
+			// kind. Currently, given we're run-time phase
+			// only anyway, implement as Fexpr, i.e. allow
+			// head to be a sub-form that calculates the
+			// syntax to be used. Use of this feature is
+			// completely *deprecated* though, it *will*
+			// go away (since it is prohibiting efficiency
+			// gains by separating compilation from
+			// run-time phase).
+
+			// So, in this implementation, make the
+			// continuation of even syntactical work
+			// visible to Scheme (via first-class
+			// continuation access)
 			cont= LIST_CONS(FRAME(NIL, p->rest()), cont);
 			code= p->first();
 			// need to look at code again, but don't have
@@ -281,13 +326,21 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		}
 		// who do we pass the value to?
 		if (cont->isNull()) {
+			// pass it back to C++
 			break;
 		} else {
+			// pass it to the Lily continuation (which is
+			// two-level, a list of frames and then in
+			// each frames, in the case of function
+			// application, a list of values to be
+			// calculated then called, in the case of macros or syntax, XXXç)
 		next_cont:
 			LETU_AS(frame, LilyContinuationFrame, cont->first());
 			LETU_AS(expressions, LilyList, frame->expressions());
 
 			LilyListPtr rvalues= LIST_CONS(acc, frame->rvalues());
+			if (rvalues->isNull()) {
+				// 
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				WARN("ready to call the continuation");

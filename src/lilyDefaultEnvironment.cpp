@@ -77,20 +77,6 @@ LilyObjectPtr lilyCons(LilyObjectPtr vs) {
 	throw std::logic_error("cons needs 2 arguments");
 }
 
-static
-LilyObjectPtr apply1ary(const char* procname,
-			std::function<LilyObjectPtr(LilyObjectPtr)> proc,
-			LilyObjectPtr vs) {
-	LETU_AS(vs0, LilyPair, vs);
-	if (vs0) {
-		LETU_AS(vs1, LilyNull, vs0->_cdr);
-		if (vs1) {
-			return proc(vs0->_car);
-		}
-	}
-	throw std::logic_error(STR(procname << " needs 1 argument"));
-}
-
 static LilyObjectPtr lilyCar(LilyObjectPtr vs) {
 	return apply1ary("car", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);

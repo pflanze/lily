@@ -17,5 +17,12 @@ std::string show(std::string str);
 		})()
 
 
+// template <typename T>
+// inline T identity(T v) { return v; }
+// ah already in <functional> (since C++20)
+
+
+#define WARN(e) std::cerr<< e <<"\n"
+
 
 #endif /* _LILYUTIL_HPP */

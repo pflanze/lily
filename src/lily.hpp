@@ -20,6 +20,8 @@ enum class LilyEvalOpcode : char {
 	Int64,
 	Double,
 	Primitive,
+	PrimitiveMacroexpander,
+	Evaluator,
 	InvalidIsFrame
 };
 
@@ -204,7 +206,8 @@ public:
 };
 
 
-
+// Currently using callable for both pre-application and application
+// phases; not sure this can remain that way in the future.
 class LilyCallable : public LilyObject {
 public:
 	virtual LilyObjectPtr call(LilyListPtr args) = 0;
@@ -227,10 +230,66 @@ public:
 	const char* _name;
 };
 
+
+// A macro expander takes code (as an LilyObject) and returns code;
+// it's like a function but used in an earlier phase during evaluation
+class LilyMacroexpander : public LilyCallable {
+};
+
+
+struct LilyPrimitiveMacroexpander : public LilyMacroexpander {
+public:
+	LilyPrimitiveMacroexpander(LilyPrimitive_t expander,
+				   const char* name)
+		: _expander(expander), _name(name) {
+		evalId= LilyEvalOpcode::PrimitiveMacroexpander;
+		// ^ but can't use this to dispatch in eval, as the
+		// pair around it is the dispatch point (and then it's
+		// hidden behind a symbol first, too; and then in the
+		// future in another context)
+	}
+	LilyPrimitive_t expander() { return _expander; }
+	virtual const char* typeName();
+	virtual void onelinePrint(std::ostream& out);
+	virtual LilyObjectPtr call(LilyListPtr args);
+	LilyPrimitive_t _expander;
+	const char* _name;
+};
+
+
+// An evaluator receives code and evaluates it to a value (not code,
+// unlike macros).
+
+// XX not sure making it a LilyCallable is right here at all since it
+// requires context(s?), too. Ah but then would want to give macros
+// access to the same, too.
+
+typedef std::function<LilyObjectPtr(LilyObjectPtr, LilyListPtr, LilyListPtr)> LilyEval_t;
+
+struct LilyEvaluator : public LilyCallable {
+public:
+	LilyEvaluator(LilyEval_t eval,
+		      const char* name)
+		: _eval(eval), _name(name) {
+		evalId= LilyEvalOpcode::Evaluator;
+	}
+	virtual const char* typeName();
+	virtual void onelinePrint(std::ostream& out);
+	virtual LilyObjectPtr call(LilyListPtr args);
+	LilyEval_t _eval;
+	const char* _name;
+};
+
+
+// not a callabe (directly), at least not obviously the right thing to
+// do for now
 struct LilyContinuationFrame : public LilyObject {
 public:
-	LilyContinuationFrame(LilyListPtr rvalues, LilyListPtr expressions)
-		: _rvalues(rvalues), _expressions(expressions) {
+	LilyContinuationFrame(LilyListPtr maybeHead,
+			      LilyListPtr rvalues, // arguments only
+			      LilyListPtr expressions // unevaluated arguments
+		)
+		: _maybeHead(maybeHead), _rvalues(rvalues), _expressions(expressions) {
 		assert(rvalues);
 		assert(expressions);
 		evalId= LilyEvalOpcode::InvalidIsFrame;
@@ -240,6 +299,7 @@ public:
 private: // XX make struct readonly?
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
+	LilyListPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
 	LilyListPtr _expressions; // i.e. unevaluated
 };
@@ -255,6 +315,13 @@ LilyObjectPtr eval(LilyObjectPtr code,
 LilyListPtr reverse(LilyObjectPtr l);
 
 // utils
+
+// usable for both syntax and function application (not sure how this
+// will remain when moving to guest language exceptions?)
+LilyObjectPtr
+apply1ary(const char* procname,
+	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
+	  LilyObjectPtr vs);
 
 // casting that also unwraps it from the shared_ptr; NOTE: returns
 // NULL if invalid
@@ -278,8 +345,6 @@ LilyListPtr reverse(LilyObjectPtr l);
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
 
-
-#define WARN(e) std::cerr<< e <<"\n"
 
 #endif
 
