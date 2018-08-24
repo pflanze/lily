@@ -24,6 +24,10 @@ Int64: 17
 Int64: 34
 Pair: (15 . hey)
 ERR: not a pair: 13
+ERR: car needs 1 argument
+ERR: car needs 1 argument
+Int64: 6
+ERR: cdr needs 1 argument
 Int64: 3
 Int64: -3
 Int64: -1

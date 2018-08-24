@@ -67,6 +67,10 @@ int main () {
 	e("(+ (* 10 3) 4)"); // 34
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
 	e("(cons (car 13) ())"); // tests argument eval order, too, not standardized
+	e("(car 4 5)");
+	e("(car)");
+	e("(cdr (cons 3 6))");
+	e("(cdr)");
 	e("(quotient 10 3)"); // 3
 	e("(quotient -10 3)"); // -3
 	e("(remainder -10 3)"); // 2
