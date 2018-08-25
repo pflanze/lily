@@ -4,3 +4,4 @@
 - protect against stack overflows during parsing and pretty-printing?
 - lilyParse: report begin of erroneous elements instead of end
 - make data structure const where applicable
+- change continuations data structure into an intrusive list or more optimized pure stack

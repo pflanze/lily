@@ -26,7 +26,9 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 
 #define DEF_FOLD_UP_NATIVE(name, LilyT, T, OP, START)			\
 	static								\
-	LilyObjectPtr name(LilyObjectPtr vs) {				\
+	LilyObjectPtr name(LilyObjectPtr vs,				\
+			   LilyObjectPtr _ctx,				\
+			   LilyObjectPtr _cont) {			\
 		return LILY_NEW						\
 			(LilyT(_lilyFold<LilyT, T>			\
 			       (XLIST_UNWRAP(vs),			\
@@ -42,7 +44,9 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyInt64, int64_t, *, 1);
 
 #define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP)				\
 	static								\
-	LilyObjectPtr name(LilyObjectPtr vs) {				\
+	LilyObjectPtr name(LilyObjectPtr vs,				\
+			   LilyObjectPtr _ctx,				\
+			   LilyObjectPtr _cont) {			\
 		LilyList* _vs= XLIST_UNWRAP(vs);			\
 		return LILY_NEW						\
 			(LilyT(_lilyFold<LilyT, T>			\
@@ -62,7 +66,9 @@ DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %);
 
 
 static
-LilyObjectPtr lilyCons(LilyObjectPtr vs) {
+LilyObjectPtr lilyCons(LilyObjectPtr vs,
+		       LilyObjectPtr _ctx,
+		       LilyObjectPtr _cont) {
 	// WARN("cons: "<<show(vs));
 	LETU_AS(vs0, LilyPair, vs);
 	if (vs0) {
@@ -77,7 +83,9 @@ LilyObjectPtr lilyCons(LilyObjectPtr vs) {
 	throw std::logic_error("cons needs 2 arguments");
 }
 
-static LilyObjectPtr lilyCar(LilyObjectPtr vs) {
+static LilyObjectPtr lilyCar(LilyObjectPtr vs,
+			     LilyObjectPtr _ctx,
+			     LilyObjectPtr _cont) {
 	return apply1ary("car", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)
@@ -88,7 +96,9 @@ static LilyObjectPtr lilyCar(LilyObjectPtr vs) {
 		}, vs);
 }
 
-static LilyObjectPtr lilyCdr(LilyObjectPtr vs) {
+static LilyObjectPtr lilyCdr(LilyObjectPtr vs,
+			     LilyObjectPtr _ctx,
+			     LilyObjectPtr _cont) {
 	return apply1ary("cdr", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)

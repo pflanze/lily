@@ -21,7 +21,7 @@ enum class LilyEvalOpcode : char {
 	Double,
 	NativeProcedure,
 	NativeMacroexpander,
-	Evaluator,
+	NativeEvaluator,
 	InvalidIsFrame
 };
 
@@ -210,10 +210,14 @@ public:
 // phases; not sure this can remain that way in the future.
 class LilyCallable : public LilyObject {
 public:
-	virtual LilyObjectPtr call(LilyListPtr args) = 0;
+	virtual LilyObjectPtr call(LilyListPtr args,
+				   LilyListPtr ctx,
+				   LilyListPtr cont) = 0;
 };
 
-typedef std::function<LilyObjectPtr(LilyObjectPtr)> LilyNative_t;
+typedef std::function<LilyObjectPtr(LilyObjectPtr,
+				    LilyObjectPtr,
+				    LilyObjectPtr)> LilyNative_t;
 
 struct LilyNativeProcedure : public LilyCallable {
 public:
@@ -224,7 +228,9 @@ public:
 	}
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr args);
+	virtual LilyObjectPtr call(LilyListPtr args,
+				   LilyListPtr ctx,
+				   LilyListPtr cont);
 	LilyNative_t _proc;
 	const char* _name;
 };
@@ -233,13 +239,19 @@ public:
 // A macro expander takes code (as an LilyObject) and returns code;
 // it's like a function but used in an earlier phase during evaluation
 class LilyMacroexpander : public LilyCallable {
+public:
+	// needs to be virtual since calling guest language function
+	// based variant will be different, correct?
+	virtual LilyObjectPtr call(LilyListPtr expressions,
+				   LilyListPtr ctx,
+				   LilyListPtr cont) = 0;
 };
 
 
 struct LilyNativeMacroexpander : public LilyMacroexpander {
 public:
 	LilyNativeMacroexpander(LilyNative_t expander,
-				   const char* name)
+				const char* name)
 		: _expander(expander), _name(name) {
 		evalId= LilyEvalOpcode::NativeMacroexpander;
 		// ^ but can't use this to dispatch in eval, as the
@@ -247,10 +259,11 @@ public:
 		// hidden behind a symbol first, too; and then in the
 		// future in another context)
 	}
-	LilyNative_t expander() { return _expander; }
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr args);
+	virtual LilyObjectPtr call(LilyListPtr expressions,
+				   LilyListPtr ctx,
+				   LilyListPtr cont);
 	LilyNative_t _expander;
 	const char* _name;
 };
@@ -265,16 +278,18 @@ public:
 
 typedef std::function<LilyObjectPtr(LilyObjectPtr, LilyListPtr, LilyListPtr)> LilyEval_t;
 
-struct LilyEvaluator : public LilyCallable {
+struct LilyNativeEvaluator : public LilyCallable {
 public:
-	LilyEvaluator(LilyEval_t eval,
+	LilyNativeEvaluator(LilyEval_t eval,
 		      const char* name)
 		: _eval(eval), _name(name) {
-		evalId= LilyEvalOpcode::Evaluator;
+		evalId= LilyEvalOpcode::NativeEvaluator;
 	}
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr args);
+	virtual LilyObjectPtr call(LilyListPtr args,
+				   LilyListPtr ctx,
+				   LilyListPtr cont);
 	LilyEval_t _eval;
 	const char* _name;
 };
@@ -284,7 +299,7 @@ public:
 // do for now
 struct LilyContinuationFrame : public LilyObject {
 public:
-	LilyContinuationFrame(LilyListPtr maybeHead,
+	LilyContinuationFrame(LilyObjectPtr maybeHead,
 			      LilyListPtr rvalues, // arguments only
 			      LilyListPtr expressions // unevaluated arguments
 		)
@@ -293,12 +308,13 @@ public:
 		assert(expressions);
 		evalId= LilyEvalOpcode::InvalidIsFrame;
 	}
+	LilyObjectPtr maybeHead() { return _maybeHead; }
 	LilyListPtr rvalues() { return _rvalues; }
 	LilyListPtr expressions() { return _expressions; }
 private: // XX make struct readonly?
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	LilyListPtr _maybeHead;
+	LilyObjectPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
 	LilyListPtr _expressions; // i.e. unevaluated
 };

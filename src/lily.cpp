@@ -184,8 +184,8 @@ LilyNativeMacroexpander::onelinePrint(std::ostream& out) {
 }
 
 void
-LilyEvaluator::onelinePrint(std::ostream& out) {
-	out << "#<evaluator "<< _name <<">";
+LilyNativeEvaluator::onelinePrint(std::ostream& out) {
+	out << "#<native-evaluator "<< _name <<">";
 }
 
 // and yeah, decided to make it a LilyObject, so now have to define
@@ -195,6 +195,8 @@ LilyContinuationFrame::onelinePrint(std::ostream& out) {
 	bool deep=1;
 	if (deep) {
 		(out << "#<continuation-frame "
+		 << (_maybeHead ? show(_maybeHead) : "NULL")
+		 << " "
 		 << show(_rvalues) // XX use onelinePrint directly please..
 		 << " "
 		 << show(_expressions)
@@ -220,16 +222,38 @@ const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyDouble::typeName() {return "Double";}
 const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
 const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
-const char* LilyEvaluator::typeName() {return "Evaluator";}
+const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 
 
 
 LilyObjectPtr
-LilyNativeProcedure::call(LilyListPtr args) {
-	return _proc(args);
+LilyNativeProcedure::call(LilyListPtr args,
+			  LilyListPtr ctx,
+			  LilyListPtr cont) {
+	WARN("NativeProcedure: " << _name << show(args));
+	return _proc(args, ctx, cont);
 }
 
+LilyObjectPtr
+LilyNativeMacroexpander::call(LilyListPtr expressions,
+			      LilyListPtr ctx,
+			      LilyListPtr cont) {
+	WARN("NativeMacroexpander: " << _name << show(expressions));
+	return _expander(expressions, ctx, cont);
+}
+
+LilyObjectPtr
+LilyNativeEvaluator::call(LilyListPtr expressions,
+		    LilyListPtr ctx,
+		    LilyListPtr cont) {
+	WARN("NativeEvaluator: " << _name << show(expressions));
+	return _eval(expressions, ctx, cont);
+}
+
+
+
+	
 
 // returns NULL on failure
 LilyObjectPtr
@@ -265,7 +289,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr cont) {
 	LilyObjectPtr acc;
 	while (true) {
-	redo:
+	eval:
 		WARN("eval: "<< show(code) << " in: " << show(cont));
 		switch (code->evalId) {
 		case LilyEvalOpcode::Null:
@@ -276,27 +300,27 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			break;
 		case LilyEvalOpcode::Pair: {
 			LETU_AS(p, LilyPair, code);
-			// function, macro or syntax application; the
-			// type of the head element determines which
-			// kind. Currently, given we're run-time phase
-			// only anyway, implement as Fexpr, i.e. allow
-			// head to be a sub-form that calculates the
-			// syntax to be used. Use of this feature is
-			// completely *deprecated* though, it *will*
-			// go away (since it is prohibiting efficiency
-			// gains by separating compilation from
-			// run-time phase).
+			// Function, macro or evaluator (base syntax)
+			// application; the type of the head element
+			// determines which kind. Currently, given
+			// we're run-time phase only anyway, implement
+			// as Fexpr, i.e. allow head to be a sub-form
+			// that calculates the syntax to be used. Use
+			// of this feature is completely *deprecated*
+			// though, it *will* go away (since it is
+			// prohibiting efficiency gains by separating
+			// compilation from run-time phase).
 
 			// So, in this implementation, make the
 			// continuation of even syntactical work
 			// visible to Scheme (via first-class
 			// continuation access)
-			cont= LIST_CONS(FRAME(NIL, p->rest()), cont);
+			cont= LIST_CONS(FRAME(NULL, NIL, p->rest()), cont);
 			code= p->first();
 			// need to look at code again, but don't have
 			// acc to use from this iteration, hence short
 			// it:
-			goto redo;
+			goto eval;
 		}
 		case LilyEvalOpcode::Boolean:
 			acc= code;
@@ -324,7 +348,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		default:
 			throw std::logic_error("invalid opcode");
 		}
-		// who do we pass the value to?
+		// Who to pass the value to?
 		if (cont->isNull()) {
 			// pass it back to C++
 			break;
@@ -333,27 +357,58 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// two-level, a list of frames and then in
 			// each frames, in the case of function
 			// application, a list of values to be
-			// calculated then called, in the case of macros or syntax, XXXç)
+			// calculated then called, in the case of
+			// macros or base syntax the unevaluated
+			// arguments are used hence different
+			// continuation created.
 		next_cont:
 			LETU_AS(frame, LilyContinuationFrame, cont->first());
+			bool accIsHead= ! frame->maybeHead();
+			if (accIsHead) {
+				// acc contains the evaluated
+				// head. Now we know whether it is a
+				// function, macro or evaluator
+				// application.
+				LETU_AS(expander, LilyMacroexpander, acc);
+				if (expander) {
+					cont= cont->rest();
+					// XX missing a reference to
+					// the original surrounding
+					// list here!
+					code = expander->call
+						(frame->expressions(), ctx, cont);
+					// ^ now C++ frame there.! XX
+					goto eval;
+				}
+				LETU_AS(evaluator, LilyNativeEvaluator, acc);
+				if (evaluator) {
+					cont= cont->rest();
+					acc= evaluator->_eval
+						(frame->expressions(), ctx, cont);
+					// ^ ditto XX
+					// pass acc to cont
+				}
+				// otherwise it's a function application;
+				// pass acc to cont
+			}
+			// pass_to_cont:
+			LilyObjectPtr head= accIsHead ? acc : frame->maybeHead();
 			LETU_AS(expressions, LilyList, frame->expressions());
-
-			LilyListPtr rvalues= LIST_CONS(acc, frame->rvalues());
-			if (rvalues->isNull()) {
-				// 
+			auto rvalues= accIsHead ? frame->rvalues()
+				: LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				WARN("ready to call the continuation");
-				LilyListPtr values= reverse(rvalues);
-				const LilyObjectPtr& first= values->first();
-				LETU_AS(f, LilyCallable, first);
+				LilyListPtr arguments= reverse(rvalues);
+				LETU_AS(f, LilyCallable, head);
 				if (!f)
-					throw std::logic_error(STR("not a function: " <<
-								   show(first)));
-				acc= f->call(values->rest());
+					throw std::logic_error
+						(STR("not a function: " <<
+						     show(head)));
+				cont= cont->rest();
+				acc= f->call(arguments, ctx, cont);
 				WARN("after finishing the continuation frame, acc="
 				     << show(acc));
-				cont= cont->rest();
 				// what's next?
 				if (cont->isNull()) {
 					break;
@@ -362,9 +417,10 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				}
 			} else {
 				// update continuation (XX optim:
-				// mutate if refcount is 1? and no
-				// weak refs?)
-				cont= LIST_CONS(FRAME(rvalues,
+				// mutate if refcount is 1 (and no
+				// weak refs)?)
+				cont= LIST_CONS(FRAME(head,
+						      rvalues,
 						      expressions->rest()),
 						cont->rest());
 				code= expressions->first();

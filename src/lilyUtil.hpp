@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <ostream>
 #include <string>
 
 
@@ -22,7 +23,7 @@ std::string show(std::string str);
 // ah already in <functional> (since C++20)
 
 
-#define WARN(e) std::cerr<< e <<"\n"
+#define WARN(e) (std::cerr << e << "\n")
 
 
 #endif /* _LILYUTIL_HPP */
