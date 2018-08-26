@@ -348,6 +348,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		default:
 			throw std::logic_error("invalid opcode");
 		}
+	next_cont:
 		// Who to pass the value to?
 		if (cont->isNull()) {
 			// pass it back to C++
@@ -361,10 +362,9 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// macros or base syntax the unevaluated
 			// arguments are used hence different
 			// continuation created.
-		next_cont:
-			// auto frame= cont->first(); // tie down! gonna release cont XX true? does not help?
-			// LETU_AS(_frame, LilyContinuationFrame, _frame);
+
 			LET_AS(frame, LilyContinuationFrame, cont->first());
+			cont= cont->rest();
 			bool accIsHead= ! frame->maybeHead();
 			if (accIsHead) {
 				// acc contains the evaluated
@@ -373,7 +373,6 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// application.
 				LET_AS(expander, LilyMacroexpander, acc);
 				if (expander) {
-					cont= cont->rest();
 					// XX missing a reference to
 					// the original surrounding
 					// list here!
@@ -384,12 +383,13 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				}
 				LET_AS(evaluator, LilyNativeEvaluator, acc);
 				if (evaluator) {
-					cont= cont->rest();
 					acc= evaluator->_eval
 						(frame->expressions(), ctx, cont);
 					// ^ ditto XX
-					WARN("evaluator returned: "<<show(acc));
+					WARN("evaluator returned: "<<show(acc)
+					     <<", while cont="<<show(cont));
 					// pass acc to cont
+					goto next_cont;
 				}
 				// otherwise it's a function application;
 				// pass acc to cont
@@ -408,16 +408,11 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					throw std::logic_error
 						(STR("not a function: " <<
 						     show(head)));
-				cont= cont->rest();
 				acc= f->call(arguments, ctx, cont);
 				WARN("after finishing the continuation frame, acc="
 				     << show(acc));
 				// what's next?
-				if (cont->isNull()) {
-					break;
-				} else {
-					goto next_cont;
-				}
+				goto next_cont;
 			} else {
 				// update continuation (XX optim:
 				// mutate if refcount is 1 (and no
@@ -425,7 +420,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				cont= LIST_CONS(FRAME(head,
 						      rvalues,
 						      expressions->rest()),
-						cont->rest());
+						cont);
 				code= expressions->first();
 			}
 		}
