@@ -113,7 +113,7 @@ static LilyObjectPtr lilyQuote(LilyObjectPtr es,
 			       LilyObjectPtr _ctx,
 			       LilyObjectPtr _cont) {
 	return apply1ary("quote", [](LilyObjectPtr e) {
-			WARN("quote: " << show(e));
+			DEBUGWARN("quote: " << show(e));
 			return e;
 		}, es);
 }

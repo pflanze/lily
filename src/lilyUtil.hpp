@@ -25,5 +25,10 @@ std::string show(std::string str);
 
 #define WARN(e) (std::cerr << e << "\n")
 
+#ifdef DEBUG
+#define DEBUGWARN(e) WARN(e)
+#else
+#define DEBUGWARN(e)
+#endif
 
 #endif /* _LILYUTIL_HPP */

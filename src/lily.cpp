@@ -271,7 +271,7 @@ LilyObjectPtr
 LilyNativeProcedure::call(LilyListPtr args,
 			  LilyListPtr ctx,
 			  LilyListPtr cont) {
-	WARN("NativeProcedure: " << _name << show(args));
+	DEBUGWARN("NativeProcedure: " << _name << show(args));
 	return _proc(args, ctx, cont);
 }
 
@@ -279,7 +279,7 @@ LilyObjectPtr
 LilyNativeMacroexpander::call(LilyListPtr expressions,
 			      LilyListPtr ctx,
 			      LilyListPtr cont) {
-	WARN("NativeMacroexpander: " << _name << show(expressions));
+	DEBUGWARN("NativeMacroexpander: " << _name << show(expressions));
 	return _expander(expressions, ctx, cont);
 }
 
@@ -287,7 +287,7 @@ LilyObjectPtr
 LilyNativeEvaluator::call(LilyListPtr expressions,
 		    LilyListPtr ctx,
 		    LilyListPtr cont) {
-	WARN("NativeEvaluator: " << _name << show(expressions));
+	DEBUGWARN("NativeEvaluator: " << _name << show(expressions));
 	return _eval(expressions, ctx, cont);
 }
 
@@ -330,7 +330,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 	LilyObjectPtr acc;
 	while (true) {
 	eval:
-		WARN("eval: "<< show(code) << " in: " << show(cont));
+		DEBUGWARN("eval: "<< show(code) << " in: " << show(cont));
 		switch (code->evalId) {
 		case LilyEvalOpcode::Null:
 			throw std::logic_error("empty call");
@@ -425,7 +425,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					acc= evaluator->_eval
 						(frame->expressions(), ctx, cont);
 					// ^ ditto XX
-					WARN("evaluator returned: "<<show(acc)
+					DEBUGWARN("evaluator returned: "<<show(acc)
 					     <<", while cont="<<show(cont));
 					// pass acc to cont
 					goto next_cont;
@@ -450,7 +450,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				: LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
-				WARN("ready to call the continuation");
+				DEBUGWARN("ready to call the continuation");
 				LilyListPtr arguments= reverse(rvalues);
 				LETU_AS(f, LilyCallable, head);
 				if (!f)
@@ -458,7 +458,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 						(STR("not a function: " <<
 						     show(head)));
 				acc= f->call(arguments, ctx, cont);
-				WARN("after finishing the continuation frame, acc="
+				DEBUGWARN("after finishing the continuation frame, acc="
 				     << show(acc));
 				// what's next?
 				goto next_cont;
@@ -474,7 +474,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			}
 		}
 	}
-	WARN("eval is finished, returning " << show(acc));
+	DEBUGWARN("eval is finished, returning " << show(acc));
 	return acc;
 }
 
