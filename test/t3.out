@@ -26,6 +26,8 @@ Int64: 34
 Symbol: x
 Symbol: y
 Pair: 'x
+Pair: (12 13)
+Pair: (12 13 14)
 Pair: (15 . hey)
 ERR: not a pair: 13
 ERR: car needs 1 argument

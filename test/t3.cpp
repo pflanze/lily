@@ -76,6 +76,8 @@ int main () {
 	_e("(quote x)"); // x
 	e("'y"); // y
 	e("(quote (quote x))"); // 'x
+	e("(cons 12 (cons 13 '()))");
+	e("(list 12 13 14)");
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
 	e("(cons (car 13) ())"); // tests argument eval order, too, not standardized
 	e("(car 4 5)");
