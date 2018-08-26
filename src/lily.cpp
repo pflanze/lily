@@ -5,6 +5,46 @@
 #include "lilyParse.hpp"
 #include "lilyUtil.hpp"
 
+
+static LilyObjectPtr lilyFakeDefine(LilyObjectPtr es,
+				    LilyObjectPtr _ctx,
+				    LilyObjectPtr _cont) {
+	// we're checking for lily_define in eval, thus this is
+	// unreachable code
+	throw std::logic_error("bug");
+}
+LilyObjectPtr lily_define = NATIVE_EVALUATOR(lilyFakeDefine, "define");
+// The actual code to run for |define|, returns the new ctx to *newctx
+static LilyObjectPtr lilyRealDefine(LilyObjectPtr es,
+				    LilyObjectPtr ctx,
+				    LilyObjectPtr _cont,
+				    LilyListPtr* newctx) {
+	// LET_AS(es0, LilyPair, es);
+	// if (!es0)
+	// 	throw std::logic_error("define needs at least 1 argument");
+	// // match 1st argument
+	// const LilyObjectPtr& var_or_pair= es0->car();
+	// LET_AS(var, LilySymbol, var_or_pair);
+	// if (var) {
+		
+	// }
+	// LET_AS(bindform, LilyPair, var_or_pair);
+	// if (bindform) {
+
+	// }
+
+	// throw std::logic_error("define needs a symbol as the first argument");
+	// const LilyObjectPtr& _es1= es0->cdr();
+	// LET_AS(es1, LilyPair, _es1);
+	// if (es1) {
+	// 	const LilyObjectPtr& 
+	// } else {
+	// 	// set variable to void (or remove it altogether?)
+	// 	XXX
+	// }
+}
+
+
 LilyObjectPtr
 LilyBoolean::True() {
 	static LilyObjectPtr v (new LilyBoolean(true));
@@ -370,16 +410,15 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// acc contains the evaluated
 				// head. Now we know whether it is a
 				// function, macro or evaluator
-				// application.
-				LET_AS(expander, LilyMacroexpander, acc);
-				if (expander) {
-					// XX missing a reference to
-					// the original surrounding
-					// list here!
-					code = expander->call
-						(frame->expressions(), ctx, cont);
-					// ^ now C++ frame there.! XX
-					goto eval;
+				// application, or the special case of
+				// |define| that needs to be allowed
+				// to modify env.
+				if (acc == lily_define) {
+					acc= lilyRealDefine(frame->expressions(),
+							    ctx,
+							    cont,
+							    &ctx);
+					goto next_cont;
 				}
 				LET_AS(evaluator, LilyNativeEvaluator, acc);
 				if (evaluator) {
@@ -390,6 +429,16 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					     <<", while cont="<<show(cont));
 					// pass acc to cont
 					goto next_cont;
+				}
+				LET_AS(expander, LilyMacroexpander, acc);
+				if (expander) {
+					// XX missing a reference to
+					// the original surrounding
+					// list here!
+					code = expander->call
+						(frame->expressions(), ctx, cont);
+					// ^ now C++ frame there.! XX
+					goto eval;
 				}
 				// otherwise it's a function application;
 				// pass acc to cont
