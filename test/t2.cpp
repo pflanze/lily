@@ -21,7 +21,7 @@ int main () {
 	pr("-1");
 	pr(" 12 ");
 	pr(" 12 3");
-	pr(" 12A 3");
+	pr(" 12A 3"); // XX Gambit's printer is smart enough to omit the | | here
 	pr(" + 3");
 	pr(" +3");
 	pr(" -3");
