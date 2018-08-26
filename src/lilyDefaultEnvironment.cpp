@@ -109,8 +109,17 @@ static LilyObjectPtr lilyCdr(LilyObjectPtr vs,
 		}, vs);
 }
 
+static LilyObjectPtr lilyQuote(LilyObjectPtr es,
+			       LilyObjectPtr _ctx,
+			       LilyObjectPtr _cont) {
+	return apply1ary("quote", [](LilyObjectPtr e) {
+			return e;
+		}, es);
+}
+
+
 LilyListPtr lilyDefaultEnvironment() {
-	LilyListPtr env= LIST(
+	static LilyListPtr env= LIST(
 		PAIR(SYMBOL("+"), NATIVE_PROCEDURE(lilyAdd, "+")),
 		PAIR(SYMBOL("*"), NATIVE_PROCEDURE(lilyMult, "*")),
 		PAIR(SYMBOL("-"), NATIVE_PROCEDURE(lilySub, "-")),
@@ -120,6 +129,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("cons"), NATIVE_PROCEDURE(lilyCons, "cons")),
 		PAIR(SYMBOL("car"), NATIVE_PROCEDURE(lilyCar, "car")),
 		PAIR(SYMBOL("cdr"), NATIVE_PROCEDURE(lilyCdr, "cdr")),
+		PAIR(SYMBOL("quote"), NATIVE_EVALUATOR(lilyQuote, "quote")),
 		);
 	return env;
 }

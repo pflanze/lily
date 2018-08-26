@@ -27,6 +27,8 @@
 #define SYMBOL(a) LilySymbol::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define NATIVE_PROCEDURE(a, name) LILY_NEW(LilyNativeProcedure(a, name))
+#define NATIVE_MACROEXPANDER(a, name) LILY_NEW(LilyNativeMacroexpander(a, name))
+#define NATIVE_EVALUATOR(a, name) LILY_NEW(LilyNativeEvaluator(a, name))
 #define FRAME(maybeHead,rvalues,expressions) LILY_NEW(LilyContinuationFrame(maybeHead,rvalues,expressions))
 
 
