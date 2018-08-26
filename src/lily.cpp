@@ -362,7 +362,11 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// arguments are used hence different
 			// continuation created.
 		next_cont:
-			LETU_AS(frame, LilyContinuationFrame, cont->first());
+			// auto frame= cont->first(); // tie down! gonna release cont XX true? does not help?
+			// LETU_AS(_frame, LilyContinuationFrame, _frame);
+			auto frame=
+				std::dynamic_pointer_cast<LilyContinuationFrame>
+				(cont->first());
 			bool accIsHead= ! frame->maybeHead();
 			if (accIsHead) {
 				// acc contains the evaluated
@@ -386,6 +390,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					acc= evaluator->_eval
 						(frame->expressions(), ctx, cont);
 					// ^ ditto XX
+					WARN("evaluator returned: "<<show(acc));
 					// pass acc to cont
 				}
 				// otherwise it's a function application;
