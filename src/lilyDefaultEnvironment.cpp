@@ -118,6 +118,51 @@ static LilyObjectPtr lilyQuote(LilyObjectPtr es,
 		}, es);
 }
 
+static LilyObjectPtr lilyLength(LilyObjectPtr arguments,
+				LilyObjectPtr _ctx,
+				LilyObjectPtr _cont) {
+	// arguments == ((12 13 14))
+	LET_AS(_arguments, LilyList, arguments);
+	if (is_LilyNull(&*(_arguments->rest()))) {
+		// we have just one argument, cool.
+		auto l= _arguments->first(); // (12 13 14) or "hello" or something
+		int64_t len= 0;
+		while (true) {
+			LET_AS(p, LilyPair, l);
+			if (p) {
+				len++; // check overflow? 64bit int is pretty large though :)
+				l= p->cdr();
+			} else {
+				LET_AS(null, LilyNull, l);
+				if (null) {
+					break;
+				} else {
+					throw std::logic_error
+						(STR("not a list: "
+						     << show(_arguments->first())));
+				}
+			}
+		}
+		return INT(len);
+	} else {
+		throw std::logic_error("length received more than one argument");
+	}
+		
+}
+
+static LilyObjectPtr lilyList(LilyObjectPtr arguments,
+			      LilyObjectPtr _ctx,
+			      LilyObjectPtr _cont) {
+	return arguments;
+}
+
+static LilyObjectPtr lilyReverse(LilyObjectPtr arguments,
+				 LilyObjectPtr _ctx,
+				 LilyObjectPtr _cont) {
+	LET_AS(_arguments, LilyList, arguments);
+	return reverse(_arguments->first()); // XX better arg count checking
+}
+
 
 LilyListPtr lilyDefaultEnvironment() {
 	static LilyListPtr env= LIST(
@@ -131,6 +176,9 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("car"), NATIVE_PROCEDURE(lilyCar, "car")),
 		PAIR(SYMBOL("cdr"), NATIVE_PROCEDURE(lilyCdr, "cdr")),
 		PAIR(SYMBOL("quote"), NATIVE_EVALUATOR(lilyQuote, "quote")),
+		PAIR(SYMBOL("list"), NATIVE_PROCEDURE(lilyList, "list")),
+		PAIR(SYMBOL("length"), NATIVE_PROCEDURE(lilyLength, "length")),
+		PAIR(SYMBOL("reverse"), NATIVE_PROCEDURE(lilyReverse, "reverse")),
 		);
 	return env;
 }

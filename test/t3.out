@@ -27,7 +27,17 @@ Symbol: x
 Symbol: y
 Pair: 'x
 Pair: (12 13)
+Int64: 2
+Int64: 0
+Int64: 3
+ERR: length received more than one argument
+---- list ----
+Null: ()
+Pair: (14)
 Pair: (12 13 14)
+ERR: not a list: "hello"
+Int64: 3
+Pair: (14 13 12)
 Pair: (15 . hey)
 ERR: not a pair: 13
 ERR: car needs 1 argument

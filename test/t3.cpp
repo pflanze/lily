@@ -76,8 +76,19 @@ int main () {
 	_e("(quote x)"); // x
 	e("'y"); // y
 	e("(quote (quote x))"); // 'x
-	e("(cons 12 (cons 13 '()))");
-	e("(list 12 13 14)");
+	e("(cons 12 (cons 13 '()))"); // (12 13)
+	e("(length (cons 12 (cons 13 '())))");
+	e("(length '())");
+	e("(length '(1 89 3))");
+	e("(length 1 89 3)");
+
+	note("list");
+	e("(list)"); // ()
+	e("(list 14)"); // (14)
+	e("(list 12 13 14)"); // (12 13 14)
+	e("(length \"hello\")"); // ERR
+	e("(length (list 12 13 14))"); // 3
+	e("(reverse (list 12 13 14))"); // (14 13 12)
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
 	e("(cons (car 13) ())"); // tests argument eval order, too, not standardized
 	e("(car 4 5)");
