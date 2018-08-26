@@ -2,6 +2,7 @@
 - check \0 handling
 - proper \r\n handling
 - protect against stack overflows during parsing and pretty-printing?
+- check for number overflows
 - lilyParse: report begin of erroneous elements instead of end
 - make data structure const where applicable
 - change continuations data structure into an intrusive list or more optimized pure stack
