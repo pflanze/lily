@@ -20,6 +20,12 @@ void e(const char* codestring) {
 	}
 }
 
+void _e(const char* codestring) {
+	auto codeobject= lilyParse(std::string(codestring));
+	auto result= eval(codeobject, environment);
+	std::cout << result->typeName() << ": "; WRITELN(result);
+}
+
 int main () {
 	note("string and symbol pointer comparison");
 	// Yes, == on the pointer is a pointer comparison, and
@@ -67,7 +73,7 @@ int main () {
 	e("(+ 10 3 4)"); // 17
 	e("(+ (+ 10 3) 4)"); // 17
 	e("(+ (* 10 3) 4)"); // 34
-	e("(quote x)"); // x
+	_e("(quote x)"); // x
 	e("'y"); // y
 	e("(quote (quote x))"); // 'x
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
