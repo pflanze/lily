@@ -35,6 +35,7 @@ ERR: cdr needs 1 argument
 Int64: 3
 Int64: -3
 Int64: -1
+Int64: 2
 Double: 3.33333333333333
 Int64: 3
 ERR: not a double: 10

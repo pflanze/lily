@@ -84,8 +84,8 @@ int main () {
 	e("(cdr)");
 	e("(quotient 10 3)"); // 3
 	e("(quotient -10 3)"); // -3
-	e("(remainder -10 3)"); // 2
-	// e("(modulo -10 3)"); // 2
+	e("(remainder -10 3)"); // -1
+	e("(modulo -10 3)"); // 2
 	e("(/ 10 3)"); // 3.33333 ?
 	e("(integer./ 10 3)"); // 3
 	e("(double./ 10 3)"); // error
