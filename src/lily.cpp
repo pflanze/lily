@@ -364,16 +364,14 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		next_cont:
 			// auto frame= cont->first(); // tie down! gonna release cont XX true? does not help?
 			// LETU_AS(_frame, LilyContinuationFrame, _frame);
-			auto frame=
-				std::dynamic_pointer_cast<LilyContinuationFrame>
-				(cont->first());
+			LET_AS(frame, LilyContinuationFrame, cont->first());
 			bool accIsHead= ! frame->maybeHead();
 			if (accIsHead) {
 				// acc contains the evaluated
 				// head. Now we know whether it is a
 				// function, macro or evaluator
 				// application.
-				LETU_AS(expander, LilyMacroexpander, acc);
+				LET_AS(expander, LilyMacroexpander, acc);
 				if (expander) {
 					cont= cont->rest();
 					// XX missing a reference to
@@ -384,7 +382,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					// ^ now C++ frame there.! XX
 					goto eval;
 				}
-				LETU_AS(evaluator, LilyNativeEvaluator, acc);
+				LET_AS(evaluator, LilyNativeEvaluator, acc);
 				if (evaluator) {
 					cont= cont->rest();
 					acc= evaluator->_eval
@@ -398,7 +396,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			}
 			// pass_to_cont:
 			LilyObjectPtr head= accIsHead ? acc : frame->maybeHead();
-			LETU_AS(expressions, LilyList, frame->expressions());
+			LET_AS(expressions, LilyList, frame->expressions());
 			auto rvalues= accIsHead ? frame->rvalues()
 				: LIST_CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {

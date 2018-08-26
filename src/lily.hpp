@@ -343,9 +343,14 @@ apply1ary(const char* procname,
 #define UNWRAP_AS(t, e) dynamic_cast<t*>(&*(e))
 #define UNWRAP(e) UNWRAP_AS(LilyObject,e)
 #define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
-// let unwrapped
+// let unwrapped (or "unsafe")
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 #define LETU(var, e) LETU_AS(var, LilyObject, e)
+
+// casting without unwrapping
+#define LET_AS(var, t, e) auto var= \
+		std::dynamic_pointer_cast<t>(e)
+
 
 // Same thing but throws an exception on cast errors.
 #define XUNWRAP_AS(t, e)						\

@@ -5,3 +5,4 @@
 - lilyParse: report begin of erroneous elements instead of end
 - make data structure const where applicable
 - change continuations data structure into an intrusive list or more optimized pure stack
+- use LETU_AS instead of LET_AS in places where it's safe, check performance difference
