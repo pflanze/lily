@@ -67,6 +67,9 @@ int main () {
 	e("(+ 10 3 4)"); // 17
 	e("(+ (+ 10 3) 4)"); // 17
 	e("(+ (* 10 3) 4)"); // 34
+	e("(quote x)"); // x
+	e("'y"); // y
+	e("(quote (quote x))"); // 'x
 	e("(cons (+ ((car (cons * +)) (+ 10 1) (- 3 2)) 4) 'hey)"); // (15 . hey)
 	e("(cons (car 13) ())"); // tests argument eval order, too, not standardized
 	e("(car 4 5)");
