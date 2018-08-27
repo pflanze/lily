@@ -20,5 +20,10 @@ int main (int argc, const char** argv) {
 			std::cout << "ERR: " << e.what() << std::endl;
 		}
 	}
-	return 0;
+	if (line.length()) {
+		std::cout << "PRE_PARSE_ERR: unfinished line" << std::endl;
+		return 1;
+	} else {
+		return 0;
+	}
 }
