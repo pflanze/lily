@@ -353,9 +353,6 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		case LilyEvalOpcode::Null:
 			throw std::logic_error("empty call");
 			break;
-		case LilyEvalOpcode::Void:
-			acc= code;
-			break;
 		case LilyEvalOpcode::Pair: {
 			LETU_AS(p, LilyPair, code);
 			// Function, macro or evaluator (base syntax)
@@ -380,12 +377,6 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// it:
 			goto eval;
 		}
-		case LilyEvalOpcode::Boolean:
-			acc= code;
-			break;
-		case LilyEvalOpcode::String:
-			acc= code;
-			break;
 		case LilyEvalOpcode::Symbol:
 			acc= alistMaybeGet(ctx, code);
 			if (!acc) {
@@ -394,17 +385,23 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				throw std::logic_error(msg.str());
 			}
 			break;
+
+			// self-evaluating cases
+		case LilyEvalOpcode::Void:
+		case LilyEvalOpcode::Boolean:
+		case LilyEvalOpcode::String:
 		case LilyEvalOpcode::Int64:
-			acc= code;
-			break;
 		case LilyEvalOpcode::Double:
 			acc= code;
 			break;
+			
+			// invalid to evaluate (arbitrary vs. above?)
 		case LilyEvalOpcode::NativeProcedure:
-			acc= code;
-			break;
+		case LilyEvalOpcode::ParseError:
+			throw std::logic_error(STR("ill-formed expression: "
+						   << show(code)));
 		default:
-			throw std::logic_error("invalid opcode");
+			throw std::logic_error("bug: unknown opcode");
 		}
 	next_cont:
 		// Who to pass the value to?
