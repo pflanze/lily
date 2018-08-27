@@ -11,7 +11,7 @@ void note(const char* s) {
 }
 
 void e(const char* codestring) {
-	auto codeobject= lilyParse(std::string(codestring));
+	auto codeobject= lilyParse(std::string(codestring), true);
 	try {
 		auto result= eval(codeobject, environment);
 		std::cout << result->typeName() << ": "; WRITELN(result);
@@ -54,6 +54,14 @@ int main () {
 		WRITELN(LIST(s1,s4,BOOLEAN(s1==s4)));
 	}
 
+	note("invalid evaluation rules");
+	// parser giving ParseError, not handled thus passed to eval,
+	// checking for the latter to produce an "ill-formed
+	// expression" error
+	e("(12 . 45 67)");
+	// e("(lambda (x) 1)"); // procedure
+	// e("(eval (lambda (x) 1))"); // ill-formed expression
+	
 	note("literals");
 	e("1233");
 	e(" \"1233\" ");

@@ -6,6 +6,8 @@
 (Hello Hello #t)
 (Hello Hello #t)
 (Hello Hello2 #f)
+---- invalid evaluation rules ----
+ERR: ill-formed expression: #<parse-error "InvalidDottedList" 9>
 ---- literals ----
 Int64: 1233
 String: "1233"
