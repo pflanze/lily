@@ -20,4 +20,5 @@ int main (int argc, const char** argv) {
 			std::cout << "ERR: " << e.what() << std::endl;
 		}
 	}
+	return 0;
 }
