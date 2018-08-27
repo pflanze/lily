@@ -47,17 +47,19 @@ enum class ParseResultCode : char; // to be defined by user
 // number from an on-demand re-scanning run in the rare case when
 // needed.)
 
+typedef uint32_t parse_position_t;
+
 class StringCursor {
 public:
 	StringCursor(std::string* string,
-		     uint32_t position = 0,
+		     parse_position_t position = 0,
 		     ParseResultCode error = ParseResultCode_Success)
 		: _string(string), _error(error), _position(position) {}
 	char first () {
 		return (*_string)[_position];
 	}
 	StringCursor rest () {
-		uint32_t pos1= _position+1;
+		parse_position_t pos1= _position+1;
 		assert(pos1 > 0); // XX not strictly portable
 		if (pos1 <= _string->length()) {
 			return StringCursor(_string, pos1, _error);
@@ -77,7 +79,7 @@ public:
 	StringCursor setError (ParseResultCode error) {
 		return StringCursor(_string, _position, error);
 	}
-	uint32_t position() {
+	parse_position_t position() {
 		return _position;
 	}
 	std::string& string() {
@@ -90,7 +92,7 @@ public:
 private:
 	std::string* _string;
 	ParseResultCode _error;
-	uint32_t _position;
+	parse_position_t _position;
 };
 
 template <typename T>

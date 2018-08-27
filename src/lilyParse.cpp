@@ -392,9 +392,8 @@ LilyObjectPtr lilyParse (std::string s, bool requireTotal) {
 		    if (end.isNull())
 			    return r.value();
 		    else
-			    return LIST(SYMBOL("parse-error"),
-					STRING("non-whitespace after expression"),
-					INT(end.position()));
+			    return PARSEERROR("non-whitespace after expression",
+					      end.position());
 		} else {
 			return r.value();
 		}
@@ -402,8 +401,7 @@ LilyObjectPtr lilyParse (std::string s, bool requireTotal) {
 		// exception? error result? Or s-expression for
 		// producing the error? :
 		ParseResultCode code= r.error();
-		return LIST(SYMBOL("parse-error"),
-			    STRING(ParseResultCode_string(code)),
-			    INT(r.remainder().position()));
+		return PARSEERROR(ParseResultCode_string(code),
+				  r.remainder().position());
 	}
 }

@@ -8,6 +8,7 @@
 #include <functional>
 #include <assert.h>
 #include "lilyUtil.hpp"
+#include "parse.hpp"
 
 
 enum class LilyEvalOpcode : char {
@@ -22,7 +23,8 @@ enum class LilyEvalOpcode : char {
 	NativeProcedure,
 	NativeMacroexpander,
 	NativeEvaluator,
-	InvalidIsFrame
+	InvalidIsFrame,
+	ParseError,
 };
 
 class LilyObject;
@@ -317,6 +319,32 @@ private: // XX make struct readonly?
 	LilyObjectPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
 	LilyListPtr _expressions; // i.e. unevaluated
+};
+
+
+// base error class, but will not work that well anymore once guest
+// language structs exist and are to be allowed to inherit from a
+// separate error base
+struct LilyErrorBase : public LilyObject {
+};
+struct LilyErrorWithWhat : public LilyObject {
+	virtual std::string what()=0;
+};
+
+
+struct LilyParseError : public LilyErrorWithWhat {
+public:
+	LilyParseError(std::string msg, parse_position_t pos)
+		: _msg(msg), _pos(pos) {
+		evalId= LilyEvalOpcode::ParseError;
+	}
+	virtual std::string msg() { return _msg; };
+	virtual parse_position_t pos() { return _pos; };
+	virtual std::string what();
+	virtual const char* typeName();
+	virtual void onelinePrint(std::ostream& out);
+	std::string _msg;
+	parse_position_t _pos;
 };
 
 

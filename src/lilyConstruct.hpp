@@ -30,7 +30,7 @@
 #define NATIVE_MACROEXPANDER(a, name) LILY_NEW(LilyNativeMacroexpander(a, name))
 #define NATIVE_EVALUATOR(a, name) LILY_NEW(LilyNativeEvaluator(a, name))
 #define FRAME(maybeHead,rvalues,expressions) LILY_NEW(LilyContinuationFrame(maybeHead,rvalues,expressions))
-
+#define PARSEERROR(msg,pos) LILY_NEW(LilyParseError(msg,pos))
 
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out);
 LilyObjectPtr WRITELN(LilyObjectPtr v);

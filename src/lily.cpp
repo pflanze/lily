@@ -251,6 +251,23 @@ LilyContinuationFrame::onelinePrint(std::ostream& out) {
 	}
 }
 
+void
+LilyParseError::onelinePrint(std::ostream& out) {
+	(out
+	 << "#<parse-error "
+	 << show(STRING(_msg)) // for string formatting
+	 << " "
+	 << _pos // no need for formatting, ok?
+	 << ">");
+}
+
+
+
+std::string LilyParseError::what() {
+	return STR(_msg << ": " << _pos);
+}
+
+
 
 const char* LilyNull::typeName() {return "Null";}
 const char* LilyVoid::typeName() {return "Void";}
@@ -264,6 +281,7 @@ const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
 const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
+const char* LilyParseError::typeName() {return "ParseError";}
 
 
 
