@@ -11,8 +11,8 @@ int main (int argc, const char** argv) {
 		std::getline(std::cin, line);
 		if (std::cin.eof())
 			break;
-		LilyObjectPtr expr= lilyParse(line); 
-		// XX error handling. XX check if there's stuff after the end of parse
+		LilyObjectPtr expr= lilyParse(line, true); 
+		// XX error handling.
 		try {
 			LilyObjectPtr res= eval(expr, environment);
 			WRITELN(res);
