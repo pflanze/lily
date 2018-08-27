@@ -6,7 +6,7 @@ endif
 
 CFLAGS=-Os -gdwarf-4 -g3 $(CFLAGS_COLOR)
 
-all: dirs bin/examples/repl tests
+all: dirs bin/examples/repl bin/examples/qt tests
 
 tests: t1 t_parse t2 t3
 
@@ -61,6 +61,10 @@ bin/test/t3: test/t3.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o b
 
 bin/examples/repl: examples/repl.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o src/lilyConstruct.o
 	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/examples/repl bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o src/lilyConstruct.o examples/repl.cpp
+
+bin/examples/qt: examples/qt.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o src/lilyConstruct.o
+	$(CXX) $(CFLAGS) -std=c++11 -Wall -Isrc -lstdc++ -o bin/examples/qt bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o bin/lilyDefaultEnvironment.o src/lilyConstruct.o examples/qt.cpp
+
 
 
 dirs:
