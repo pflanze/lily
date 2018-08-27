@@ -6,7 +6,7 @@ endif
 
 CFLAGS=-Os -gdwarf-4 -g3 $(CFLAGS_COLOR)
 
-all: dirs bin/examples/repl bin/examples/qt tests
+all: dirs bin/examples/repl tests
 
 tests: t1 t_parse t2 t3
 
