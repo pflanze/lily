@@ -12,12 +12,16 @@ int main (int argc, const char** argv) {
 		if (std::cin.eof())
 			break;
 		LilyObjectPtr expr= lilyParse(line, true); 
-		// XX error handling.
-		try {
-			LilyObjectPtr res= eval(expr, environment);
-			WRITELN(res);
-		} catch (std::logic_error& e) {
-			std::cout << "ERR: " << e.what() << std::endl;
+		LETU_AS(err, LilyParseError, expr);
+		if (err) {
+			std::cout << "PARSE_ERR: " << err->what() << std::endl;
+		} else {
+			try {
+				LilyObjectPtr res= eval(expr, environment);
+				WRITELN(res);
+			} catch (std::logic_error& e) {
+				std::cout << "ERR: " << e.what() << std::endl;
+			}
 		}
 	}
 	if (line.length()) {
