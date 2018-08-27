@@ -1,4 +1,4 @@
-Pair: (parse-error "non-whitespace after expression" 21)
+ParseError: #<parse-error "non-whitespace after expression" 21>
 String: "Hi,\nand\n \"you"
 Int64: 7
 Int64: 1
@@ -13,30 +13,30 @@ Int64: 3
 Int64: -3
 Int64: -4
 ---- overflow ----
-Pair: (parse-error "Int64Overflow" 19)
+ParseError: #<parse-error "Int64Overflow" 19>
 Int64: 9223372036854775807
-Pair: (parse-error "Int64Overflow" 20)
+ParseError: #<parse-error "Int64Overflow" 20>
 Int64: -9223372036854775808
 Symbol: |922337203685477580844A|
 Pair: (1 2 3)
 Symbol: hi:all
 Pair: (hi "there")
-Pair: (parse-error "InvalidDottedList" 5)
+ParseError: #<parse-error "InvalidDottedList" 5>
 Pair: (hi .x)
 Pair: (hi . x)
-Pair: (parse-error "UnexpectedEof" 6)
-Pair: (parse-error "UnexpectedEof" 7)
+ParseError: #<parse-error "UnexpectedEof" 6>
+ParseError: #<parse-error "UnexpectedEof" 7>
 Pair: (hi .x ())
-Pair: (parse-error "InvalidDottedList" 7)
+ParseError: #<parse-error "InvalidDottedList" 7>
 Pair: (hi "there")
 Pair: (a b c)
 ---- line comments ----
 Pair: (hi "there")
 Pair: (hi "there")
-Pair: (parse-error "UnexpectedEof" 11)
+ParseError: #<parse-error "UnexpectedEof" 11>
 Pair: (() 5 ())
 Pair: (hi () () "there")
-Pair: (parse-error "UnexpectedEof" 20)
+ParseError: #<parse-error "UnexpectedEof" 20>
 Pair: (hi . x)
 Pair: (hi . x)
 ---- in-line comments ----
@@ -54,22 +54,22 @@ Pair: (hi . x)
 ---- symbol, unknown special, symbols: ----
 Symbol: .#a
 Pair: (1 .#a)
-Pair: (parse-error "UnknownSpecial" 1)
+ParseError: #<parse-error "UnknownSpecial" 1>
 Symbol: ..
 Pair: (a ..)
 Pair: (a ...)
 Pair: (a . ..)
-Pair: (parse-error "InvalidDottedList" 7)
+ParseError: #<parse-error "InvalidDottedList" 7>
 Pair: (#!void #f #t)
 Pair: (#!void #f #t)
 Pair: (#t #f)
 ---- keywords (not implemented) ----
 Symbol: foo:bar
-Pair: (parse-error "Unimplemented" 4)
-Pair: (parse-error "Unimplemented" 9)
+ParseError: #<parse-error "Unimplemented" 4>
+ParseError: #<parse-error "Unimplemented" 9>
 Pair: (foo: :bar)
 Symbol: :
-Pair: (parse-error "Unimplemented" 3)
+ParseError: #<parse-error "Unimplemented" 3>
 ---- syntactic sugar ----
 Pair: 'a
 Pair: 'a
