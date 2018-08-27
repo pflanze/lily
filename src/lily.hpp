@@ -105,12 +105,23 @@ public:
 	}
 	virtual LilyObjectPtr first() { return _car; }
 	virtual LilyListPtr rest() {
+#if 0
+		// this gives "dereferencing type-punned pointer will
+		// break strict-aliasing rules" warning, but it allows
+		// me to check whether conversion succeeded and still
+		// only do the casting work once.
 		if (dynamic_cast<LilyList*>(&*_cdr)) {
 			return *((LilyListPtr*)(&_cdr));
 		} else {
 			throw std::logic_error(STR("improper list: " <<
 						   show(_cdr)));
 		}
+#else
+		// XX does that give an exception on errors or wrapped
+		// NULL? If capturing in a variable, does that cost
+		// a pair of reference counting operations?
+		return std::dynamic_pointer_cast<LilyList>(_cdr);
+#endif
 	}
 	virtual LilyObjectPtr car() { return _car; }
 	virtual LilyObjectPtr cdr() { return _cdr; }
