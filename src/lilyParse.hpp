@@ -5,7 +5,7 @@
 
 bool needsSymbolQuoting (char c);
 
-LilyObjectPtr lilyParse (std::string s);
+LilyObjectPtr lilyParse (std::string s, bool requireTotal=false);
 
 
 #endif

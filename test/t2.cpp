@@ -2,8 +2,8 @@
 #include <lilyConstruct.hpp>
 #include <lilyParse.hpp>
 
-void pr(const char* s) {
-	auto v= lilyParse(std::string(s));
+void pr(const char* s, bool requireTotal=true) {
+	auto v= lilyParse(std::string(s), requireTotal);
 	std::cout << v->typeName() << ": ";
 	WRITELN(v);
 }
@@ -14,15 +14,16 @@ void note(const char* s) {
 
 int main () {
 	pr(" \n \"Hi,\nand\\n \\\"you\" 123");
+	pr(" \n \"Hi,\nand\\n \\\"you\" \n ");
 	pr("7");
 	pr("1");
 	pr("0");
 	pr("+1");
 	pr("-1");
 	pr(" 12 ");
-	pr(" 12 3");
-	pr(" 12A 3"); // XX Gambit's printer is smart enough to omit the | | here
-	pr(" + 3");
+	pr(" 12 3", false);
+	pr(" 12A 3", false); // XX Gambit's printer is smart enough to omit the | | here
+	pr(" + 3", false);
 	pr(" +3");
 	pr(" -3");
 	pr("-4 ");
@@ -34,7 +35,7 @@ int main () {
 	pr("-9223372036854775808");
 	pr("922337203685477580844A"); // symbol, not number overflow error
 	pr("  (1 2 3)");
-	pr("hi:all there");
+	pr("hi:all there",false);
 	pr("(hi \"there\")");
 	pr("(hi .)");
 	pr("(hi .x)");
@@ -48,7 +49,7 @@ int main () {
 
 	note("line comments");
 	pr("(\n hi\"there\" ;; all good\n) ");
-	pr("(hi \"there\")3");
+	pr("(hi \"there\")3",false);
 	pr("(hi \"there\""); // UnexpectedEof
 	pr("(()5())");
 	pr("(hi () ( ;\n) \"there\")");
@@ -60,8 +61,8 @@ int main () {
 	pr(" #|hi|# there"); // "there"
 	pr(" #| |# 234"); // 234
 	pr(" #| |#| 234|"); // | 234|
-	pr(" #| |#  234|"); // 234
-	pr("  234|"); // 234
+	pr(" #| |#  234|",false); // 234
+	pr("  234|",false); // 234
 
 	note("  all: (hi . x)");
 	pr("(hi .#||#x)"); // Gambit parses .#| as invalid token!

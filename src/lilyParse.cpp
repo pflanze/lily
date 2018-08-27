@@ -382,10 +382,22 @@ special:
 }
 
 // convenience function
-LilyObjectPtr lilyParse (std::string s) {
+LilyObjectPtr lilyParse (std::string s, bool requireTotal) {
 	PR r= lilyParse(StringCursor(&s));
 	if (r.success()) {
-		return r.value();
+		if (requireTotal) {
+		    // check that there's nothing after the parsed
+		    // expression
+		    auto end= skipWhitespaceAndComments(r.remainder());
+		    if (end.isNull())
+			    return r.value();
+		    else
+			    return LIST(SYMBOL("parse-error"),
+					STRING("non-whitespace after expression"),
+					INT(end.position()));
+		} else {
+			return r.value();
+		}
 	} else {
 		// exception? error result? Or s-expression for
 		// producing the error? :

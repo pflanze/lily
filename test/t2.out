@@ -1,3 +1,4 @@
+Pair: (parse-error "non-whitespace after expression" 21)
 String: "Hi,\nand\n \"you"
 Int64: 7
 Int64: 1
