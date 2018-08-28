@@ -26,6 +26,9 @@ t3: bin/test/t3
 	bin/test/t3 > test/t3.actual.out
 	sbin/tdiff test/t3.out
 
+SipHash/siphash.c:
+	git submodule update SipHash
+
 bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyConstruct.cpp -o bin/lilyConstruct.o
 
