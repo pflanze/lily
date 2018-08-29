@@ -160,6 +160,9 @@ LilySymbol::onelinePrint(std::ostream& out) {
 	} else {
 		out << string;
 	}
+#if 0
+	out<< "[" << hash << "]";
+#endif
 }
 
 
