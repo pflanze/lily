@@ -107,9 +107,12 @@ int main () {
 	note("arithmetic");
 	e("(-10)"); // err
 	e("(- 10)"); // -10
+	e("(- 10 . 33)"); // err
 	e("(-)"); // Gambit: Wrong number of arguments passed to procedure
 	e("(quotient 10 3)"); // 3
 	e("(quotient -10 3)"); // -3
+	e("(quotient 30)"); // 0 ? Gambit: Wrong number of arguments..
+	e("(remainder 30)"); // 1 ? Gambit: Wrong number of arguments..
 	e("(remainder -10 3)"); // -1
 	e("(modulo -10 3)"); // 2
 	e("(/ 10 3)"); // 3.33333 ?

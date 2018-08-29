@@ -49,9 +49,12 @@ ERR: cdr needs 1 argument
 ---- arithmetic ----
 ERR: not a function: -10
 Int64: -10
-ERR: end of listXXbetter
+ERR: improper list: 33
+ERR: -: wrong number of arguments
 Int64: 3
 Int64: -3
+Int64: 0
+Int64: 1
 Int64: -1
 Int64: 2
 Double: 3.33333333333333

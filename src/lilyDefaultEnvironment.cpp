@@ -42,25 +42,32 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 DEF_FOLD_UP_NATIVE(lilyAdd, LilyInt64, int64_t, +, 0);
 DEF_FOLD_UP_NATIVE(lilyMult, LilyInt64, int64_t, *, 1);
 
-#define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP)				\
+// LONESTART is used when there's only one argument
+#define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP, LONESTART)		\
 	static								\
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
 			   LilyListPtr* _cont) {			\
-		LilyList* _vs= XLIST_UNWRAP(*vs);			\
-		return LILY_NEW						\
-			(LilyT(_lilyFold<LilyT, T>			\
-			       (XLIST_UNWRAP(_vs->rest()),		\
-				[](LilyT* num, T res) -> T {		\
-				       /* XX check for overflow? */	\
-				       return res OP num->value;	\
-			        },					\
-				XUNWRAP_AS(LilyT, _vs->first())->value))); \
+	auto fn= [](LilyT* num, T res) -> T {				\
+		/* XX check for overflow? */				\
+		return res OP num->value;				\
+	};								\
+	LilyList* _vs= &**vs;						\
+	if (is_LilyNull(_vs))						\
+		throw std::logic_error(#OP ": wrong number of arguments"); \
+	T res;								\
+	LilyList* r= &*(_vs->rest());					\
+	if (is_LilyNull(r))						\
+		res= fn(XUNWRAP_AS(LilyT, _vs->first()), LONESTART);	\
+	else								\
+		res= _lilyFold<LilyT, T>				\
+			(r, fn, XUNWRAP_AS(LilyT, _vs->first())->value); \
+	return LILY_NEW(LilyT(res));					\
 	}
 
-DEF_FOLD_DOWN_NATIVE(lilySub, LilyInt64, int64_t, -);
-DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, int64_t, /);
-DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %);
+DEF_FOLD_DOWN_NATIVE(lilySub, LilyInt64, int64_t, -, 0);
+DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, int64_t, /, 1);
+DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %, 1);
 
 // DEF_NATIVE(lilyDiv, LilyInt64, int64_t, /); // generic
 
