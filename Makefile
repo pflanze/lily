@@ -4,7 +4,7 @@ ifndef INSIDE_EMACS
 	CFLAGS_COLOR=-fdiagnostics-color=always
 endif
 
-CFLAGS=-Os -gdwarf-4 -g3 $(CFLAGS_COLOR)
+CFLAGS=-O0 -gdwarf-4 -g3 $(CFLAGS_COLOR)
 
 all: dirs bin/examples/repl tests
 
