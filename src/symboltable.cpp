@@ -15,13 +15,13 @@ static void symboltable_secret_perhaps_init() {
 }
 
 symboltablehash_t siphash(const std::string s) {
-	symboltablehash_t res;
+	uint64_t res;
 	symboltable_secret_perhaps_init();
 	siphash(s.data(),
 		static_cast<const size_t>(s.length()),
 		symboltable_secret,
 		&res);
-	return res;
+	return static_cast<symboltablehash_t>(res);
 }
 
 

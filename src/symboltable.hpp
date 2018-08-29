@@ -6,7 +6,7 @@
 
 
 // the idea is to optimize the particular hashtable by not re-hashing
-typedef uint64_t symboltablehash_t;
+typedef uint32_t symboltablehash_t;
 
 
 // mapping strings to symbols
@@ -39,12 +39,13 @@ int siphash(const uint8_t *in, const size_t inlen, const uint8_t *k,
             uint8_t *out, const size_t outlen);
 
 // and a reasonable adaption, please!
+template <typename out_t>
 inline
 int siphash(const char *in, const size_t inlen, const char k[16],
-	    // symboltablehash_t* correct? now endianness dependent! Does that bother me?
-            symboltablehash_t *out) {
+	    // out_t* correct? now endianness dependent! Does that bother me?
+            out_t *out) {
 	return siphash((const uint8_t *)in, inlen, (const uint8_t *)k,
-		       (uint8_t *)out, sizeof(symboltablehash_t));
+		       (uint8_t *)out, sizeof(out_t));
 }
 
 symboltablehash_t siphash(const std::string s);
