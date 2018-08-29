@@ -168,39 +168,50 @@ static LilyObjectPtr lilyReverse(LilyListPtr* arguments,
 static LilyObjectPtr lilyDefine(LilyListPtr* es,
 				LilyListPtr* ctx,
 				LilyListPtr* cont) {
-	// LET_AS(es0, LilyPair, es);
-	// if (!es0)
-	// 	throw std::logic_error("define needs at least 1 argument");
-	// // match 1st argument
-	// auto var_or_pair= es0->car();
-	// LET_AS(var, LilySymbol, var_or_pair);
-	// if (var) {
-	// 	LET_AS(es1, LilyPair, es0->cdr());
-	// 	if (!es1)
-	// 		throw std::logic_error("define: if getting a symbol as 1st argument, need one more argument");
-	// 	ç
-		
-	// }
-	// LET_AS(bindform, LilyPair, var_or_pair);
-	// if (bindform) {
-	// 	LET_AS(var, LilySymbol, bindform->first());
-	// 	if (var) {
-	// 		throw std::logic_error("XX functions not yet implemented");
-	// 	} else {
-	// 		throw std::logic_error(STR("define: expecting symbol, got: "
-	// 					   << show(bindform->first())));
-	// 	}
-	// }
+	LET_AS(es0, LilyPair, *es);
+	if (!es0)
+		throw std::logic_error("define needs at least 1 argument");
+	// match 1st argument
+	auto var_or_pair= es0->car();
+	LET_AS(var, LilySymbol, var_or_pair);
+	if (var) {
+		LET_AS(es1, LilyPair, es0->cdr());
+		if (!es1)
+			throw std::logic_error("define: if getting a symbol as 1st argument, need one more argument");
+		LET_AS(end, LilyNull, es1->cdr());
+		if (!end)
+			throw std::logic_error("define: if getting a symbol as 1st argument, accepting just one more argument");
+		auto expr= es1->car();
+		// ç
+	}
+	LET_AS(bindform, LilyPair, var_or_pair);
+	if (bindform) {
+		LET_AS(var, LilySymbol, bindform->first());
+		if (var) {
+			throw std::logic_error("XX functions not yet implemented");
+		} else {
+			throw std::logic_error(STR("define: expecting symbol, got: "
+						   << show(bindform->first())));
+		}
+	}
 
-	// throw std::logic_error("define needs a symbol as the first argument");
-	// const LilyObjectPtr& _es1= es0->cdr();
-	// LET_AS(es1, LilyPair, _es1);
-	// if (es1) {
-	// 	const LilyObjectPtr& 
-	// } else {
-	// 	// set variable to void (or remove it altogether?)
-	// 	XXX
-	// }
+	throw std::logic_error("define needs a symbol as the first argument");
+	const LilyObjectPtr& _es1= es0->cdr();
+	LET_AS(es1, LilyPair, _es1);
+	if (es1) {
+		//const LilyObjectPtr& 
+	} else {
+		// set variable to void (or remove it altogether?)
+		//XXX
+	}
+}
+
+
+static LilyObjectPtr lilyBegin(LilyListPtr* es,
+			       LilyListPtr* ctx,
+			       LilyListPtr* cont) {
+	// evaluate all es in turn; drop all results before the last
+	return NIL;
 }
 
 
@@ -220,6 +231,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("length"), NATIVE_PROCEDURE(lilyLength, "length")),
 		PAIR(SYMBOL("reverse"), NATIVE_PROCEDURE(lilyReverse, "reverse")),
 		PAIR(SYMBOL("define"), NATIVE_EVALUATOR(lilyDefine, "define")),
+		PAIR(SYMBOL("begin"), NATIVE_EVALUATOR(lilyBegin, "begin")),
 		);
 	return env;
 }
