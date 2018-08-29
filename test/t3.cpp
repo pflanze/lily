@@ -103,6 +103,11 @@ int main () {
 	e("(car)");
 	e("(cdr (cons 3 6))");
 	e("(cdr)");
+
+	note("arithmetic");
+	e("(-10)"); // err
+	e("(- 10)"); // -10
+	e("(-)"); // Gambit: Wrong number of arguments passed to procedure
 	e("(quotient 10 3)"); // 3
 	e("(quotient -10 3)"); // -3
 	e("(remainder -10 3)"); // -1

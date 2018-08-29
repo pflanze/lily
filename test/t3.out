@@ -46,6 +46,10 @@ ERR: car needs 1 argument
 ERR: car needs 1 argument
 Int64: 6
 ERR: cdr needs 1 argument
+---- arithmetic ----
+ERR: not a function: -10
+Int64: -10
+ERR: end of listXXbetter
 Int64: 3
 Int64: -3
 Int64: -1
