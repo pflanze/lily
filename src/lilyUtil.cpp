@@ -1,3 +1,7 @@
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
+
 #include "lilyUtil.hpp"
 
 
@@ -34,4 +38,16 @@ std::string show(std::string str) {
 	return out.str();
 }
 
+
+void throwWithStrerror(const std::string &msg) {
+#define SIZ 256
+	char buf[SIZ];
+	// https://en.cppreference.com/w/c/string/byte/strerror
+	// describes strerror_s but not available
+	//strerror_s(buf, SIZ, errno);
+	char* err= strerror_r(errno, buf, SIZ);
+	
+	throw std::runtime_error(STR(msg << ": " << err));
+#undef SIZ
+}
 

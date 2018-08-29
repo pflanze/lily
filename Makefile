@@ -29,14 +29,14 @@ t3: bin/test/t3
 SipHash/siphash.c:
 	git submodule update SipHash
 
-bin/symboltable.o: src/symboltable.cpp src/symboltable.hpp SipHash/siphash.c
+bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp
+	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyUtil.cpp -o bin/lilyUtil.o
+
+bin/symboltable.o: src/symboltable.cpp src/symboltable.hpp SipHash/siphash.c src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/symboltable.cpp -o bin/symboltable.o
 
 bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyConstruct.cpp -o bin/lilyConstruct.o
-
-bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp
-	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lilyUtil.cpp -o bin/lilyUtil.o
 
 bin/lily.o: src/lily.cpp src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp src/parse.hpp src/symboltable.hpp 
 	$(CXX) $(CFLAGS) -c -std=c++11 -Wall src/lily.cpp -o bin/lily.o

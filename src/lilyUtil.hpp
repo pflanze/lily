@@ -33,4 +33,8 @@ std::string show(std::string str);
 #define DEBUGWARN(e)
 #endif
 
+
+void throwWithStrerror(const std::string &msg);
+
+
 #endif /* _LILYUTIL_HPP */
