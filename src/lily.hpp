@@ -120,10 +120,13 @@ public:
 						   show(_cdr)));
 		}
 #else
-		// XX does that give an exception on errors or wrapped
-		// NULL? If capturing in a variable, does that cost
-		// a pair of reference counting operations?
-		return std::dynamic_pointer_cast<LilyList>(_cdr);
+		// Does this cost a pair of reference counting
+		// operations?
+		auto res= std::dynamic_pointer_cast<LilyList>(_cdr);
+		if (!res)
+			throw std::logic_error(STR("improper list: " <<
+						   show(_cdr)));
+		return res;
 #endif
 	}
 	virtual LilyObjectPtr car() { return _car; }
