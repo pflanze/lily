@@ -229,7 +229,7 @@ LilyParseError::onelinePrint(std::ostream& out) {
 
 
 std::string LilyParseError::what() {
-	return STR(_msg << ": " << _pos);
+	return STR(_msg << " (position " << _pos << ")");
 }
 
 
