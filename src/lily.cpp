@@ -84,7 +84,7 @@ LilySymbol::intern(std::string s) {
 		// why 'is this a tuple and iterator at same time?'?
 		// Overloaded dereference, right? (Uh?)
 	} else {
-		auto v= LILY_NEW(LilySymbol(s));
+		auto v= LILY_NEW(LilySymbol(s,siphash(s)));
 		lilySymbolTable[s]= v;
 		return v;
 	}

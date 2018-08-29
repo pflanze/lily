@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "lilyUtil.hpp"
 #include "parse.hpp"
+#include "symboltable.hpp"
 
 
 enum class LilyEvalOpcode : char {
@@ -46,7 +47,7 @@ public:
 	std::string onelineString();
 	virtual const char* typeName()=0;
 	virtual void onelinePrint(std::ostream& out)=0;
-	LilyEvalOpcode evalId;
+	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
 };
 
 
@@ -181,11 +182,13 @@ public:
 
 class LilySymbol : public LilyObject {
 public:
-	LilySymbol(std::string s) : string(s) {
+	LilySymbol(std::string s, symboltablehash_t h)
+		: string(s), hash(h) {
 		evalId= LilyEvalOpcode::Symbol;
 	}
 	static LilyObjectPtr intern(std::string s);
-	std::string string;
+	const std::string string;
+	const symboltablehash_t hash;
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilySymbol();
