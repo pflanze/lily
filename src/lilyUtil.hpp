@@ -7,7 +7,9 @@
 #include <string>
 
 
-void string_onelinePrint(std::string& str, std::ostream& out, char quoteChar);
+void string_onelinePrint(const std::string& str,
+			 std::ostream& out,
+			 char quoteChar);
 
 std::string show(std::string str);
 

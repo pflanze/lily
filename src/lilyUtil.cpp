@@ -1,7 +1,9 @@
 #include "lilyUtil.hpp"
 
 
-void string_onelinePrint(std::string& str, std::ostream& out, char quoteChar) {
+void string_onelinePrint(const std::string& str,
+			 std::ostream& out,
+			 char quoteChar) {
 	for (char c : str) {
 		if (c==quoteChar) {
 			out << '\\' << c;

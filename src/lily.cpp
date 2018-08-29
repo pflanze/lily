@@ -6,44 +6,6 @@
 #include "lilyUtil.hpp"
 
 
-static LilyObjectPtr lilyFakeDefine(LilyObjectPtr es,
-				    LilyObjectPtr _ctx,
-				    LilyObjectPtr _cont) {
-	// we're checking for lily_define in eval, thus this is
-	// unreachable code
-	throw std::logic_error("bug");
-}
-LilyObjectPtr lily_define = NATIVE_EVALUATOR(lilyFakeDefine, "define");
-// The actual code to run for |define|, returns the new ctx to *newctx
-static LilyObjectPtr lilyRealDefine(LilyObjectPtr es,
-				    LilyObjectPtr ctx,
-				    LilyObjectPtr _cont,
-				    LilyListPtr* newctx) {
-	// LET_AS(es0, LilyPair, es);
-	// if (!es0)
-	// 	throw std::logic_error("define needs at least 1 argument");
-	// // match 1st argument
-	// const LilyObjectPtr& var_or_pair= es0->car();
-	// LET_AS(var, LilySymbol, var_or_pair);
-	// if (var) {
-		
-	// }
-	// LET_AS(bindform, LilyPair, var_or_pair);
-	// if (bindform) {
-
-	// }
-
-	// throw std::logic_error("define needs a symbol as the first argument");
-	// const LilyObjectPtr& _es1= es0->cdr();
-	// LET_AS(es1, LilyPair, _es1);
-	// if (es1) {
-	// 	const LilyObjectPtr& 
-	// } else {
-	// 	// set variable to void (or remove it altogether?)
-	// 	XXX
-	// }
-}
-
 
 LilyObjectPtr
 LilyBoolean::True() {
@@ -286,32 +248,31 @@ const char* LilyParseError::typeName() {return "ParseError";}
 
 
 LilyObjectPtr
-LilyNativeProcedure::call(LilyListPtr args,
-			  LilyListPtr ctx,
-			  LilyListPtr cont) {
-	DEBUGWARN("NativeProcedure: " << _name << show(args));
+LilyNativeProcedure::call(LilyListPtr* args,
+			  LilyListPtr* ctx,
+			  LilyListPtr* cont) {
+	DEBUGWARN("NativeProcedure: " << _name << show(*args));
 	return _proc(args, ctx, cont);
 }
 
 LilyObjectPtr
-LilyNativeMacroexpander::call(LilyListPtr expressions,
-			      LilyListPtr ctx,
-			      LilyListPtr cont) {
-	DEBUGWARN("NativeMacroexpander: " << _name << show(expressions));
+LilyNativeMacroexpander::call(LilyListPtr* expressions,
+			      LilyListPtr* ctx,
+			      LilyListPtr* cont) {
+	DEBUGWARN("NativeMacroexpander: " << _name << show(*expressions));
 	return _expander(expressions, ctx, cont);
 }
 
 LilyObjectPtr
-LilyNativeEvaluator::call(LilyListPtr expressions,
-		    LilyListPtr ctx,
-		    LilyListPtr cont) {
-	DEBUGWARN("NativeEvaluator: " << _name << show(expressions));
+LilyNativeEvaluator::call(LilyListPtr* expressions,
+			  LilyListPtr* ctx,
+			  LilyListPtr* cont) {
+	DEBUGWARN("NativeEvaluator: " << _name << show(*expressions));
 	return _eval(expressions, ctx, cont);
 }
 
 
 
-	
 
 // returns NULL on failure
 LilyObjectPtr
@@ -329,8 +290,8 @@ alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
 LilyObjectPtr
 apply1ary(const char* procname,
 	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
-	  LilyObjectPtr vs) {
-	LETU_AS(vs0, LilyPair, vs);
+	  LilyListPtr* vs) {
+	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
 		LETU_AS(vs1, LilyNull, vs0->_cdr);
 		if (vs1) {
@@ -341,6 +302,13 @@ apply1ary(const char* procname,
 }
 
 
+// just casting...
+static LilyListPtr frameExpressionsList(const LilyContinuationFramePtr& frame) {
+	LET_AS(expressions, LilyList, frame->expressions());
+	if (!expressions)
+		throw std::logic_error("ill-formed special form");
+	return expressions;
+}
 
 LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr ctx,
@@ -425,20 +393,12 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// acc contains the evaluated
 				// head. Now we know whether it is a
 				// function, macro or evaluator
-				// application, or the special case of
-				// |define| that needs to be allowed
-				// to modify env.
-				if (acc == lily_define) {
-					acc= lilyRealDefine(frame->expressions(),
-							    ctx,
-							    cont,
-							    &ctx);
-					goto next_cont;
-				}
+				// application.
 				LET_AS(evaluator, LilyNativeEvaluator, acc);
 				if (evaluator) {
+					auto expressions= frameExpressionsList(frame);
 					acc= evaluator->_eval
-						(frame->expressions(), ctx, cont);
+						(&expressions, &ctx, &cont);
 					// ^ ditto XX
 					DEBUGWARN("evaluator returned: "<<show(acc)
 					     <<", while cont="<<show(cont));
@@ -447,11 +407,12 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				}
 				LET_AS(expander, LilyMacroexpander, acc);
 				if (expander) {
+					auto expressions= frameExpressionsList(frame);
 					// XX missing a reference to
 					// the original surrounding
 					// list here!
 					code = expander->call
-						(frame->expressions(), ctx, cont);
+						(&expressions, &ctx, &cont);
 					// ^ now C++ frame there.! XX
 					goto eval;
 				}
@@ -472,7 +433,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 					throw std::logic_error
 						(STR("not a function: " <<
 						     show(head)));
-				acc= f->call(arguments, ctx, cont);
+				acc= f->call(&arguments, &ctx, &cont);
 				DEBUGWARN("after finishing the continuation frame, acc="
 				     << show(acc));
 				// what's next?

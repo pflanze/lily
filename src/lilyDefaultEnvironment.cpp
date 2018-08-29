@@ -26,12 +26,12 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 
 #define DEF_FOLD_UP_NATIVE(name, LilyT, T, OP, START)			\
 	static								\
-	LilyObjectPtr name(LilyObjectPtr vs,				\
-			   LilyObjectPtr _ctx,				\
-			   LilyObjectPtr _cont) {			\
+	LilyObjectPtr name(LilyListPtr* vs,				\
+			   LilyListPtr* _ctx,				\
+			   LilyListPtr* _cont) {			\
 		return LILY_NEW						\
 			(LilyT(_lilyFold<LilyT, T>			\
-			       (XLIST_UNWRAP(vs),			\
+			       (XLIST_UNWRAP(*vs),			\
 				[](LilyT* num, T res) -> T {		\
 				       /* XX check for overflow! */	\
 				       return res OP num->value;	\
@@ -44,10 +44,10 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyInt64, int64_t, *, 1);
 
 #define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP)				\
 	static								\
-	LilyObjectPtr name(LilyObjectPtr vs,				\
-			   LilyObjectPtr _ctx,				\
-			   LilyObjectPtr _cont) {			\
-		LilyList* _vs= XLIST_UNWRAP(vs);			\
+	LilyObjectPtr name(LilyListPtr* vs,				\
+			   LilyListPtr* _ctx,				\
+			   LilyListPtr* _cont) {			\
+		LilyList* _vs= XLIST_UNWRAP(*vs);			\
 		return LILY_NEW						\
 			(LilyT(_lilyFold<LilyT, T>			\
 			       (XLIST_UNWRAP(_vs->rest()),		\
@@ -66,11 +66,11 @@ DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %);
 
 
 static
-LilyObjectPtr lilyCons(LilyObjectPtr vs,
-		       LilyObjectPtr _ctx,
-		       LilyObjectPtr _cont) {
+LilyObjectPtr lilyCons(LilyListPtr* vs,
+		       LilyListPtr* _ctx,
+		       LilyListPtr* _cont) {
 	// WARN("cons: "<<show(vs));
-	LETU_AS(vs0, LilyPair, vs);
+	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
 		LETU_AS(vs1, LilyPair, vs0->_cdr);
 		if (vs1) {
@@ -83,9 +83,9 @@ LilyObjectPtr lilyCons(LilyObjectPtr vs,
 	throw std::logic_error("cons needs 2 arguments");
 }
 
-static LilyObjectPtr lilyCar(LilyObjectPtr vs,
-			     LilyObjectPtr _ctx,
-			     LilyObjectPtr _cont) {
+static LilyObjectPtr lilyCar(LilyListPtr* vs,
+			     LilyListPtr* _ctx,
+			     LilyListPtr* _cont) {
 	return apply1ary("car", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)
@@ -96,9 +96,9 @@ static LilyObjectPtr lilyCar(LilyObjectPtr vs,
 		}, vs);
 }
 
-static LilyObjectPtr lilyCdr(LilyObjectPtr vs,
-			     LilyObjectPtr _ctx,
-			     LilyObjectPtr _cont) {
+static LilyObjectPtr lilyCdr(LilyListPtr* vs,
+			     LilyListPtr* _ctx,
+			     LilyListPtr* _cont) {
 	return apply1ary("cdr", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)
@@ -109,20 +109,20 @@ static LilyObjectPtr lilyCdr(LilyObjectPtr vs,
 		}, vs);
 }
 
-static LilyObjectPtr lilyQuote(LilyObjectPtr es,
-			       LilyObjectPtr _ctx,
-			       LilyObjectPtr _cont) {
+static LilyObjectPtr lilyQuote(LilyListPtr* es,
+			       LilyListPtr* _ctx,
+			       LilyListPtr* _cont) {
 	return apply1ary("quote", [](LilyObjectPtr e) {
 			DEBUGWARN("quote: " << show(e));
 			return e;
 		}, es);
 }
 
-static LilyObjectPtr lilyLength(LilyObjectPtr arguments,
-				LilyObjectPtr _ctx,
-				LilyObjectPtr _cont) {
+static LilyObjectPtr lilyLength(LilyListPtr* arguments,
+				LilyListPtr* _ctx,
+				LilyListPtr* _cont) {
 	// arguments == ((12 13 14))
-	LET_AS(_arguments, LilyList, arguments);
+	LET_AS(_arguments, LilyList, *arguments);
 	if (is_LilyNull(&*(_arguments->rest()))) {
 		// we have just one argument, cool.
 		auto l= _arguments->first(); // (12 13 14) or "hello" or something
@@ -150,17 +150,57 @@ static LilyObjectPtr lilyLength(LilyObjectPtr arguments,
 		
 }
 
-static LilyObjectPtr lilyList(LilyObjectPtr arguments,
-			      LilyObjectPtr _ctx,
-			      LilyObjectPtr _cont) {
-	return arguments;
+static LilyObjectPtr lilyList(LilyListPtr* arguments,
+			      LilyListPtr* _ctx,
+			      LilyListPtr* _cont) {
+	return *arguments;
 }
 
-static LilyObjectPtr lilyReverse(LilyObjectPtr arguments,
-				 LilyObjectPtr _ctx,
-				 LilyObjectPtr _cont) {
-	LET_AS(_arguments, LilyList, arguments);
-	return reverse(_arguments->first()); // XX better arg count checking
+static LilyObjectPtr lilyReverse(LilyListPtr* arguments,
+				 LilyListPtr* _ctx,
+				 LilyListPtr* _cont) {
+	return apply1ary("reverse", [](LilyObjectPtr v) {
+			return reverse(v);
+		}, arguments);
+}
+
+
+static LilyObjectPtr lilyDefine(LilyListPtr* es,
+				LilyListPtr* ctx,
+				LilyListPtr* cont) {
+	// LET_AS(es0, LilyPair, es);
+	// if (!es0)
+	// 	throw std::logic_error("define needs at least 1 argument");
+	// // match 1st argument
+	// auto var_or_pair= es0->car();
+	// LET_AS(var, LilySymbol, var_or_pair);
+	// if (var) {
+	// 	LET_AS(es1, LilyPair, es0->cdr());
+	// 	if (!es1)
+	// 		throw std::logic_error("define: if getting a symbol as 1st argument, need one more argument");
+	// 	ç
+		
+	// }
+	// LET_AS(bindform, LilyPair, var_or_pair);
+	// if (bindform) {
+	// 	LET_AS(var, LilySymbol, bindform->first());
+	// 	if (var) {
+	// 		throw std::logic_error("XX functions not yet implemented");
+	// 	} else {
+	// 		throw std::logic_error(STR("define: expecting symbol, got: "
+	// 					   << show(bindform->first())));
+	// 	}
+	// }
+
+	// throw std::logic_error("define needs a symbol as the first argument");
+	// const LilyObjectPtr& _es1= es0->cdr();
+	// LET_AS(es1, LilyPair, _es1);
+	// if (es1) {
+	// 	const LilyObjectPtr& 
+	// } else {
+	// 	// set variable to void (or remove it altogether?)
+	// 	XXX
+	// }
 }
 
 
@@ -179,6 +219,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PAIR(SYMBOL("list"), NATIVE_PROCEDURE(lilyList, "list")),
 		PAIR(SYMBOL("length"), NATIVE_PROCEDURE(lilyLength, "length")),
 		PAIR(SYMBOL("reverse"), NATIVE_PROCEDURE(lilyReverse, "reverse")),
+		PAIR(SYMBOL("define"), NATIVE_EVALUATOR(lilyDefine, "define")),
 		);
 	return env;
 }

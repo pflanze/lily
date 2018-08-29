@@ -30,10 +30,12 @@ enum class LilyEvalOpcode : char {
 
 class LilyObject;
 class LilyList;
+class LilyContinuationFrame;
 // class LilySymbol;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
+typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
 // typedef std::shared_ptr<LilyList> LilySymbolPtr;
 
 
@@ -222,18 +224,24 @@ public:
 };
 
 
+
+// LilyNative_t is also used for syntax, hence args could be values or
+// expressions
+typedef std::function<LilyObjectPtr(LilyListPtr* args,  // XX const LilyListPtr&? Say const about the pointer target, really, well, both. Refcounting ?
+				    LilyListPtr* ctx,
+				    LilyListPtr* cont)> LilyNative_t;
+
+
 // Currently using callable for both pre-application and application
 // phases; not sure this can remain that way in the future.
 class LilyCallable : public LilyObject {
 public:
-	virtual LilyObjectPtr call(LilyListPtr args,
-				   LilyListPtr ctx,
-				   LilyListPtr cont) = 0;
+	//XXQ do I have to use () syntax for making it clear it's a
+	//method or would something using LilyNative_t work?
+	virtual LilyObjectPtr call(LilyListPtr* args,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont) = 0;
 };
-
-typedef std::function<LilyObjectPtr(LilyObjectPtr,
-				    LilyObjectPtr,
-				    LilyObjectPtr)> LilyNative_t;
 
 struct LilyNativeProcedure : public LilyCallable {
 public:
@@ -244,9 +252,9 @@ public:
 	}
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr args,
-				   LilyListPtr ctx,
-				   LilyListPtr cont);
+	virtual LilyObjectPtr call(LilyListPtr* args,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont);
 	LilyNative_t _proc;
 	const char* _name;
 };
@@ -258,9 +266,9 @@ class LilyMacroexpander : public LilyCallable {
 public:
 	// needs to be virtual since calling guest language function
 	// based variant will be different, correct?
-	virtual LilyObjectPtr call(LilyListPtr expressions,
-				   LilyListPtr ctx,
-				   LilyListPtr cont) = 0;
+	virtual LilyObjectPtr call(LilyListPtr* expressions,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont) = 0;
 };
 
 
@@ -277,9 +285,9 @@ public:
 	}
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr expressions,
-				   LilyListPtr ctx,
-				   LilyListPtr cont);
+	virtual LilyObjectPtr call(LilyListPtr* expressions,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont);
 	LilyNative_t _expander;
 	const char* _name;
 };
@@ -292,21 +300,19 @@ public:
 // requires context(s?), too. Ah but then would want to give macros
 // access to the same, too.
 
-typedef std::function<LilyObjectPtr(LilyObjectPtr, LilyListPtr, LilyListPtr)> LilyEval_t;
-
 struct LilyNativeEvaluator : public LilyCallable {
 public:
-	LilyNativeEvaluator(LilyEval_t eval,
-		      const char* name)
+	LilyNativeEvaluator(LilyNative_t eval,
+			    const char* name)
 		: _eval(eval), _name(name) {
 		evalId= LilyEvalOpcode::NativeEvaluator;
 	}
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
-	virtual LilyObjectPtr call(LilyListPtr args,
-				   LilyListPtr ctx,
-				   LilyListPtr cont);
-	LilyEval_t _eval;
+	virtual LilyObjectPtr call(LilyListPtr* args,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont);
+	LilyNative_t _eval;
 	const char* _name;
 };
 
@@ -378,7 +384,7 @@ LilyListPtr reverse(LilyObjectPtr l);
 LilyObjectPtr
 apply1ary(const char* procname,
 	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
-	  LilyObjectPtr vs);
+	  LilyListPtr* vs);
 
 // casting that also unwraps it from the shared_ptr; NOTE: returns
 // NULL if invalid
