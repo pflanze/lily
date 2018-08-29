@@ -327,6 +327,13 @@ public:
 		)
 		: _maybeHead(maybeHead), _rvalues(rvalues), _expressions(expressions) {
 		assert(rvalues);
+		// WARN("expressions="<<expressions); this is sick:
+		// showing 0, assert fails, in upper frame gdb reports
+		// as zero, but in this frame gdb insists that it
+		// isn't. In both "p expressions ? true : false"
+		// (true) as well as "p &*expressions" ((LilyList *)
+		// 0x7fffffffd960). Assert works as designed but gdb
+		// doesn't agree.
 		assert(expressions);
 		evalId= LilyEvalOpcode::InvalidIsFrame;
 	}
