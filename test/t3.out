@@ -46,6 +46,7 @@ ERR: car needs 1 argument
 ERR: car needs 1 argument
 Int64: 6
 ERR: cdr needs 1 argument
+Pair: (10 11 12 ())
 ---- arithmetic ----
 ERR: not a function: -10
 Int64: -10
@@ -61,7 +62,6 @@ Double: 3.33333333333333
 Int64: 3
 ERR: not a double: 10
 Double: 3.33333333333333
-Pair: (10 11 12 ())
 ---- invalid ----
 ERR: empty call
 ERR: improper list: 20

@@ -103,6 +103,7 @@ int main () {
 	e("(car)");
 	e("(cdr (cons 3 6))");
 	e("(cdr)");
+	e("(cons 10 (list 11 12 '()))"); // (10 11 12 ())
 
 	note("arithmetic");
 	e("(-10)"); // err
@@ -119,7 +120,6 @@ int main () {
 	e("(integer./ 10 3)"); // 3
 	e("(double./ 10 3)"); // error
 	e("(double./ 10. 3.)"); // 3.3333
-	e("(cons 10 (list 11 12 '()))"); // (10 11 12 ())
 
 	note("invalid");
 	e("()"); // empty call
