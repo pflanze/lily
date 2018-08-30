@@ -22,6 +22,7 @@
 #define FALSE LilyBoolean::False()
 #define VOID LilyVoid::singleton()
 #define INT(a) LILY_NEW(LilyInt64(a))
+#define FRACTIONAL(n,d) LILY_NEW(LilyFractional64(n,d))
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LilySymbol::intern(a)

@@ -7,6 +7,7 @@
 #include <ostream>
 #include <functional>
 #include <assert.h>
+
 #include "lilyUtil.hpp"
 #include "parse.hpp"
 #include "symboltable.hpp"
@@ -20,6 +21,7 @@ enum class LilyEvalOpcode : char {
 	String,
 	Symbol,
 	Int64,
+	Fractional64,
 	Double,
 	NativeProcedure,
 	NativeMacroexpander,
@@ -201,10 +203,22 @@ public:
 
 class LilyNumber : public LilyObject {
 public:
-	// virtual ~LilyNumber();
+	virtual LilyNumberPtr multiply(LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr divideBy(LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr add(LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr subtract(LilyNumberPtr& b)=0;
+	virtual double asDouble()=0;
 };
 
-class LilyInt64 : public LilyNumber {
+class LilyExact : public LilyNumber {
+public:
+};
+
+class LilyInexact : public LilyNumber {
+public:
+};
+
+class LilyInt64 : public LilyExact {
 public:
 	LilyInt64(int64_t v) : value(v) {
 		evalId= LilyEvalOpcode::Int64;
@@ -212,10 +226,33 @@ public:
 	int64_t value;
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
+	virtual double asDouble();
+	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
+	virtual LilyNumberPtr add(LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
 	virtual ~LilyInt64();
 };
 
-class LilyDouble : public LilyNumber {
+class LilyFractional64 : public LilyExact {
+public:
+	LilyFractional64 (int64_t numerator, int64_t denonimator)
+		: _numerator(numerator), _denonimator(denonimator) {
+		evalId= LilyEvalOpcode::Fractional64;
+	}
+	int64_t _numerator;
+	int64_t _denonimator;
+	virtual void onelinePrint(std::ostream& out);
+	virtual const char* typeName();
+	virtual double asDouble();
+	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
+	virtual LilyNumberPtr add(LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
+	virtual ~LilyDouble();
+};
+
+class LilyDouble : public LilyInexact {
 public:
 	LilyDouble (double x) : value(x) {
 		evalId= LilyEvalOpcode::Double;
@@ -223,8 +260,30 @@ public:
 	double value;
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
+	virtual double asDouble();
+	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
+	virtual LilyNumberPtr add(LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
 	virtual ~LilyDouble();
 };
+
+int64_t lily_gcd(int64_t a, int64_t b);
+//XXX  
+
+// Number operations via static dispatch; normally use the virtual
+// methods instead (which are using these)
+static inline LilyNumberPtr multiply(LilyDouble* a, LilyDouble* b) {
+	return DOUBLE(a->value * b->value);
+}
+// don't need all the combinations: only inexact*inexact and then the
+// combinations of the exact variants; complex numbers pending.
+static inline LilyNumberPtr multiply(LilyInt64* a, LilyFractional64* b) {
+	return lilyGcd();
+}
+static inline LilyNumberPtr multiply(LilyFractional64* a, LilyInt64* b) {
+	return multiply(b,a);
+}
 
 
 

@@ -172,6 +172,11 @@ LilyInt64::onelinePrint(std::ostream& out) {
 }
 
 void
+LilyFractional64::onelinePrint(std::ostream& out) {
+	out << _numerator << "/" << _denonimator;
+}
+
+void
 LilyDouble::onelinePrint(std::ostream& out) {
 	out << value;
 }
@@ -241,12 +246,44 @@ const char* LilyBoolean::typeName() {return "Boolean";}
 const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyInt64::typeName() {return "Int64";}
+const char* LilyFractional64::typeName() {return "Fractional64";}
 const char* LilyDouble::typeName() {return "Double";}
 const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
 const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 const char* LilyParseError::typeName() {return "ParseError";}
+
+
+
+// can't use gcd from <numeric> as it doesn't check for number overflow
+int64_t lily_gcd(int64_t a, int64_t b) {
+	
+}
+
+// XX test
+double LilyInt64::asDouble() {
+	return static_cast<double>(value);
+}
+double LilyFractional64::asDouble() {
+	return static_cast<double>(_numerator) / static_cast<double>(_numerator);
+}
+double LilyDouble::asDouble() {
+	return value;
+}
+
+LilyNumberPtr ::multiply(const LilyNumber* b) {
+	return ;
+}
+LilyNumberPtr ::divideBy(const LilyNumber* b) {
+	return ;
+}
+LilyNumberPtr ::add(const LilyNumber* b) {
+	return ;
+}
+LilyNumberPtr ::subtract(const LilyNumber* b) {
+	return ;
+}
 
 
 
