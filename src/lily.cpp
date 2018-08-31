@@ -330,13 +330,17 @@ double LilyDouble::asDouble() {
 }
 
 LilyNumberPtr LilyInt64::multiply(const LilyNumberPtr& b) {
-	LilyInt64* b0= dynamic_cast<LilyInt64*>(&*b);
+	auto* b0= dynamic_cast<LilyInt64*>(&*b);
 	if (b0) return Multiply(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Multiply(this, b1);
 	throw std::logic_error("unimplemented number operation");
 }
 LilyNumberPtr LilyInt64::divideBy(const LilyNumberPtr& b) {
+	auto* b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Divide(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Divide(this, b1);
 	throw std::logic_error("unimplemented number operation");
 }
 LilyNumberPtr LilyInt64::add(const LilyNumberPtr& b) {
@@ -494,6 +498,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		case LilyEvalOpcode::Boolean:
 		case LilyEvalOpcode::String:
 		case LilyEvalOpcode::Int64:
+		case LilyEvalOpcode::Fractional64:
 		case LilyEvalOpcode::Double:
 			acc= code;
 			break;

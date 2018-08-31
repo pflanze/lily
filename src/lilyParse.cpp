@@ -19,6 +19,7 @@ enum class ParseResultCode : char {
 	UnknownBangSpecial,
 	UnknownSpecial,
 	NotAnInteger,
+	NotANumber,
 	Int64Overflow,
 	NotASymbol,
 	InvalidDottedList,
@@ -38,6 +39,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::UnknownBangSpecial: return "UnknownBangSpecial";
 	case ParseResultCode::UnknownSpecial: return "UnknownSpecial";
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
+	case ParseResultCode::NotANumber: return "NotANumber";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
 	case ParseResultCode::NotASymbol: return "NotASymbol";
 	case ParseResultCode::InvalidDottedList: return "InvalidDottedList";
@@ -191,6 +193,7 @@ PR parseInteger(S s) {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
 	s=s.rest();
+	// XXX this way of overflow checking is not working for *10, right?
 	auto checkOverflow= [&]() {
 		if (isoverflow)
 			return;
@@ -230,8 +233,63 @@ PR parseInteger(S s) {
 
 PR parseNumber(S s) {
 	auto num= parseInteger(s);
-	if (num.success())
-		return num;
+	if (num.success()) {
+		DEBUGWARN("after int: "<< show(num.remainder().stringRemainder()));
+		if (num.remainder().isNull())
+			return num;
+		char c= num.remainder().first();
+		DEBUGWARN("     c="<<c);
+		switch (c) {
+		case '/': {
+			// 1/-3 should be parsed as a symbol, at least
+			// Gambit does that, hence we have to do this
+			// (stupid, XX: separate parsePositiveInteger
+			// parser)
+			auto s= num.remainder().rest();
+			if (s.isNull())
+				goto fail;
+			{
+				char c= s.first();
+				switch (c) {
+				case '+':
+				case '-':
+					goto fail;
+				}
+			}
+			{
+				auto num2= parseInteger(s);
+				if (num2.success()) {
+					// Oh, and we have to check again what
+					// follows it. Evil syntax? Tokenizer
+					// actually makes sense for *this*
+					// reason. Should have proper boundary
+					// detection functions to achieve the
+					// same (todo).
+					auto s= num2.remainder();
+					if ((! s.isNull()) && (s.first() == '/'))
+						return parseError(s, ParseResultCode::NotANumber);
+					LETU_AS(n, LilyNumber, num.value());
+					// todo location keeping
+					return PR(n->divideBy(std::dynamic_pointer_cast
+							      <LilyNumber>(num2.value())),
+						  num2.remainder());
+				} else {
+					// returning num would be wrong now
+					// that we know it would be valid as a
+					// fractional up to this point? I
+					// mean, we can and should fall back
+					// to parsing as a symbol now. Weird
+					// case?
+					return num2;
+				}
+			}
+			fail:
+			return parseError(s, ParseResultCode::NotANumber);
+		}
+		default:
+			return num;
+		}
+	}
 	// num= p.. XXX
 	//throw std::logic_error("unfinished");
 	return num;
@@ -334,7 +392,7 @@ PR lilyParse (S s) {
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
 	auto s1= s.rest();
-	const char* special_name;
+	const char* special_name; // XX special_symbol instead to save lookup
 	if (c=='(') {
 		return parseList(s1);
 	} else if (c=='#') {

@@ -340,6 +340,14 @@ static inline LilyNumberPtr Multiply(LilyInt64* a, LilyInt64* b) {
 }
 
 
+static inline LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
+	return std::shared_ptr<LilyNumber>(new LilyFractional64(a->value, b->value));
+}
+static inline LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b) {
+	XXX
+}
+
+
 
 // LilyNative_t is also used for syntax, hence args could be values or
 // expressions
