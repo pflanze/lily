@@ -11,6 +11,7 @@
 #include "lilyUtil.hpp"
 #include "parse.hpp"
 #include "symboltable.hpp"
+#include "xxx.hpp"
 
 
 enum class LilyEvalOpcode : char {
@@ -325,11 +326,11 @@ static inline LilyNumberPtr Multiply(LilyDouble* a, LilyDouble* b) {
 // combinations of the exact variants; complex numbers pending.
 static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b) {
 	// return lilyGcd();
-	throw std::logic_error("XXX unfinished");
+	XXX
 }
 static inline LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b) {
 	// return lilyGcd();
-	throw std::logic_error("XXX unfinished");
+	XXX
 }
 static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyInt64* b) {
 	return Multiply(b,a);
