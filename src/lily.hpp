@@ -32,13 +32,14 @@ enum class LilyEvalOpcode : char {
 
 class LilyObject;
 class LilyList;
+class LilyNumber;
 class LilyContinuationFrame;
 // class LilySymbol;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
 typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
-// typedef std::shared_ptr<LilyList> LilySymbolPtr;
+typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
@@ -203,10 +204,10 @@ public:
 
 class LilyNumber : public LilyObject {
 public:
-	virtual LilyNumberPtr multiply(LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr divideBy(LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr add(LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr subtract(LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr multiply(const LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr add(const LilyNumberPtr& b)=0;
+	virtual LilyNumberPtr subtract(const LilyNumberPtr& b)=0;
 	virtual double asDouble()=0;
 };
 
@@ -227,10 +228,10 @@ public:
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
-	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
-	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
-	virtual LilyNumberPtr add(LilyNumberPtr& b);
-	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
+	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
+	virtual LilyNumberPtr add(const LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
 	virtual ~LilyInt64();
 };
 
@@ -245,11 +246,11 @@ public:
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
-	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
-	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
-	virtual LilyNumberPtr add(LilyNumberPtr& b);
-	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
-	virtual ~LilyDouble();
+	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
+	virtual LilyNumberPtr add(const LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
+	virtual ~LilyFractional64();
 };
 
 class LilyDouble : public LilyInexact {
@@ -261,10 +262,10 @@ public:
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
-	virtual LilyNumberPtr multiply(LilyNumberPtr& b);
-	virtual LilyNumberPtr divideBy(LilyNumberPtr& b);
-	virtual LilyNumberPtr add(LilyNumberPtr& b);
-	virtual LilyNumberPtr subtract(LilyNumberPtr& b);
+	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
+	virtual LilyNumberPtr add(const LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
 	virtual ~LilyDouble();
 };
 
@@ -291,7 +292,7 @@ inline int64_t lily_mul(int64_t a, int64_t b) {
 		throwOverflow(a, "*", b);
 	return res;
 }
-inline int64_t lily_div(int64_t a, int64_t b) {
+inline int64_t lily_quotient(int64_t a, int64_t b) {
 	if (b==0)
 		throwDivByZero(a, "/");
 	return a/b;
@@ -314,20 +315,27 @@ inline int64_t lily_abs(int64_t a) {
 
 
 int64_t lily_gcd(int64_t a, int64_t b);
-//XXX  
 
 // Number operations via static dispatch; normally use the virtual
 // methods instead (which are using these)
-static inline LilyNumberPtr multiply(LilyDouble* a, LilyDouble* b) {
-	return DOUBLE(a->value * b->value);
+static inline LilyNumberPtr Multiply(LilyDouble* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->value));
 }
 // don't need all the combinations: only inexact*inexact and then the
 // combinations of the exact variants; complex numbers pending.
-static inline LilyNumberPtr multiply(LilyInt64* a, LilyFractional64* b) {
-	return lilyGcd();
+static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b) {
+	// return lilyGcd();
+	throw std::logic_error("XXX unfinished");
 }
-static inline LilyNumberPtr multiply(LilyFractional64* a, LilyInt64* b) {
-	return multiply(b,a);
+static inline LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b) {
+	// return lilyGcd();
+	throw std::logic_error("XXX unfinished");
+}
+static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyInt64* b) {
+	return Multiply(b,a);
+}
+static inline LilyNumberPtr Multiply(LilyInt64* a, LilyInt64* b) {
+	return std::shared_ptr<LilyNumber>(new LilyInt64(lily_mul(a->value, b->value)));
 }
 
 

@@ -59,6 +59,7 @@ LilyPair::~LilyPair() {};
 LilyString::~LilyString() {};
 LilySymbol::~LilySymbol() {};
 LilyInt64::~LilyInt64() {};
+LilyFractional64::~LilyFractional64() {};
 LilyDouble::~LilyDouble() {};
 
 
@@ -269,9 +270,53 @@ void throwDivByZero(int64_t a, const char*op) {
 
 
 // can't use gcd from <numeric> as it doesn't check for number overflow
-int64_t lily_gcd(int64_t a, int64_t b) {
-	
+
+// Scheme code from scheme 48
+// (define (gcd . integers)
+//   (reduce (lambda (x y)
+//             (cond ((< x 0) (gcd (- 0 x) y))
+//                   ((< y 0) (gcd x (- 0 y)))
+//                   ((< x y) (euclid y x))
+//                   (else (euclid x y))))
+//           0
+//           integers))
+int64_t lily_euclid(int64_t x, int64_t y);
+int64_t lily_gcd(int64_t x, int64_t y) {
+	if (x < 0)
+		return lily_gcd(lily_negate(x), y);
+	else if (y < 0)
+		return lily_gcd(x, lily_negate(y));
+	else if (x < y)
+		return lily_euclid(x, y);
 }
+// (define (euclid x y)
+//   (if (= y 0)
+//       (if (and (inexact? y)
+//                (exact? x))
+//           (exact->inexact x)
+//           x)
+//       (euclid y (remainder x y))))
+int64_t lily_euclid(int64_t x, int64_t y) {
+	if (y == 0)
+		return x;
+	else
+		return lily_euclid(y, lily_remainder(x, y));
+}
+// (define (lcm . integers)
+//   (reduce (lambda (x y)
+//             (let ((g (gcd x y)))
+//               (cond ((= g 0) g)
+//                     (else (* (quotient (abs x) g) (abs y))))))
+//           1
+//           integers))
+int64_t lily_lcm(int64_t x, int64_t y) {
+	int64_t g= lily_gcd(x, y);
+	if (g == 0)
+		return g;
+	else
+		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
+}
+
 
 // XX test
 double LilyInt64::asDouble() {
@@ -284,17 +329,55 @@ double LilyDouble::asDouble() {
 	return value;
 }
 
-LilyNumberPtr ::multiply(const LilyNumber* b) {
-	return ;
+LilyNumberPtr LilyInt64::multiply(const LilyNumberPtr& b) {
+	LilyInt64* b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Multiply(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Multiply(this, b1);
+	throw std::logic_error("unimplemented number operation");
 }
-LilyNumberPtr ::divideBy(const LilyNumber* b) {
-	return ;
+LilyNumberPtr LilyInt64::divideBy(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
 }
-LilyNumberPtr ::add(const LilyNumber* b) {
-	return ;
+LilyNumberPtr LilyInt64::add(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
 }
-LilyNumberPtr ::subtract(const LilyNumber* b) {
-	return ;
+LilyNumberPtr LilyInt64::subtract(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+
+// really copy-paste; XX templates possible?
+LilyNumberPtr LilyFractional64::multiply(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Multiply(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Multiply(this, b1);
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyFractional64::divideBy(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyFractional64::add(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyFractional64::subtract(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+
+
+LilyNumberPtr LilyDouble::multiply(const LilyNumberPtr& b) {
+	auto f= dynamic_cast<LilyDouble*>(&*b);
+	if (f) return Multiply(this, f);
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyDouble::divideBy(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyDouble::add(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
+}
+LilyNumberPtr LilyDouble::subtract(const LilyNumberPtr& b) {
+	throw std::logic_error("unimplemented number operation");
 }
 
 
