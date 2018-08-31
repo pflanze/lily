@@ -302,7 +302,8 @@ inline int64_t lily_remainder(int64_t a, int64_t b) {
 	return a/b;
 }
 inline int64_t lily_negate(int64_t a) {
-	if (a == -9223372036854775808) // (- (expt 2 63))
+	// wow (= (- (arithmetic-shift 1 63)) (arithmetic-shift -1 63)) holds true
+	if (a == (-1ll << 63ll))
 		throwOverflow("-", a);
 	return -a;
 }
