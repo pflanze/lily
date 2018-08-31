@@ -145,16 +145,17 @@ LilyString::onelinePrint(std::ostream& out) {
 
 void
 LilySymbol::onelinePrint(std::ostream& out) {
-	bool needsQuoting=0;
+	bool needsQuoting= false;
+	bool containsNonDigit= false;
 	for(char c : string) {
 		if (needsSymbolQuoting(c)) {
-			needsQuoting=1;
+			needsQuoting= true;
 			break;
 		}
+		if (!isDigit(c))
+			containsNonDigit= true;
 	}
-	if (needsQuoting
-	    || string.length()==0
-	    || isDigit(string[0])) {
+	if (needsQuoting || (!containsNonDigit) || string.length()==0) {
 		out << '|';
 		string_onelinePrint(string, out, '|');
 		out << '|';
