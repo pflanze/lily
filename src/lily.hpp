@@ -268,6 +268,50 @@ public:
 	virtual ~LilyDouble();
 };
 
+
+void throwOverflow(int64_t a, const char*op, int64_t b);
+void throwOverflow(const char*op, int64_t a);
+void throwDivByZero(int64_t a, const char*op);
+
+inline int64_t lily_add(int64_t a, int64_t b) {
+	int64_t res;
+	if (__builtin_saddl_overflow(a, b, &res))
+		throwOverflow(a, "+", b);
+	return res;
+}
+inline int64_t lily_sub(int64_t a, int64_t b) {
+	int64_t res;
+	if (__builtin_ssubl_overflow(a, b, &res))
+		throwOverflow(a, "-", b);
+	return res;
+}
+inline int64_t lily_mul(int64_t a, int64_t b) {
+	int64_t res;
+	if (__builtin_smull_overflow(a, b, &res))
+		throwOverflow(a, "*", b);
+	return res;
+}
+inline int64_t lily_div(int64_t a, int64_t b) {
+	if (b==0)
+		throwDivByZero(a, "/");
+	return a/b;
+}
+inline int64_t lily_remainder(int64_t a, int64_t b) {
+	if (b==0)
+		throwDivByZero(a, "%");
+	return a/b;
+}
+inline int64_t lily_negate(int64_t a) {
+	if (a == -9223372036854775808) // (- (expt 2 63))
+		throwOverflow("-", a);
+	return -a;
+}
+inline int64_t lily_abs(int64_t a) {
+	return (a < 0) ? lily_negate(a) : a;
+}
+
+
+
 int64_t lily_gcd(int64_t a, int64_t b);
 //XXX  
 

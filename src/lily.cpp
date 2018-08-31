@@ -255,6 +255,18 @@ const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 const char* LilyParseError::typeName() {return "ParseError";}
 
 
+void throwOverflow(int64_t a, const char*op, int64_t b) {
+	throw std::overflow_error(STR("int64 overflow: " << a << " " << op << " " << b));
+}
+void throwOverflow(const char*op, int64_t a) {
+	throw std::overflow_error(STR("int64 overflow: " << op << " " << a));
+}
+void throwDivByZero(int64_t a, const char*op) {
+	// no div by zero exception, huh? XX?
+	throw std::runtime_error(STR("int64 division by zero: " << a << " " << op << " " << 0));
+}
+
+
 
 // can't use gcd from <numeric> as it doesn't check for number overflow
 int64_t lily_gcd(int64_t a, int64_t b) {
