@@ -325,6 +325,33 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 }
 
 
+LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
+	int64_t bv= b->value;
+	if (bv == 0)
+		throw std::runtime_error("division by zero");
+	if (bv == 1)
+		// stupid since might just refcnt++ a, but then the API wouldn't work.
+		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));
+	int64_t av= a->value;
+	int64_t d= lily_gcd(av, bv);
+	WARN("Divide("<<show(a)<<", "<<show(b)<<"): gcd = "<< d);
+	int64_t a1;
+	int64_t b1;
+	if (d > 1) {
+		a1= av / d;
+		b1= bv / d;
+		if (b1 == 1)
+			return std::shared_ptr<LilyNumber>
+				(new LilyInt64(a1));
+	} else {
+		a1= av;
+		b1= bv;
+	}
+	return std::shared_ptr<LilyNumber>(new LilyFractional64(a1, b1));
+}
+
+
+
 // XX test
 double LilyInt64::asDouble() {
 	return static_cast<double>(value);
