@@ -224,6 +224,14 @@ LilyContinuationFrame::onelinePrint(std::ostream& out) {
 }
 
 void
+LilyDivisionByZeroError::onelinePrint(std::ostream& out) {
+	(out
+	 << "#<division-by-zero-error "
+	 << show(STRING(_msg))
+	 << ">");
+}
+
+void
 LilyParseError::onelinePrint(std::ostream& out) {
 	(out
 	 << "#<parse-error "
@@ -234,9 +242,14 @@ LilyParseError::onelinePrint(std::ostream& out) {
 }
 
 
+// XX include the exception type or not?
+
+std::string LilyDivisionByZeroError::what() {
+	return STR("division by zero: " << _msg );
+}
 
 std::string LilyParseError::what() {
-	return STR(_msg << " (position " << _pos << ")");
+	return STR("parse error: " <<_msg << " (position " << _pos << ")");
 }
 
 
@@ -254,6 +267,7 @@ const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
 const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
+const char* LilyDivisionByZeroError::typeName() {return "DivisionByZeroError";}
 const char* LilyParseError::typeName() {return "ParseError";}
 
 
@@ -264,8 +278,7 @@ void throwOverflow(const char*op, int64_t a) {
 	throw std::overflow_error(STR("int64 overflow: " << op << " " << a));
 }
 void throwDivByZero(int64_t a, const char*op) {
-	// no div by zero exception, huh? XX?
-	throw std::runtime_error(STR("int64 division by zero: " << a << " " << op << " " << 0));
+	throw LilyDivisionByZeroError(STR("int64 division by zero: " << a << " " << op << " " << 0));
 }
 
 
@@ -328,7 +341,9 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
 	int64_t bv= b->value;
 	if (bv == 0)
-		throw std::runtime_error("division by zero");
+		// even though the message is not actually going to be
+		// used in the case of the parser
+		throw LilyDivisionByZeroError(STR("Divide(" << a << ", " << b << ")"));
 	if (bv == 1)
 		// stupid since might just refcnt++ a, but then the API wouldn't work.
 		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));

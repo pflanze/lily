@@ -21,6 +21,7 @@ enum class ParseResultCode : char {
 	NotAnInteger,
 	NotANumber,
 	Int64Overflow,
+	DivisionByZero,
 	NotASymbol,
 	InvalidDottedList,
 };
@@ -41,6 +42,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
 	case ParseResultCode::NotANumber: return "NotANumber";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
+	case ParseResultCode::DivisionByZero: return "DivisionByZero";
 	case ParseResultCode::NotASymbol: return "NotASymbol";
 	case ParseResultCode::InvalidDottedList: return "InvalidDottedList";
 	}
@@ -270,9 +272,13 @@ PR parseNumber(S s) {
 						return parseError(s, ParseResultCode::NotANumber);
 					XLETU_AS(n, LilyInt64, num.value());
 					XLETU_AS(d, LilyInt64, num2.value());
-					// todo location keeping
-					return PR(Divide(n, d),
-						  num2.remainder());
+					try {
+						// todo location keeping
+						return PR(Divide(n, d), s);
+					} catch (LilyDivisionByZeroError) {
+						// XX report start, not end?
+						return parseError(s, ParseResultCode::DivisionByZero);
+					}
 				} else {
 					// returning num would be wrong now
 					// that we know it would be valid as a

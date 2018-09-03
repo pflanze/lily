@@ -482,9 +482,20 @@ struct LilyErrorWithWhat : public LilyObject {
 };
 
 
+struct LilyDivisionByZeroError : public LilyErrorWithWhat {
+public:
+	LilyDivisionByZeroError(const std::string msg)
+		: _msg(msg) {}
+	virtual std::string what();
+	virtual const char* typeName();
+	virtual void onelinePrint(std::ostream& out);
+	std::string _msg;
+};
+
+
 struct LilyParseError : public LilyErrorWithWhat {
 public:
-	LilyParseError(std::string msg, parse_position_t pos)
+	LilyParseError(const std::string msg, parse_position_t pos)
 		: _msg(msg), _pos(pos) {
 		evalId= LilyEvalOpcode::ParseError;
 	}
@@ -496,6 +507,7 @@ public:
 	std::string _msg;
 	parse_position_t _pos;
 };
+
 
 
 // direct s-expr evaluator; ctx is the lexical context, cont the
