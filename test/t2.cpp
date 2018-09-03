@@ -22,7 +22,7 @@ int main () {
 	pr("-1");
 	pr(" 12 ");
 	pr(" 12 3", false);
-	pr(" 12A 3", false); // XX Gambit's printer is smart enough to omit the | | here
+	pr(" 12A 3", false);
 	pr(" + 3", false);
 	pr(" +3");
 	pr(" -3");
