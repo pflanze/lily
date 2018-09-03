@@ -288,6 +288,8 @@ int64_t lily_gcd(int64_t x, int64_t y) {
 	else if (y < 0)
 		return lily_gcd(x, lily_negate(y));
 	else if (x < y)
+		return lily_euclid(y, x);
+	else
 		return lily_euclid(x, y);
 }
 // (define (euclid x y)

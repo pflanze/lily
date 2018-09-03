@@ -301,7 +301,7 @@ inline int64_t lily_quotient(int64_t a, int64_t b) {
 inline int64_t lily_remainder(int64_t a, int64_t b) {
 	if (b==0)
 		throwDivByZero(a, "%");
-	return a/b;
+	return a % b;
 }
 inline int64_t lily_negate(int64_t a) {
 	// wow (= (- (arithmetic-shift 1 63)) (arithmetic-shift -1 63)) holds true
