@@ -271,7 +271,7 @@ PR parseNumber(S s) {
 					XLETU_AS(n, LilyInt64, num.value());
 					XLETU_AS(d, LilyInt64, num2.value());
 					// todo location keeping
-					return PR(FRACTIONAL(n->value, d->value),
+					return PR(Divide(n, d),
 						  num2.remainder());
 				} else {
 					// returning num would be wrong now
