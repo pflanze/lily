@@ -8,6 +8,7 @@ auto environment= lilyDefaultEnvironment();
 int main (int argc, const char** argv) {
 	std::string line;
 	while (true) {
+		std::cout << "> " << std::flush;
 		std::getline(std::cin, line);
 		if (std::cin.eof())
 			break;
