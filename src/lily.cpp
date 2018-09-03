@@ -281,17 +281,7 @@ void throwDivByZero(int64_t a, const char*op) {
 //                   (else (euclid x y))))
 //           0
 //           integers))
-int64_t lily_euclid(int64_t x, int64_t y);
-int64_t lily_gcd(int64_t x, int64_t y) {
-	if (x < 0)
-		return lily_gcd(lily_negate(x), y);
-	else if (y < 0)
-		return lily_gcd(x, lily_negate(y));
-	else if (x < y)
-		return lily_euclid(y, x);
-	else
-		return lily_euclid(x, y);
-}
+
 // (define (euclid x y)
 //   (if (= y 0)
 //       (if (and (inexact? y)
@@ -299,12 +289,7 @@ int64_t lily_gcd(int64_t x, int64_t y) {
 //           (exact->inexact x)
 //           x)
 //       (euclid y (remainder x y))))
-int64_t lily_euclid(int64_t x, int64_t y) {
-	if (y == 0)
-		return x;
-	else
-		return lily_euclid(y, lily_remainder(x, y));
-}
+
 // (define (lcm . integers)
 //   (reduce (lambda (x y)
 //             (let ((g (gcd x y)))
@@ -312,6 +297,27 @@ int64_t lily_euclid(int64_t x, int64_t y) {
 //                     (else (* (quotient (abs x) g) (abs y))))))
 //           1
 //           integers))
+
+int64_t lily_euclid(int64_t x, int64_t y);
+
+int64_t _lily_gcd_positive(int64_t x, int64_t y) {
+	if (x < y)
+		return lily_euclid(y, x);
+	else
+		return lily_euclid(x, y);
+}
+
+int64_t lily_gcd(int64_t x, int64_t y) {
+	return _lily_gcd_positive(lily_abs(x), lily_abs(y));
+}
+
+int64_t lily_euclid(int64_t x, int64_t y) {
+	if (y == 0)
+		return x;
+	else
+		return lily_euclid(y, lily_remainder(x, y));
+}
+
 int64_t lily_lcm(int64_t x, int64_t y) {
 	int64_t g= lily_gcd(x, y);
 	if (g == 0)
