@@ -34,6 +34,25 @@ int main () {
 	pr(" 1/2/3"); // symbol
 	pr(" 1/2/3 "); // symbol
 	pr("1/-3"); // symbol?
+	pr("1/0"); // symbol? Gambit and Guile yes, Racket no.
+	pr("32/00");
+	pr("1/2."); // symbol
+	pr("1/2X"); // symbol
+	pr("1/2e"); // symbol
+	pr("1/2e3"); // symbol
+	pr("1/2:"); // keyword
+
+	note("symbol and keyword quoting");
+	pr("|12|");
+	pr("|1x|");
+	pr("|x1|");
+	pr("|1/2|");
+	pr("|1e2|");
+	pr("|1.|");
+	pr("|.1|");
+	pr("|1|:");
+	pr("1:");
+	// todo: generative tests
 
 	note("overflow");
 	pr("9223372036854775808"); // 2^63
