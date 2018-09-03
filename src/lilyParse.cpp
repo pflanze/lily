@@ -361,6 +361,7 @@ ParseResult parseList(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c=s.first();
+	WARN("parseList: c="<<c);
 	if (c==')')
 		return ParseResult(NIL, s);
 	if (c=='.') {
@@ -400,6 +401,7 @@ ParseResult parseList(S s) {
 		//XX from here copy-paste from above!
 		if (!res.success())
 			return res;
+		WARN("remainder is: "<< res.remainder().show());
 		auto tail= parseList(res.remainder());
 		if (!tail.success())
 			return tail;
@@ -425,6 +427,7 @@ ParseResult lilyParse (S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
+	WARN("c="<<c);
 	auto r= s.rest();
 	if (c=='(') {
 		return parseList(r);
