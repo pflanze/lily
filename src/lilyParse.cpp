@@ -268,10 +268,10 @@ PR parseNumber(S s) {
 					auto s= num2.remainder();
 					if ((! s.isNull()) && (s.first() == '/'))
 						return parseError(s, ParseResultCode::NotANumber);
-					LETU_AS(n, LilyNumber, num.value());
+					XLETU_AS(n, LilyInt64, num.value());
+					XLETU_AS(d, LilyInt64, num2.value());
 					// todo location keeping
-					return PR(n->divideBy(std::dynamic_pointer_cast
-							      <LilyNumber>(num2.value())),
+					return PR(FRACTIONAL(n->value, d->value),
 						  num2.remainder());
 				} else {
 					// returning num would be wrong now
