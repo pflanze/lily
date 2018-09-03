@@ -487,11 +487,8 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		}
 		case LilyEvalOpcode::Symbol:
 			acc= alistMaybeGet(ctx, code);
-			if (!acc) {
-				std::ostringstream msg;
-				msg << "variable not bound: " << show(code);
-				throw std::logic_error(msg.str());
-			}
+			if (!acc)
+				throw std::logic_error(STR("variable not bound: " << show(code)));
 			break;
 
 			// self-evaluating cases
