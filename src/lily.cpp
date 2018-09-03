@@ -315,7 +315,7 @@ int64_t lily_euclid(int64_t x, int64_t y) {
 	if (y == 0)
 		return x;
 	else
-		return lily_euclid(y, lily_remainder(x, y));
+		return lily_euclid(y, x % y);
 }
 
 int64_t lily_lcm(int64_t x, int64_t y) {
