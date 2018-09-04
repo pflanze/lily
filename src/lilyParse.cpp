@@ -73,6 +73,12 @@ bool needsSymbolQuoting (char c) {
 		);
 }
 
+// all the character that will introduce another token after a number,
+// or also symbol or keyword?
+bool isSeparation (char c) {
+	return isWhitespace(c)
+		|| needsSymbolQuoting(c);
+}
 
 static
 S skipWhitespaceAndComments (S s) {
@@ -235,71 +241,75 @@ PR parseInteger(S s) {
 }
 
 PR parseNumber(S s) {
-	auto num= parseInteger(s);
-	if (num.success()) {
-		DEBUGWARN("after int: "<< show(num.remainder().stringRemainder()));
-		if (num.remainder().isNull())
-			return num;
-		char c= num.remainder().first();
-		DEBUGWARN("     c="<<c);
-		switch (c) {
-		case '/': {
-			// 1/-3 should be parsed as a symbol, at least
-			// Gambit does that, hence we have to do this
-			// (stupid, XX: separate parsePositiveInteger
-			// parser)
-			auto s= num.remainder().rest();
-			if (s.isNull())
-				goto fail;
-			{
-				char c= s.first();
-				switch (c) {
-				case '+':
-				case '-':
-					goto fail;
-				}
+	auto result= parseInteger(s);
+	if (! result.success())
+		return result;
+
+	if (result.remainder().isNull())
+		return result;
+	char c= result.remainder().first();
+	DEBUGWARN("     c="<<c);
+	switch (c) {
+	case '/': {
+		// 1/-3 should be parsed as a symbol, at least
+		// Gambit does that, hence we have to do this
+		// (stupid, XX: separate parsePositiveInteger
+		// parser)
+		auto s= result.remainder().rest();
+		if (s.isNull())
+			goto notanumber;
+		{
+			char c= s.first();
+			switch (c) {
+			case '+':
+			case '-':
+				goto notanumber;
 			}
-			{
-				auto num2= parseInteger(s);
-				if (num2.success()) {
-					// Oh, and we have to check again what
-					// follows it. Evil syntax? Tokenizer
-					// actually makes sense for *this*
-					// reason. Should have proper boundary
-					// detection functions to achieve the
-					// same (todo).
-					auto s= num2.remainder();
-					if ((! s.isNull()) && (s.first() == '/'))
-						return parseError(s, ParseResultCode::NotANumber);
-					XLETU_AS(n, LilyInt64, num.value());
-					XLETU_AS(d, LilyInt64, num2.value());
-					try {
-						// todo location keeping
-						return PR(Divide(n, d), s);
-					} catch (LilyDivisionByZeroError) {
-						// XX report start, not end?
-						return parseError(s, ParseResultCode::DivisionByZero);
-					}
-				} else {
-					// returning num would be wrong now
-					// that we know it would be valid as a
-					// fractional up to this point? I
-					// mean, we can and should fall back
-					// to parsing as a symbol now. Weird
-					// case?
-					return num2;
-				}
-			}
-			fail:
-			return parseError(s, ParseResultCode::NotANumber);
 		}
-		default:
-			return num;
+		{
+			auto num2= parseInteger(s);
+			if (num2.success()) {
+				// Oh, and we have to check again what
+				// follows it. Evil syntax? Tokenizer
+				// actually makes sense for *this*
+				// reason. Should have proper boundary
+				// detection functions to achieve the
+				// same (todo).
+				s= num2.remainder();
+				if ((! s.isNull()) && (s.first() == '/'))
+					goto notanumber;
+				XLETU_AS(n, LilyInt64, result.value());
+				XLETU_AS(d, LilyInt64, num2.value());
+				try {
+					// todo location keeping
+					result= PR(Divide(n, d), s);
+					goto successsofar;
+				} catch (LilyDivisionByZeroError) {
+					// XX ever report start, not end?
+					goto notanumber;
+				}
+			} else {
+				// returning num would be wrong now
+				// that we know it would be valid as a
+				// fractional up to this point? I
+				// mean, we can and should fall back
+				// to parsing as a symbol now. Weird
+				// case?
+				return num2;
+			}
 		}
 	}
-	// num= p.. XXX
-	//throw std::logic_error("unfinished");
-	return num;
+	default:
+		goto successsofar;
+	}
+successsofar:
+	// now there must be a proper separation after
+	// the number, otherwise it's not one.
+	if ((result.remainder().isNull())
+	    || isSeparation(result.remainder().first()))
+		return result;
+notanumber:
+	return parseError(s, ParseResultCode::NotANumber);
 }
 
 // unquoted (no '|' around it) symbols
