@@ -103,6 +103,7 @@ public:
 		assert(result);
 	}
 	T value() {
+		assert(_remainder.success());
 		return _result;
 	}
 	ParseResultCode error () {
