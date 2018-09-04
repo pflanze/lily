@@ -27,9 +27,13 @@ int main () {
 	pr(" +3");
 	pr(" -3");
 	pr("-4 ");
+
+	note("fractional vs. symbol");
 	pr(" -4/3 ");
 	pr("2/4"); // 1/2
 	pr(" 7/13");
+	pr("3190/44");
+	pr("3190/3190");
 	pr(" 7/13e2"); // symbol
 	pr(" 1/2/3"); // symbol
 	pr(" 1/2/3 "); // symbol

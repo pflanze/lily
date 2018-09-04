@@ -12,9 +12,12 @@ Symbol: +
 Int64: 3
 Int64: -3
 Int64: -4
+---- fractional vs. symbol ----
 Fractional64: -4/3
 Fractional64: 1/2
 Fractional64: 7/13
+Fractional64: 145/2
+Int64: 1
 Symbol: 7/13e2
 Symbol: 1/2/3
 Symbol: 1/2/3
