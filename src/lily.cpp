@@ -577,6 +577,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// invalid to evaluate (arbitrary vs. above?)
 		case LilyEvalOpcode::NativeProcedure:
 		case LilyEvalOpcode::ParseError:
+		case LilyEvalOpcode::DivisionByZeroError:
 			throw std::logic_error(STR("ill-formed expression: "
 						   << show(code)));
 		default:

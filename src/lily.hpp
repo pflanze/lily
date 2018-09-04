@@ -30,6 +30,7 @@ enum class LilyEvalOpcode : char {
 	NativeEvaluator,
 	InvalidIsFrame,
 	ParseError,
+	DivisionByZeroError,
 };
 
 class LilyObject;
@@ -504,7 +505,9 @@ struct LilyErrorWithWhat : public LilyObject {
 struct LilyDivisionByZeroError : public LilyErrorWithWhat {
 public:
 	LilyDivisionByZeroError(const std::string msg)
-		: _msg(msg) {}
+		: _msg(msg) {
+		evalId= LilyEvalOpcode::DivisionByZeroError;
+	}
 	virtual std::string what();
 	virtual const char* typeName();
 	virtual void onelinePrint(std::ostream& out);
