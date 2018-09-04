@@ -182,26 +182,13 @@ PR parseStringLike(S s,
 }
 
 
-PR parseInteger(S s) {
-	int64_t res=0;
+
+PR parsePositiveInteger(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
-	char c0= s.first();
-	bool isneg= false;
+	int64_t res=0;
 	bool isnumber= false;
 	bool isoverflow= false;
-	if (c0=='-') {
-		isneg= true;
-	} else if (c0=='+') {
-		isneg= false;
-	} else if (isDigit(c0)) {
-		auto d = c0 - '0';
-		res= isneg ? -d : d;
-		isnumber=true;
-	} else {
-		return parseError(s, ParseResultCode::NotAnInteger);
-	}
-	s=s.rest();
 	while (true) {
 		if (s.isNull())
 			break;
@@ -210,8 +197,7 @@ PR parseInteger(S s) {
 			s=s.rest();
 			auto d = c - '0';
 			try {
-				res= lily_mul(res, 10);
-				res= isneg ? lily_sub(res, d) : lily_add(res, d);
+				res= lily_add(lily_mul(res, 10), d);
 			} catch (std::overflow_error) {
 				isoverflow= true;
 			}
@@ -234,6 +220,35 @@ PR parseInteger(S s) {
 	}
 }
 
+// could have a leading + or -; does not verify boundary after the
+// integer
+PR parseInteger(S s) {
+	if (s.isNull())
+		return parseError(s, ParseResultCode::MissingInput);
+	char c0= s.first();
+	bool isneg= false;
+	if (c0=='-') {
+		isneg= true;
+	} else if (c0=='+') {
+		isneg= false;
+	} else {
+		return parsePositiveInteger(s);
+	}
+	auto pr= parsePositiveInteger(s.rest());
+	if (!pr.success())
+		return pr;
+	if (isneg) {
+		LETU_AS(v, LilyInt64, pr.value());
+		try {
+			return PR(INT(lily_negate(v->value)), pr.remainder());
+		} catch (std::overflow_error) {
+			return parseError(s, ParseResultCode::Int64Overflow);
+		}
+	} else {
+		return pr;
+	}
+}
+
 PR parseNumber(S s) {
 	auto result= parseInteger(s);
 	if (! result.success())
@@ -247,50 +262,38 @@ PR parseNumber(S s) {
 	case '/': {
 		// 1/-3 should be parsed as a symbol, at least
 		// Gambit does that, hence we have to do this
-		// (stupid, XX: separate parsePositiveInteger
-		// parser)
 		auto s= result.remainder().rest();
 		if (s.isNull())
 			goto notanumber;
-		{
-			char c= s.first();
-			switch (c) {
-			case '+':
-			case '-':
+		auto num2= parsePositiveInteger(s);
+		if (num2.success()) {
+			// Oh, and we have to check again what
+			// follows it. Evil syntax? Tokenizer
+			// actually makes sense for *this*
+			// reason. Should have proper boundary
+			// detection functions to achieve the
+			// same (todo).
+			s= num2.remainder();
+			if ((! s.isNull()) && (s.first() == '/'))
+				goto notanumber;
+			XLETU_AS(n, LilyInt64, result.value());
+			XLETU_AS(d, LilyInt64, num2.value());
+			try {
+				// todo location keeping
+				result= PR(Divide(n, d), s);
+				goto successsofar;
+			} catch (LilyDivisionByZeroError) {
+				// XX ever report start, not end?
 				goto notanumber;
 			}
-		}
-		{
-			auto num2= parseInteger(s);
-			if (num2.success()) {
-				// Oh, and we have to check again what
-				// follows it. Evil syntax? Tokenizer
-				// actually makes sense for *this*
-				// reason. Should have proper boundary
-				// detection functions to achieve the
-				// same (todo).
-				s= num2.remainder();
-				if ((! s.isNull()) && (s.first() == '/'))
-					goto notanumber;
-				XLETU_AS(n, LilyInt64, result.value());
-				XLETU_AS(d, LilyInt64, num2.value());
-				try {
-					// todo location keeping
-					result= PR(Divide(n, d), s);
-					goto successsofar;
-				} catch (LilyDivisionByZeroError) {
-					// XX ever report start, not end?
-					goto notanumber;
-				}
-			} else {
-				// returning num would be wrong now
-				// that we know it would be valid as a
-				// fractional up to this point? I
-				// mean, we can and should fall back
-				// to parsing as a symbol now. Weird
-				// case?
-				return num2;
-			}
+		} else {
+			// returning num would be wrong now
+			// that we know it would be valid as a
+			// fractional up to this point? I
+			// mean, we can and should fall back
+			// to parsing as a symbol now. Weird
+			// case?
+			return num2;
 		}
 	}
 	default:

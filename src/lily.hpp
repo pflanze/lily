@@ -295,8 +295,10 @@ public:
 };
 
 
+// throws std::overflow_error
 void throwOverflow(int64_t a, const char*op, int64_t b);
 void throwOverflow(const char*op, int64_t a);
+// throws LilyDivisionByZeroError
 void throwDivByZero(int64_t a, const char*op);
 
 inline int64_t lily_add(int64_t a, int64_t b) {
