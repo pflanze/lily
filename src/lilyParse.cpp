@@ -195,32 +195,26 @@ PR parseInteger(S s) {
 	} else if (c0=='+') {
 		isneg= false;
 	} else if (isDigit(c0)) {
-		auto d = c0-'0';
+		auto d = c0 - '0';
 		res= isneg ? -d : d;
 		isnumber=true;
 	} else {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
 	s=s.rest();
-	// XXX this way of overflow checking is not working for *10, right?
-	auto checkOverflow= [&]() {
-		if (isoverflow)
-			return;
-		if ((isneg && (res>0)) ||
-		    ((!isneg) && (res<0)))
-			isoverflow=true;
-	};
 	while (true) {
 		if (s.isNull())
 			break;
 		char c= s.first();
 		if (isDigit(c)) {
 			s=s.rest();
-			auto d = c-'0';
-			res= res*10;
-			checkOverflow(); // this one required?
-			res= isneg ? res - d : res + d;
-			checkOverflow();
+			auto d = c - '0';
+			try {
+				res= lily_mul(res, 10);
+				res= isneg ? lily_sub(res, d) : lily_add(res, d);
+			} catch (std::overflow_error) {
+				isoverflow= true;
+			}
 			isnumber=true;
 		} else {
 			// equivalent to isWordEndBoundary, isNull
