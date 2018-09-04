@@ -43,7 +43,7 @@ typedef std::unordered_map<std::string, LilyObjectPtr> lilySymbollikeTable;
 template <typename T>
 static /* inline since only used once per type? But static should do the same, right? */
 LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
-				   bool cameWithQuoting) {
+				   bool mayNeedQuoting) {
 	auto it= t->find(s);
 	if (it != t->end()) {
 		return it->second;
@@ -51,7 +51,7 @@ LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 		// Overloaded dereference, right? (Uh?)
 	} else {
 		auto v= LILY_NEW(T(s, siphash(s), false));
-		if (cameWithQuoting) {
+		if (mayNeedQuoting) {
 			// check whether it would work unquoted:
 			// simply try to parse its unquoted
 			// representation back
@@ -60,7 +60,8 @@ LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 			if (!v1p || !(v1p->string() == s))
 				v= LILY_NEW(T(s, siphash(s), true));
 		}
-		// else we already showed that it doesn't need quoting.
+		// else (did not come with quotes) we already showed
+		// that it doesn't need quoting.
 		(*t)[s]= v;
 		return v;
 	}

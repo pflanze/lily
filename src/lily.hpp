@@ -37,12 +37,13 @@ class LilyObject;
 class LilyList;
 class LilyNumber;
 class LilyContinuationFrame;
-// class LilySymbol;
+class LilySymbollike;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
 typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
 typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
+typedef std::shared_ptr<LilySymbollike> LilySymbollikePtr;
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?

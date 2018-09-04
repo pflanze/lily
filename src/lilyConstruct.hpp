@@ -25,8 +25,21 @@
 #define FRACTIONAL(n,d) LILY_NEW(LilyFractional64(n,d))
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
-#define SYMBOL(str, needsQuoting) LilySymbol::intern(str, needsQuoting)
-#define KEYWORD(str, needsQuoting) LilyKeyword::intern(str, needsQuoting)
+		
+inline LilyObjectPtr SYMBOL(std::string str, bool mayNeedQuoting) {
+	return LilySymbol::intern(str, mayNeedQuoting);
+}
+inline LilyObjectPtr SYMBOL(std::string str) {
+	return SYMBOL(str, true);
+}
+
+inline LilyObjectPtr KEYWORD(std::string str, bool mayNeedQuoting) {
+	return LilyKeyword::intern(str, mayNeedQuoting);
+}
+inline LilyObjectPtr KEYWORD(std::string str) {
+	return KEYWORD(str, true);
+}
+
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define NATIVE_PROCEDURE(a, name) LILY_NEW(LilyNativeProcedure(a, name))
 #define NATIVE_MACROEXPANDER(a, name) LILY_NEW(LilyNativeMacroexpander(a, name))
