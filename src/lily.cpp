@@ -334,7 +334,6 @@ LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
 		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));
 	int64_t av= a->value;
 	int64_t d= lily_gcd(av, bv);
-	WARN("Divide("<<show(a)<<", "<<show(b)<<"): gcd = "<< d);
 	int64_t a1;
 	int64_t b1;
 	if (d > 1) {
