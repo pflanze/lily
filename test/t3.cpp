@@ -6,7 +6,6 @@
 auto environment= lilyDefaultEnvironment();
 
 void note(const char* s) {
-	std::cerr << "---- " << s << " ----\n"; //
 	std::cout << "---- " << s << " ----\n";
 }
 
