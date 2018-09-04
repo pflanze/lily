@@ -182,8 +182,11 @@ PR parseStringLike(S s,
 }
 
 
-
-PR parsePositiveInteger(S s) {
+// a parsePositiveInteger would be unable to hold the most negative
+// integer we could parse, hence not usable for that case; hence,
+// assume negative number and return such; negate outside for the
+// positive case.
+PR parseNegativeInteger(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	int64_t res=0;
@@ -197,7 +200,7 @@ PR parsePositiveInteger(S s) {
 			s=s.rest();
 			auto d = c - '0';
 			try {
-				res= lily_add(lily_mul(res, 10), d);
+				res= lily_sub(lily_mul(res, 10), d);
 			} catch (std::overflow_error) {
 				isoverflow= true;
 			}
@@ -220,32 +223,36 @@ PR parsePositiveInteger(S s) {
 	}
 }
 
+PR parseNegate(PR pr) {
+	if (!pr.success())
+		return pr;
+	LETU_AS(v, LilyInt64, pr.value());
+	assert(v);
+	try {
+		return PR(INT(lily_negate(v->value)), pr.remainder());
+	} catch (std::overflow_error) {
+		return parseError(pr.remainder(), ParseResultCode::Int64Overflow);
+	}
+}
+
+// CAREFUL: this is only in fact able to parse positive integers; for
+// the general case use parseNegativeInteger!
+PR parsePositiveInteger(S s) {
+	return parseNegate(parseNegativeInteger(s));
+}
+
 // could have a leading + or -; does not verify boundary after the
 // integer
 PR parseInteger(S s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	char c0= s.first();
-	bool isneg= false;
 	if (c0=='-') {
-		isneg= true;
+		return parseNegativeInteger(s.rest());
 	} else if (c0=='+') {
-		isneg= false;
+		return parsePositiveInteger(s.rest());
 	} else {
 		return parsePositiveInteger(s);
-	}
-	auto pr= parsePositiveInteger(s.rest());
-	if (!pr.success())
-		return pr;
-	if (isneg) {
-		LETU_AS(v, LilyInt64, pr.value());
-		try {
-			return PR(INT(lily_negate(v->value)), pr.remainder());
-		} catch (std::overflow_error) {
-			return parseError(s, ParseResultCode::Int64Overflow);
-		}
-	} else {
-		return pr;
 	}
 }
 
