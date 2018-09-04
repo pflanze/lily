@@ -5,7 +5,9 @@
 
 bool needsSymbolQuoting (char c);
 
-LilyObjectPtr lilyParse (std::string s, bool requireTotal=false);
+// never throws exceptions: 1/0 is parsed as a symbol, parsing errors
+// are returned as LilyParseError objects
+LilyObjectPtr lilyParse (std::string s, bool requireTotal=false) noexcept;
 
 
 #endif

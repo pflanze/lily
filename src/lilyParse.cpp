@@ -453,7 +453,7 @@ special:
 }
 
 // convenience function
-LilyObjectPtr lilyParse (std::string s, bool requireTotal) {
+LilyObjectPtr lilyParse (std::string s, bool requireTotal) noexcept {
 	PR r= lilyParse(StringCursor(&s));
 	if (r.success()) {
 		if (requireTotal) {
