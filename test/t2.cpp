@@ -124,7 +124,7 @@ int main () {
 	pr("(#!void#f #t)"); // XX currently same as above; Gambit: Invalid '#!' name: "void#f"
 	pr("(#t#f)"); // XX currently accepted as 2 values; Gambit: invalid token
 
-	note("keywords");
+	note("more keywords");
 	pr("foo:bar");
 	pr("foo: bar", false);
 	pr("(foo :bar)");
