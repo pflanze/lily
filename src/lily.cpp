@@ -34,23 +34,41 @@ LilyVoid::singleton() {
 
 
 // XX careful threads! danger?
-std::unordered_map<std::string, LilyObjectPtr> lilySymbolTable {};
 
 // XX currently does not free unused symbols. Periodic sweep? Weak
 // somehow, how? (Special table needed, or weak will wrapper.)
-LilyObjectPtr
-LilySymbol::intern(std::string s) {
-	auto it= lilySymbolTable.find(s);
-	if (it != lilySymbolTable.end()) {
+
+typedef std::unordered_map<std::string, LilyObjectPtr> lilySymbollikeTable;
+
+template <typename T>
+static /* inline since only used once per type? But static should do the same, right? */
+LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s) {
+	auto it= t->find(s);
+	if (it != t->end()) {
 		return it->second;
 		// why 'is this a tuple and iterator at same time?'?
 		// Overloaded dereference, right? (Uh?)
 	} else {
-		auto v= LILY_NEW(LilySymbol(s,siphash(s)));
-		lilySymbolTable[s]= v;
+		auto v= LILY_NEW(T(s,siphash(s)));
+		(*t)[s]= v;
 		return v;
 	}
 }
+
+static lilySymbollikeTable lilySymbolTable {};
+LilyObjectPtr
+LilySymbol::intern(std::string s) {
+	return lilySymbollikeIntern<LilySymbol>(&lilySymbolTable, s);
+}
+
+static lilySymbollikeTable lilyKeywordTable {};
+LilyObjectPtr
+LilyKeyword::intern(std::string s) {
+	return lilySymbollikeIntern<LilyKeyword>(&lilyKeywordTable, s);
+}
+
+
+
 
 
 LilyPair::~LilyPair() {};
@@ -58,6 +76,7 @@ LilyPair::~LilyPair() {};
 //LilyBoolean::~LilyBoolean() {};
 LilyString::~LilyString() {};
 LilySymbol::~LilySymbol() {};
+LilyKeyword::~LilyKeyword() {};
 LilyInt64::~LilyInt64() {};
 LilyFractional64::~LilyFractional64() {};
 LilyDouble::~LilyDouble() {};
@@ -144,7 +163,7 @@ LilyString::onelinePrint(std::ostream& out) {
 }
 
 void
-LilySymbol::onelinePrint(std::ostream& out) {
+LilySymbollike::onelinePrint(std::ostream& out) {
 	bool needsQuoting= false;
 	bool containsNonDigit= false;
 	for(char c : string) {
@@ -167,6 +186,11 @@ LilySymbol::onelinePrint(std::ostream& out) {
 #endif
 }
 
+void
+LilyKeyword::onelinePrint(std::ostream& out) {
+	LilySymbollike::onelinePrint(out);
+	out << ":";
+}
 
 void
 LilyInt64::onelinePrint(std::ostream& out) {
@@ -260,6 +284,7 @@ const char* LilyPair::typeName() {return "Pair";}
 const char* LilyBoolean::typeName() {return "Boolean";}
 const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
+const char* LilyKeyword::typeName() {return "Keyword";}
 const char* LilyInt64::typeName() {return "Int64";}
 const char* LilyFractional64::typeName() {return "Fractional64";}
 const char* LilyDouble::typeName() {return "Double";}
@@ -542,6 +567,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		case LilyEvalOpcode::Void:
 		case LilyEvalOpcode::Boolean:
 		case LilyEvalOpcode::String:
+		case LilyEvalOpcode::Keyword:
 		case LilyEvalOpcode::Int64:
 		case LilyEvalOpcode::Fractional64:
 		case LilyEvalOpcode::Double:

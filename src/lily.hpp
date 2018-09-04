@@ -21,6 +21,7 @@ enum class LilyEvalOpcode : char {
 	Boolean,
 	String,
 	Symbol,
+	Keyword,
 	Int64,
 	Fractional64,
 	Double,
@@ -189,18 +190,36 @@ public:
 	virtual ~LilyString();
 };
 
-class LilySymbol : public LilyObject {
+class LilySymbollike : public LilyObject {
+protected:
+	LilySymbollike(std::string s, symboltablehash_t h)
+		: string(s), hash(h) {}
+	virtual void onelinePrint(std::ostream& out);
+	const std::string string;
+	const symboltablehash_t hash;
+};
+
+class LilySymbol : public LilySymbollike {
 public:
 	LilySymbol(std::string s, symboltablehash_t h)
-		: string(s), hash(h) {
+		: LilySymbollike(s, h) {
 		evalId= LilyEvalOpcode::Symbol;
 	}
 	static LilyObjectPtr intern(std::string s);
-	const std::string string;
-	const symboltablehash_t hash;
-	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilySymbol();
+};
+
+class LilyKeyword : public LilySymbollike {
+public:
+	LilyKeyword(std::string s, symboltablehash_t h)
+		: LilySymbollike(s, h) {
+		evalId= LilyEvalOpcode::Keyword;
+	}
+	static LilyObjectPtr intern(std::string s);
+	virtual void onelinePrint(std::ostream& out);
+	virtual const char* typeName();
+	virtual ~LilyKeyword();
 };
 
 class LilyNumber : public LilyObject {

@@ -138,9 +138,10 @@ PR parseHashitem(S s) {
 
 // s is after '"' or '|'
 static
-PR parseStringLike(S s, char quoteChar,
-			    std::function<LilyObjectPtr(const std::string&)>
-			    constructor) {
+PR parseStringLike(S s,
+		   char quoteChar,
+		   std::function<PR(const std::string&, S rest)>
+		   cont) {
 	std::string str;
 	while (true) {
 		if (s.isNull())
@@ -148,7 +149,7 @@ PR parseStringLike(S s, char quoteChar,
 		char c= s.first();
 		s= s.rest();
 		if (c == quoteChar)
-			return PR(constructor(str), s);
+			return cont(str, s);
 		if (c == '\\') {
 			if (s.isNull())
 				return parseError(s, ParseResultCode::UnexpectedEof);
@@ -301,6 +302,7 @@ PR parseNumber(S s) {
 	return num;
 }
 
+// unquoted (no '|' around it) symbols
 PR parseSymbol(S s) {
 	std::string str;
 	while (true) {
@@ -316,9 +318,11 @@ PR parseSymbol(S s) {
 	auto len= str.length();
 	if ((len == 1) && str[0] == '.')
 		return parseError(s, ParseResultCode::NotASymbol);
-	else if ((len > 1) && ((str[0] == ':') || (str[len-1] == ':')))
-		// keywords
-		return parseError(s, ParseResultCode::Unimplemented);
+	else if ((len > 1) && (str[len-1] == ':')) {
+		str.pop_back();
+		return PR(KEYWORD(str), s);
+	}
+	// check (str[0] == ':') for CL style keywords, give them another type?
 	else
 		return PR(SYMBOL(str), s);
 }
@@ -383,12 +387,15 @@ PR parseList(S s) {
 
 
 static
-LilyObjectPtr newString(const std::string& str) {
-	return STRING(str);
+PR newString(const std::string& str, S rest) {
+	return PR(STRING(str), rest);
 }
 static
-LilyObjectPtr newSymbol(const std::string& str) {
-	return SYMBOL(str);
+PR newSymbolOrKeyword(const std::string& str, S rest) {
+	if ((! rest.isNull()) && (rest.first() == ':'))
+		return PR(KEYWORD(str), rest.rest());
+	else
+		return PR(SYMBOL(str), rest);
 }
 
 
@@ -406,7 +413,7 @@ PR lilyParse (S s) {
 	} else if (c=='"') {
 		return parseStringLike(s1, '"', newString);
 	} else if (c=='|') {
-		return parseStringLike(s1, '|', newSymbol);
+		return parseStringLike(s1, '|', newSymbolOrKeyword);
 	} else if (c==';') {
 		// until the end of the line; if s is 1 line then that
 		// will be eof, but make it generic so actually check:

@@ -26,6 +26,7 @@
 #define DOUBLE(a) LILY_NEW(LilyDouble(a))
 #define STRING(a) LILY_NEW(LilyString(a))
 #define SYMBOL(a) LilySymbol::intern(a)
+#define KEYWORD(a) LilyKeyword::intern(a)
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
 #define NATIVE_PROCEDURE(a, name) LILY_NEW(LilyNativeProcedure(a, name))
 #define NATIVE_MACROEXPANDER(a, name) LILY_NEW(LilyNativeMacroexpander(a, name))

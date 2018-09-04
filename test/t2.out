@@ -26,6 +26,12 @@ Symbol: 1/2X
 Symbol: 1/2e
 Symbol: 1/2e3
 Keyword: 1/2:
+---- keywords ----
+Keyword: foo:
+Keyword: foo:
+Keyword: |foo bar|:
+Keyword: ||:
+Pair: (||: 3)
 ---- symbol and keyword quoting ----
 Symbol: |12|
 Symbol: |1x|
@@ -34,6 +40,9 @@ Symbol: |1/2|
 Symbol: |1e2|
 Symbol: |1.|
 Symbol: |.1|
+Keyword: .1:
+Keyword: .1:
+Keyword: 1:
 Keyword: 1:
 ---- overflow ----
 ParseError: #<parse-error "Int64Overflow" 19>
@@ -86,13 +95,13 @@ ParseError: #<parse-error "InvalidDottedList" 7>
 Pair: (#!void #f #t)
 Pair: (#!void #f #t)
 Pair: (#t #f)
----- keywords (not implemented) ----
+---- keywords ----
 Symbol: foo:bar
-ParseError: #<parse-error "Unimplemented" 4>
-ParseError: #<parse-error "Unimplemented" 9>
+Keyword: foo:
+Pair: (foo :bar)
 Pair: (foo: :bar)
 Symbol: :
-ParseError: #<parse-error "Unimplemented" 3>
+Keyword: ::
 ---- syntactic sugar ----
 Pair: 'a
 Pair: 'a

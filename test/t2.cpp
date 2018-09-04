@@ -42,6 +42,14 @@ int main () {
 	pr("1/2e3"); // symbol
 	pr("1/2:"); // keyword
 
+	note("keywords");
+	pr("foo:");
+	// pr(":"); // symbol, but we have that further down, too
+	pr("|foo|:");
+	pr("|foo bar|:");
+	pr("||:1", false);
+	pr("(||:3)");
+
 	note("symbol and keyword quoting");
 	pr("|12|");
 	pr("|1x|");
@@ -50,6 +58,8 @@ int main () {
 	pr("|1e2|");
 	pr("|1.|");
 	pr("|.1|");
+	pr(".1:");
+	pr("|.1|:");
 	pr("|1|:");
 	pr("1:");
 	// todo: generative tests
@@ -110,9 +120,9 @@ int main () {
 	pr("(#!void#f #t)"); // XX currently same as above; Gambit: Invalid '#!' name: "void#f"
 	pr("(#t#f)"); // XX currently accepted as 2 values; Gambit: invalid token
 
-	note("keywords (not implemented)");
+	note("keywords");
 	pr("foo:bar");
-	pr("foo: bar");
+	pr("foo: bar", false);
 	pr("(foo :bar)");
 	pr("(|foo:||:bar|)");
 	pr(" : ");
