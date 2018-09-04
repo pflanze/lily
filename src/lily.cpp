@@ -42,14 +42,25 @@ typedef std::unordered_map<std::string, LilyObjectPtr> lilySymbollikeTable;
 
 template <typename T>
 static /* inline since only used once per type? But static should do the same, right? */
-LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s, bool needsQuoting) {
+LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
+				   bool cameWithQuoting) {
 	auto it= t->find(s);
 	if (it != t->end()) {
 		return it->second;
 		// why 'is this a tuple and iterator at same time?'?
 		// Overloaded dereference, right? (Uh?)
 	} else {
-		auto v= LILY_NEW(T(s, siphash(s), needsQuoting));
+		auto v= LILY_NEW(T(s, siphash(s), false));
+		if (cameWithQuoting) {
+			// check whether it would work unquoted:
+			// simply try to parse its unquoted
+			// representation back
+			auto v1= lilyParse(show(v), true);
+			LETU_AS(v1p, T, v1);
+			if (!v1p || !(v1p->string() == s))
+				v= LILY_NEW(T(s, siphash(s), true));
+		}
+		// else we already showed that it doesn't need quoting.
 		(*t)[s]= v;
 		return v;
 	}
@@ -166,10 +177,10 @@ void
 LilySymbollike::onelinePrint(std::ostream& out) {
 	if (needsQuoting) {
 		out << '|';
-		string_onelinePrint(string, out, '|');
+		string_onelinePrint(_string, out, '|');
 		out << '|';
 	} else {
-		out << string;
+		out << _string;
 	}
 #if 0
 	out<< "[" << hash << "]";
