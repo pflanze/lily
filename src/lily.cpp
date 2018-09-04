@@ -42,14 +42,14 @@ typedef std::unordered_map<std::string, LilyObjectPtr> lilySymbollikeTable;
 
 template <typename T>
 static /* inline since only used once per type? But static should do the same, right? */
-LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s) {
+LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s, bool needsQuoting) {
 	auto it= t->find(s);
 	if (it != t->end()) {
 		return it->second;
 		// why 'is this a tuple and iterator at same time?'?
 		// Overloaded dereference, right? (Uh?)
 	} else {
-		auto v= LILY_NEW(T(s,siphash(s)));
+		auto v= LILY_NEW(T(s, siphash(s), needsQuoting));
 		(*t)[s]= v;
 		return v;
 	}
@@ -57,14 +57,14 @@ LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s) {
 
 static lilySymbollikeTable lilySymbolTable {};
 LilyObjectPtr
-LilySymbol::intern(std::string s) {
-	return lilySymbollikeIntern<LilySymbol>(&lilySymbolTable, s);
+LilySymbol::intern(std::string s, bool nq) {
+	return lilySymbollikeIntern<LilySymbol>(&lilySymbolTable, s, nq);
 }
 
 static lilySymbollikeTable lilyKeywordTable {};
 LilyObjectPtr
-LilyKeyword::intern(std::string s) {
-	return lilySymbollikeIntern<LilyKeyword>(&lilyKeywordTable, s);
+LilyKeyword::intern(std::string s, bool nq) {
+	return lilySymbollikeIntern<LilyKeyword>(&lilyKeywordTable, s, nq);
 }
 
 
@@ -107,17 +107,17 @@ LilyList::onelinePrint(std::ostream& out) {
 }
 
 // XX const? can we bring it into the program segment?
-static auto quote= SYMBOL("quote");
-static auto quasiquote= SYMBOL("quasiquote");
-static auto unquote= SYMBOL("unquote");
+LilyObjectPtr lilySymbol_quote= SYMBOL("quote", false);
+LilyObjectPtr lilySymbol_quasiquote= SYMBOL("quasiquote", false);
+LilyObjectPtr lilySymbol_unquote= SYMBOL("unquote", false);
 
 void
 LilyPair::onelinePrint(std::ostream& out) {
 	LETU_AS(cdr, LilyPair, _cdr);
 	if (cdr && is_LilyNull(&*(cdr->_cdr))) {
-		if (_car==quote) { out << "'";  goto end_special; }
-		else if (_car==quasiquote) { out << "`";  goto end_special; }
-		else if (_car==unquote) { out << ",";  goto end_special; }
+		if (_car == lilySymbol_quote) { out << "'";  goto end_special; }
+		else if (_car == lilySymbol_quasiquote) { out << "`";  goto end_special; }
+		else if (_car == lilySymbol_unquote) { out << ",";  goto end_special; }
 		else {goto otherwise; }
 	end_special:
 		cdr->_car->onelinePrint(out);
@@ -164,17 +164,7 @@ LilyString::onelinePrint(std::ostream& out) {
 
 void
 LilySymbollike::onelinePrint(std::ostream& out) {
-	bool needsQuoting= false;
-	bool containsNonDigit= false;
-	for(char c : string) {
-		if (needsSymbolQuoting(c)) {
-			needsQuoting= true;
-			break;
-		}
-		if (!isDigit(c))
-			containsNonDigit= true;
-	}
-	if (needsQuoting || (!containsNonDigit) || string.length()==0) {
+	if (needsQuoting) {
 		out << '|';
 		string_onelinePrint(string, out, '|');
 		out << '|';

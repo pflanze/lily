@@ -320,11 +320,11 @@ PR parseSymbol(S s) {
 		return parseError(s, ParseResultCode::NotASymbol);
 	else if ((len > 1) && (str[len-1] == ':')) {
 		str.pop_back();
-		return PR(KEYWORD(str), s);
+		return PR(KEYWORD(str, false), s);
 	}
 	// check (str[0] == ':') for CL style keywords, give them another type?
 	else
-		return PR(SYMBOL(str), s);
+		return PR(SYMBOL(str, false), s);
 }
 
 // move to header file? but then also need to move the above classes.
@@ -393,9 +393,9 @@ PR newString(const std::string& str, S rest) {
 static
 PR newSymbolOrKeyword(const std::string& str, S rest) {
 	if ((! rest.isNull()) && (rest.first() == ':'))
-		return PR(KEYWORD(str), rest.rest());
+		return PR(KEYWORD(str, true), rest.rest());
 	else
-		return PR(SYMBOL(str), rest);
+		return PR(SYMBOL(str, true), rest);
 }
 
 
@@ -405,7 +405,7 @@ PR lilyParse (S s) {
 		return parseError(s, ParseResultCode::MissingInput);
 	char c= s.first();
 	auto s1= s.rest();
-	const char* special_name; // XX special_symbol instead to save lookup
+	LilyObjectPtr* special_symbol;
 	if (c=='(') {
 		return parseList(s1);
 	} else if (c=='#') {
@@ -419,11 +419,11 @@ PR lilyParse (S s) {
 		// will be eof, but make it generic so actually check:
 		return lilyParse(skipUntilAfterEol(s1));
 	} else if (c=='\'') {
-		special_name="quote"; goto special;
+		special_symbol= &lilySymbol_quote; goto special;
 	} else if (c=='`') {
-		special_name="quasiquote"; goto special;
+		special_symbol= &lilySymbol_quasiquote; goto special;
 	} else if (c==',') {
-		special_name="unquote"; goto special;
+		special_symbol= &lilySymbol_unquote; goto special;
 	} else {
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
@@ -448,7 +448,7 @@ PR lilyParse (S s) {
 	throw std::logic_error("unreachable");
 special:
 	auto r= lilyParse(s1);
-	return PR(CONS(SYMBOL(special_name), CONS(r.value(), NIL)),
+	return PR(CONS(*special_symbol, CONS(r.value(), NIL)),
 		  r.remainder());
 }
 

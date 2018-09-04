@@ -13,10 +13,12 @@ int main () {
 	auto ft2= CONS(ft, TRUE);
 	WRITELN(ft);
 	WRITELN(ft2);
-	WRITELN(CONS(SYMBOL("10"),
-		     CONS(SYMBOL("println!"),
-			  SYMBOL("Hello\nWorld, \"all | \\| \\fine\""))));
+	// XX really should provide a SYMBOL constructor that works
+	// without the second argument.
+	WRITELN(CONS(SYMBOL("10", true),
+		     CONS(SYMBOL("println!", false),
+			  SYMBOL("Hello\nWorld, \"all | \\| \\fine\"", true))));
 	WRITELN(WRITELN(CONS(NIL,NIL)));
-	WRITELN(LIST(NIL,FALSE,TRUE,SYMBOL("")));
+	WRITELN(LIST(NIL,FALSE,TRUE,SYMBOL("", true)));
 }
 

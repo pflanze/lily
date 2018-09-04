@@ -193,31 +193,32 @@ public:
 
 class LilySymbollike : public LilyObject {
 protected:
-	LilySymbollike(std::string s, symboltablehash_t h)
-		: string(s), hash(h) {}
+	LilySymbollike(std::string s, symboltablehash_t h, bool nq)
+		: string(s), hash(h), needsQuoting(nq) {}
 	virtual void onelinePrint(std::ostream& out);
 	const std::string string;
 	const symboltablehash_t hash;
+	bool needsQuoting;
 };
 
 class LilySymbol : public LilySymbollike {
 public:
-	LilySymbol(std::string s, symboltablehash_t h)
-		: LilySymbollike(s, h) {
+	LilySymbol(std::string s, symboltablehash_t h, bool nq)
+		: LilySymbollike(s, h, nq) {
 		evalId= LilyEvalOpcode::Symbol;
 	}
-	static LilyObjectPtr intern(std::string s);
+	static LilyObjectPtr intern(std::string s, bool nq);
 	virtual const char* typeName();
 	virtual ~LilySymbol();
 };
 
 class LilyKeyword : public LilySymbollike {
 public:
-	LilyKeyword(std::string s, symboltablehash_t h)
-		: LilySymbollike(s, h) {
+	LilyKeyword(std::string s, symboltablehash_t h, bool nq)
+		: LilySymbollike(s, h, nq) {
 		evalId= LilyEvalOpcode::Keyword;
 	}
-	static LilyObjectPtr intern(std::string s);
+	static LilyObjectPtr intern(std::string s, bool nq);
 	virtual void onelinePrint(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyKeyword();
@@ -576,6 +577,13 @@ apply1ary(const char* procname,
 // let unwrapped
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
+
+
+// Some special symbols
+extern LilyObjectPtr lilySymbol_quote;
+extern LilyObjectPtr lilySymbol_quasiquote;
+extern LilyObjectPtr lilySymbol_unquote;
+
 
 
 #endif
