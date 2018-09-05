@@ -81,7 +81,7 @@ bool isSeparation (char c) {
 }
 
 static
-S skipWhitespaceAndComments (S s) {
+S skipWhitespaceAndComments (Sm s) {
 	s= skipWhitespaceOnly(s);
 	if (s.isNull())
 		return s;
@@ -99,7 +99,8 @@ S skipWhitespaceAndComments (S s) {
 }
 
 
-typedef ParseResult<LilyObjectPtr> PR;
+typedef const ParseResult<LilyObjectPtr> PR;
+typedef ParseResult<LilyObjectPtr> PRm;
 
 static
 PR parseError(S s, ParseResultCode error) {
@@ -144,7 +145,7 @@ PR parseHashitem(S s) {
 
 // s is after '"' or '|'
 static
-PR parseStringLike(S s,
+PR parseStringLike(Sm s,
 		   char quoteChar,
 		   std::function<PR(const std::string&, S rest)>
 		   cont) {
@@ -186,7 +187,7 @@ PR parseStringLike(S s,
 // integer we could parse, hence not usable for that case; hence,
 // assume negative number and return such; negate outside for the
 // positive case.
-PR parseNegativeInteger(S s) {
+PR parseNegativeInteger(Sm s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
 	int64_t res=0;
@@ -317,7 +318,7 @@ notanumber:
 }
 
 // unquoted (no '|' around it) symbols
-PR parseSymbol(S s) {
+PR parseSymbol(Sm s) {
 	std::string str;
 	while (true) {
 		if (s.isNull())
@@ -345,7 +346,7 @@ PR parseSymbol(S s) {
 PR lilyParse (S s);
 
 // s is after the '('
-PR parseList(S s) {
+PR parseList(Sm s) {
 	s= skipWhitespaceAndComments(s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
@@ -413,7 +414,7 @@ PR newSymbolOrKeyword(const std::string& str, S rest) {
 }
 
 
-PR lilyParse (S s) {
+PR lilyParse (Sm s) {
 	s= skipWhitespaceAndComments (s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
