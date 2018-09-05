@@ -28,6 +28,22 @@ int main () {
 	pr(" -3");
 	pr("-4 ");
 
+	note("double vs. symbol");
+	pr("1e2");
+	pr("1.");
+	pr("1.|", false);
+	pr("1.3");
+	pr("1.3|",false);
+	pr("12.345;");
+	pr(".309");
+	pr("1.3e1");
+	pr("-1.3e1");
+	pr("-1.3e-1");
+	// XX +nan.0, +inf.0, -inf.0
+
+	note("double overflow");
+	pr("1.332344523452345234524564562434545");
+
 	note("fractional vs. symbol");
 	pr(" -4/3 ");
 	pr("2/4"); // 1/2

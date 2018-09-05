@@ -12,6 +12,19 @@ Symbol: +
 Int64: 3
 Int64: -3
 Int64: -4
+---- double vs. symbol ----
+Double: 1e2
+Double: 1.
+Double: 1.
+Double: 1.3
+Double: 1.3
+Double: 12.345
+Double: .309
+Double: 1.3e1
+Double: -1.3e1
+Double: -1.3e-1
+---- double overflow ----
+ParseError: #<parse-error "Int64Overflow" 22>
 ---- fractional vs. symbol ----
 Fractional64: -4/3
 Fractional64: 1/2
