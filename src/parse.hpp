@@ -51,14 +51,14 @@ typedef uint32_t parse_position_t;
 
 class StringCursor {
 public:
-	StringCursor(std::string* string,
+	StringCursor(const std::string* string,
 		     parse_position_t position = 0,
 		     ParseResultCode error = ParseResultCode_Success)
 		: _string(string), _error(error), _position(position) {}
-	char first () {
+	char first () const {
 		return (*_string)[_position];
 	}
-	StringCursor rest () {
+	const StringCursor rest () const {
 		parse_position_t pos1= _position+1;
 		assert(pos1 > 0); // XX not strictly portable
 		if (pos1 <= _string->length()) {
@@ -67,30 +67,30 @@ public:
 			throw std::logic_error("read past end of input");
 		}
 	}
-	bool isNull () {
+	bool isNull () const {
 		return !(_position < _string->length());
 	}
-	ParseResultCode error () {
+	ParseResultCode error () const {
 		return _error;
 	}
-	bool success () {
+	bool success () const {
 		return (_error==ParseResultCode_Success);
 	}
-	StringCursor setError (ParseResultCode error) {
+	const StringCursor setError (ParseResultCode error) const {
 		return StringCursor(_string, _position, error);
 	}
-	parse_position_t position() {
+	parse_position_t position() const {
 		return _position;
 	}
-	std::string& string() {
+	const std::string& string() const {
 		return *_string;
 	}
-	std::string stringRemainder() {
+	const std::string stringRemainder() const {
 		return _string->substr(_position,
 				       _string->length() - _position);
 	}
 private:
-	std::string* _string;
+	const std::string* _string;
 	ParseResultCode _error;
 	parse_position_t _position;
 };
@@ -98,30 +98,37 @@ private:
 template <typename T>
 class ParseResult {
 public:
-	ParseResult(T result, StringCursor remainder)
+	ParseResult(const T result, StringCursor remainder)
 		: _result(result), _remainder(remainder) {
 		assert(result);
 	}
-	T value() {
+	const T value() const {
 		assert(_remainder.success());
 		return _result;
 	}
-	ParseResultCode error () {
+	ParseResultCode error () const {
 		return _remainder.error();
 	}
-	bool success() {
+	bool success() const {
 		return _remainder.success();
 	}
-	StringCursor remainder() {
+	bool failed() const {
+		return ! success();
+	}
+	const StringCursor remainder() const {
 		return _remainder;
 	}
 private:
-	T _result;	
+	T _result;
 	StringCursor _remainder;
 };
 
-typedef StringCursor S;
-// typedef ParseResult<YourType> PR;
+typedef const StringCursor S;
+typedef StringCursor Sm;
+
+//in your header you could:
+// typedef const ParseResult<YourType> PR;
+// typedef ParseResult<YourType> PRm;
 
 
 // ----------------------------------------------------------------
