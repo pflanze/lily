@@ -15,7 +15,7 @@ void p(StringCursor s) {
 		std::cout << "failure (code " << (int)s.error()
 			  << ", pos " << s.position() << "): ";
 	}
-	std::cout << show(s.stringRemainder()) << "\n";
+	std::cout << show(s.string()) << "\n";
 }
 
 

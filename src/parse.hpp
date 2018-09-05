@@ -51,24 +51,26 @@ typedef uint32_t parse_position_t;
 
 class StringCursor {
 public:
-	StringCursor(const std::string* string,
+	StringCursor(const std::string* backingString,
 		     parse_position_t position = 0,
 		     ParseResultCode error = ParseResultCode_Success)
-		: _string(string), _error(error), _position(position) {}
+		: _backingString(backingString),
+		  _error(error),
+		  _position(position) {}
 	char first () const {
-		return (*_string)[_position];
+		return (*_backingString)[_position];
 	}
 	const StringCursor rest () const {
 		parse_position_t pos1= _position+1;
 		assert(pos1 > 0); // XX not strictly portable
-		if (pos1 <= _string->length()) {
-			return StringCursor(_string, pos1, _error);
+		if (pos1 <= _backingString->length()) {
+			return StringCursor(_backingString, pos1, _error);
 		} else {
 			throw std::logic_error("read past end of input");
 		}
 	}
 	bool isNull () const {
-		return !(_position < _string->length());
+		return !(_position < _backingString->length());
 	}
 	ParseResultCode error () const {
 		return _error;
@@ -77,20 +79,21 @@ public:
 		return (_error==ParseResultCode_Success);
 	}
 	const StringCursor setError (ParseResultCode error) const {
-		return StringCursor(_string, _position, error);
+		return StringCursor(_backingString, _position, error);
 	}
 	parse_position_t position() const {
 		return _position;
 	}
-	const std::string& string() const {
-		return *_string;
+	const std::string& backingString() const {
+		return *_backingString;
 	}
-	const std::string stringRemainder() const {
-		return _string->substr(_position,
-				       _string->length() - _position);
+	const std::string string() const {
+		return _backingString
+			->substr(_position,
+				 _backingString->length() - _position);
 	}
 private:
-	const std::string* _string;
+	const std::string* _backingString;
 	ParseResultCode _error;
 	parse_position_t _position;
 };
