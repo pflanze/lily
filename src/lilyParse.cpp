@@ -198,10 +198,12 @@ PR parseStringLike(Sm s,
 }
 
 
-// a parsePositiveInteger would be unable to hold the most negative
-// integer we could parse, hence not usable for that case; hence,
-// assume negative number and return such; negate outside for the
-// positive case.
+// A positive integer is unable to hold the most negative integer we
+// could parse, hence not usable for both positive and negative cases;
+// hence, assume negative number and return such; negate outside for
+// the positive case. Does not check for boundary after number, this
+// is left for the upper level: necessary since this is used as part
+// of parseFloat, too.
 PR parseNegativeInteger(Sm s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
@@ -222,10 +224,6 @@ PR parseNegativeInteger(Sm s) {
 			}
 			isnumber=true;
 		} else {
-			// equivalent to isWordEndBoundary, isNull
-			// check already done
-			if (isWordChar(c))
-				isnumber=false;
 			break;
 		}
 	}
@@ -235,6 +233,8 @@ PR parseNegativeInteger(Sm s) {
 		else
 			return OK(INT(res), s);
 	} else {
+		// length is not zero. isnumber is an odd (left-over)
+		// way to do that perhaps.
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
 }
