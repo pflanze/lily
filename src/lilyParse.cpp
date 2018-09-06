@@ -79,10 +79,16 @@ bool needsSymbolQuoting (char c) {
 
 // all the character that will introduce another token after a number,
 // or also symbol or keyword?
-bool isSeparation (char c) {
+static bool isSeparation (char c) {
 	return isWhitespace(c)
 		|| needsSymbolQuoting(c);
 }
+static bool isSeparation (S s) {
+	bool r= s.isNull() || isSeparation(s.first());
+	WARN("isSeparation on " << show(s.string()) << " = " << r);
+	return r;
+}
+
 
 static
 S skipWhitespaceAndComments (Sm s) {
@@ -301,8 +307,12 @@ PR_suffix parseFloat_suffix(S s) {
 	case 'l': {
 		PR exponent= parseInteger(s.rest());
 		if (exponent.failed())
+			// Note: need to pass along exponent.error()
+			// so as to pass along overflow errors;
+			// overflow must be 'sticky' in the error
+			// path. (Automate?)
 			return parseError_suffix(exponent.remainder(),
-						 ParseResultCode::NotAFloatSuffix);
+						 exponent.error());
 		// if (isSeparation(exponent.remainder())) // XX or is this done outside?
 		// 	return
 		return PR_suffix
@@ -325,18 +335,29 @@ PR parseFloat(int64_t predot, Sm s) {
 		return parseError(s, ParseResultCode::NotAFloat);
 	int64_t postdot= 0;
 	bool hasDot= false;
+	bool overflow= false;
 	char c0= s.first();
 	switch (c0) {
 	case '.': {
 		WARN("  has dot, " << show(s.rest().string()));
 		hasDot= true;
-		PR _postdot= parsePositiveInteger(s.rest());
+		s= s.rest();
+		PR _postdot= parsePositiveInteger(s);
 		if (_postdot.success()) {
 			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value;
 			s= _postdot.remainder();
 			WARN("  got postdot, " << postdot << ", " << show(s.string()));
 		} else {
-			WARN("  no postdot");
+			if (_postdot.error() == ParseResultCode::Int64Overflow) {
+				overflow= true;
+				// need to go on parsing, hence force
+				// success; will then fail again at
+				// the end via checking 'overflow'
+				s= _postdot.remainder().setSuccess();
+				WARN("  postdot but overflowed");
+			} else {
+				WARN("  no postdot");
+			}
 		}
 		break;
 	}
@@ -358,19 +379,25 @@ PR parseFloat(int64_t predot, Sm s) {
 	} else {
 		// there is no suffix
 		WARN("  there is no suffix, hasDot="<<hasDot<<", ç");
-		if (hasDot)
-			return OK(STRING(STR("float without suffix: "
-					     << predot
-					     << " . "
-					     << postdot)),
-				  suffix.remainder());
-		else
+		if (hasDot) {
+			if (overflow)
+				// it is following float syntax, but
+				// error parsing it
+				return parseError(s, ParseResultCode::Int64Overflow);
+			else
+				return OK(STRING(STR("float without suffix: "
+						     << predot
+						     << " . "
+						     << postdot)),
+					  s);
+		} else {
 			return parseError(s, ParseResultCode::NotAFloat);
+		}
 	}
 }
 
 PR parseNumber(S s) {
-	auto result= parseInteger(s);
+	PRm result= parseInteger(s);
 	if (! result.success())
 		return result;
 
@@ -382,6 +409,14 @@ PR parseNumber(S s) {
 				 result.remainder());
 		if (f.success()) {
 			WARN("  parseFloat returned success, " << show(f.value()));
+			result= f;
+			goto successsofar;
+		}
+		if (f.error() == ParseResultCode::Int64Overflow) {
+			// syntax follows float, just couldn't hold in
+			// words. Need to pass along failure. Here it
+			// is actually fine to let result be an error
+			// case.
 			result= f;
 			goto successsofar;
 		}
@@ -435,10 +470,12 @@ PR parseNumber(S s) {
 		}
 	}
 successsofar:
-	// now there must be a proper separation after
-	// the number, otherwise it's not one.
-	if ((result.remainder().isNull())
-	    || isSeparation(result.remainder().first()))
+	// now there must be a proper separation after the number,
+	// otherwise it's not one. (XX could there be cases where
+	// other options should be tried? I.e. every option should be
+	// followed by isSeparation check?)
+	WARN("successsofar: checking remainder "<<show(result.remainder().string()));
+	if (isSeparation(result.remainder()))
 		return result;
 notanumber:
 	return parseError(s, ParseResultCode::NotANumber);
