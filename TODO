@@ -8,3 +8,4 @@
 - change continuations data structure into an intrusive list or more optimized pure stack
 - use LETU_AS instead of LET_AS in places where it's safe, check performance difference
 - provide an interface hierarchy separate from implementation?
+- replace assert with ASSERT that throws (what about null pointer exceptions?)
