@@ -81,6 +81,9 @@ public:
 	const StringCursor setError (ParseResultCode error) const {
 		return StringCursor(_backingString, _position, error);
 	}
+	const StringCursor setSuccess () const {
+		return setError(ParseResultCode_Success);
+	}
 	parse_position_t position() const {
 		return _position;
 	}
