@@ -107,10 +107,15 @@ typedef const ParseResult<LilyObjectPtr> PR;
 typedef ParseResult<LilyObjectPtr> PRm;
 
 static
+PR OK(LilyObjectPtr v, S s) {
+	assert(s.success());
+	return PR(v,s);
+}
+
+static
 PR parseError(S s, ParseResultCode error) {
 	return PR(VOID, s.setError(error));
 }
-
 
 
 // s is after '#'
@@ -125,7 +130,7 @@ PR parseHashitem(S s) {
 		r= expectString(r, "void");
 		if (r.success()) {
 			if (isWordEndBoundary(r))
-				return PR(VOID, r);
+				return OK(VOID, r);
 		}
 		return parseError(r, ParseResultCode::UnknownBangSpecial);
 	} else if (c1 == '|') {
@@ -135,9 +140,9 @@ PR parseHashitem(S s) {
 	} else {
 		if (isWordEndBoundary(r)) {
 			if (c1 == 'f') {
-				return PR(FALSE, r);
+				return OK(FALSE, r);
 			} else if (c1 == 't') {
-				return PR(TRUE, r);
+				return OK(TRUE, r);
 			} else {
 				return parseError(s, ParseResultCode::UnknownSpecial);
 			}
@@ -222,7 +227,7 @@ PR parseNegativeInteger(Sm s) {
 		if (isoverflow)
 			return parseError(s, ParseResultCode::Int64Overflow);
 		else
-			return PR(INT(res), s);
+			return OK(INT(res), s);
 	} else {
 		return parseError(s, ParseResultCode::NotAnInteger);
 	}
@@ -234,7 +239,7 @@ PR parseNegate(PR pr) {
 	LETU_AS(v, LilyInt64, pr.value());
 	assert(v);
 	try {
-		return PR(INT(lily_negate(v->value)), pr.remainder());
+		return OK(INT(lily_negate(v->value)), pr.remainder());
 	} catch (std::overflow_error) {
 		return parseError(pr.remainder(), ParseResultCode::Int64Overflow);
 	}
@@ -341,7 +346,7 @@ PR parseFloat(int64_t predot, Sm s) {
 		// we have a suffix
 		char exponentMarker= suffix.value().first;
 		int64_t exponent= suffix.value().second;
-		return PR(STRING(STR("float with suffix: "
+		return OK(STRING(STR("float with suffix: "
 				     << predot
 				     << " . "
 				     << postdot
@@ -354,7 +359,7 @@ PR parseFloat(int64_t predot, Sm s) {
 		// there is no suffix
 		WARN("  there is no suffix, hasDot="<<hasDot<<", ç");
 		if (hasDot)
-			return PR(STRING(STR("float without suffix: "
+			return OK(STRING(STR("float without suffix: "
 					     << predot
 					     << " . "
 					     << postdot)),
@@ -409,7 +414,7 @@ PR parseNumber(S s) {
 				XLETU_AS(d, LilyInt64, num2.value());
 				try {
 					// todo location keeping
-					result= PR(Divide(n, d), s);
+					result= OK(Divide(n, d), s);
 					goto successsofar;
 				} catch (LilyDivisionByZeroError) {
 					// XX ever report start, not end?
@@ -457,11 +462,11 @@ PR parseSymbol(Sm s) {
 		return parseError(s, ParseResultCode::NotASymbol);
 	else if ((len > 1) && (str[len-1] == ':')) {
 		str.pop_back();
-		return PR(KEYWORD(str, false), s);
+		return OK(KEYWORD(str, false), s);
 	}
 	// check (str[0] == ':') for CL style keywords, give them another type?
 	else
-		return PR(SYMBOL(str, false), s);
+		return OK(SYMBOL(str, false), s);
 }
 
 // move to header file? but then also need to move the above classes.
@@ -474,7 +479,7 @@ PR parseList(Sm s) {
 		return parseError(s, ParseResultCode::UnexpectedEof);
 	char c=s.first();
 	if (c==')')
-		return PR(NIL, s.rest());
+		return OK(NIL, s.rest());
 	if (c=='.') {
 		auto s1=s.rest();
 		if (s1.isNull())
@@ -491,7 +496,7 @@ PR parseList(Sm s) {
 				return parseError(s2, ParseResultCode::UnexpectedEof);
 			char c2= s2.first();
 			if (c2 == ')')
-				return PR(r1.value(), s2.rest());
+				return OK(r1.value(), s2.rest());
 			else
 				return parseError(s2, ParseResultCode::InvalidDottedList);
 		} else {
@@ -506,7 +511,7 @@ PR parseList(Sm s) {
 			auto tail= parseList(res.remainder());
 			if (!tail.success())
 				return tail; // ditto, and, this is our 'failure monad'
-			return PR(CONS(res.value(), tail.value()),
+			return OK(CONS(res.value(), tail.value()),
 				  tail.remainder());
 		}
 	} else {
@@ -517,7 +522,7 @@ PR parseList(Sm s) {
 		auto tail= parseList(res.remainder());
 		if (!tail.success())
 			return tail;
-		return PR(CONS(res.value(), tail.value()),
+		return OK(CONS(res.value(), tail.value()),
 			  tail.remainder());
 	}
 }
@@ -525,14 +530,14 @@ PR parseList(Sm s) {
 
 static
 PR newString(const std::string& str, S rest) {
-	return PR(STRING(str), rest);
+	return OK(STRING(str), rest);
 }
 static
 PR newSymbolOrKeyword(const std::string& str, S rest) {
 	if ((! rest.isNull()) && (rest.first() == ':'))
-		return PR(KEYWORD(str, true), rest.rest());
+		return OK(KEYWORD(str, true), rest.rest());
 	else
-		return PR(SYMBOL(str, true), rest);
+		return OK(SYMBOL(str, true), rest);
 }
 
 
@@ -585,7 +590,7 @@ PR lilyParse (Sm s) {
 	throw std::logic_error("unreachable");
 special:
 	auto r= lilyParse(s1);
-	return PR(CONS(*special_symbol, CONS(r.value(), NIL)),
+	return OK(CONS(*special_symbol, CONS(r.value(), NIL)),
 		  r.remainder());
 }
 
