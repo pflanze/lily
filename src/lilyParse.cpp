@@ -19,6 +19,8 @@ enum class ParseResultCode : char {
 	UnknownBangSpecial,
 	UnknownSpecial,
 	NotAnInteger,
+	NotAFloatSuffix,
+	NotAFloat,
 	NotANumber,
 	Int64Overflow,
 	DivisionByZero,
@@ -40,6 +42,8 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::UnknownBangSpecial: return "UnknownBangSpecial";
 	case ParseResultCode::UnknownSpecial: return "UnknownSpecial";
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
+	case ParseResultCode::NotAFloatSuffix: return "NotAFloatSuffix";
+	case ParseResultCode::NotAFloat: return "NotAFloat";
 	case ParseResultCode::NotANumber: return "NotANumber";
 	case ParseResultCode::Int64Overflow: return "Int64Overflow";
 	case ParseResultCode::DivisionByZero: return "DivisionByZero";
@@ -257,6 +261,109 @@ PR parseInteger(S s) {
 	}
 }
 
+// R5RS:
+
+// (decimal 10) -> (uinteger 10) (suffix)
+//    | . (digit 10)+ #* (suffix)
+//    | (digit 10)+ . (digit 10)* #* (suffix)
+//    | (digit 10)+ #+ . #* (suffix)
+
+// (uinteger R) -> (digit R)+ #*
+
+// (suffix) -> (empty)
+//    | (eponent marker) (sign) (digit 10)+
+
+// (eponent marker) -> e | s | f | d | l
+
+// (sign) -> (empty) | + | -
+
+
+typedef std::pair<char,int64_t> suffixValue; // <exponent marker, exponent>
+typedef ParseResult<suffixValue> PR_suffix;
+static PR_suffix parseError_suffix(S s, ParseResultCode error) {
+	return PR_suffix(suffixValue(0,0), s.setError(error));
+}
+
+PR_suffix parseFloat_suffix(S s) {
+	if (s.isNull())
+		return parseError_suffix(s, ParseResultCode::NotAFloatSuffix);
+	char c0= s.first();
+	switch (c0) {
+	case 'e':
+	case 's':
+	case 'f':
+	case 'd':
+	case 'l': {
+		PR exponent= parseInteger(s.rest());
+		if (exponent.failed())
+			return parseError_suffix(exponent.remainder(),
+						 ParseResultCode::NotAFloatSuffix);
+		// if (isSeparation(exponent.remainder())) // XX or is this done outside?
+		// 	return
+		return PR_suffix
+			(suffixValue(c0,
+				     UNWRAP_AS(LilyInt64,
+					       exponent.value())->value),
+			 exponent.remainder());
+	}
+	default:
+		return parseError_suffix(s, ParseResultCode::NotAFloatSuffix);
+	}
+}
+
+
+// s is after the predot part; in the case of a leading dot, 0 is
+// passed as predot value
+PR parseFloat(int64_t predot, Sm s) {
+	WARN("parseFloat: " << predot << ", " << show(s.string()));
+	if (s.isNull())
+		return parseError(s, ParseResultCode::NotAFloat);
+	int64_t postdot= 0;
+	bool hasDot= false;
+	char c0= s.first();
+	switch (c0) {
+	case '.': {
+		WARN("  has dot, " << show(s.rest().string()));
+		hasDot= true;
+		PR _postdot= parsePositiveInteger(s.rest());
+		if (_postdot.success()) {
+			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value;
+			s= _postdot.remainder();
+			WARN("  got postdot, " << postdot << ", " << show(s.string()));
+		} else {
+			WARN("  no postdot");
+		}
+		break;
+	}
+	}
+	PR_suffix suffix= parseFloat_suffix(s);
+	if (suffix.success()) {
+		// we have a suffix
+		char exponentMarker= suffix.value().first;
+		int64_t exponent= suffix.value().second;
+		return PR(STRING(STR("float with suffix: "
+				     << predot
+				     << " . "
+				     << postdot
+				     << " "
+				     << exponentMarker
+				     << " "
+				     << exponent)),
+			  suffix.remainder());
+	} else {
+		// there is no suffix
+		WARN("  there is no suffix, hasDot="<<hasDot<<", ç");
+		if (hasDot)
+			return PR(STRING(STR("float without suffix: "
+					     << predot
+					     << " . "
+					     << postdot)),
+				  suffix.remainder());
+		else
+			return parseError(s, ParseResultCode::NotAFloat);
+	}
+}
+
 PR parseNumber(S s) {
 	auto result= parseInteger(s);
 	if (! result.success())
@@ -264,48 +371,63 @@ PR parseNumber(S s) {
 
 	if (result.remainder().isNull())
 		return result;
-	char c= result.remainder().first();
-	DEBUGWARN("     c="<<c);
-	switch (c) {
-	case '/': {
-		// 1/-3 should be parsed as a symbol, at least
-		// Gambit does that, hence we have to do this
-		auto s= result.remainder().rest();
-		if (s.isNull())
-			goto notanumber;
-		auto num2= parsePositiveInteger(s);
-		if (num2.success()) {
-			// Oh, and we have to check again what
-			// follows it. Evil syntax? Tokenizer
-			// actually makes sense for *this*
-			// reason. Should have proper boundary
-			// detection functions to achieve the
-			// same (todo).
-			s= num2.remainder();
-			if ((! s.isNull()) && (s.first() == '/'))
-				goto notanumber;
-			XLETU_AS(n, LilyInt64, result.value());
-			XLETU_AS(d, LilyInt64, num2.value());
-			try {
-				// todo location keeping
-				result= PR(Divide(n, d), s);
-				goto successsofar;
-			} catch (LilyDivisionByZeroError) {
-				// XX ever report start, not end?
-				goto notanumber;
-			}
-		} else {
-			// returning num would be wrong now
-			// that we know it would be valid as a
-			// fractional up to this point? I
-			// mean, we can and should fall back
-			// to parsing as a symbol now. Weird
-			// case?
-			return num2;
+
+	{
+		PR f= parseFloat(UNWRAP_AS(LilyInt64, result.value())->value,
+				 result.remainder());
+		if (f.success()) {
+			WARN("  parseFloat returned success, " << show(f.value()));
+			result= f;
+			goto successsofar;
 		}
+		WARN("  parseFloat returned failure, " << ParseResultCode_string(f.error()));
 	}
-	default:
-		goto successsofar;
+
+	{
+		// XX make a parseFractional like parseFloat ?
+		char c= result.remainder().first();
+		DEBUGWARN("     c="<<c);
+		switch (c) {
+		case '/': {
+			// 1/-3 should be parsed as a symbol, at least
+			// Gambit does that, hence we have to do this
+			auto s= result.remainder().rest();
+			if (s.isNull())
+				goto notanumber;
+			auto num2= parsePositiveInteger(s);
+			if (num2.success()) {
+				// Oh, and we have to check again what
+				// follows it. Evil syntax? Tokenizer
+				// actually makes sense for *this*
+				// reason. Should have proper boundary
+				// detection functions to achieve the
+				// same (todo).
+				s= num2.remainder();
+				if ((! s.isNull()) && (s.first() == '/'))
+					goto notanumber;
+				XLETU_AS(n, LilyInt64, result.value());
+				XLETU_AS(d, LilyInt64, num2.value());
+				try {
+					// todo location keeping
+					result= PR(Divide(n, d), s);
+					goto successsofar;
+				} catch (LilyDivisionByZeroError) {
+					// XX ever report start, not end?
+					goto notanumber;
+				}
+			} else {
+				// returning num would be wrong now
+				// that we know it would be valid as a
+				// fractional up to this point? I
+				// mean, we can and should fall back
+				// to parsing as a symbol now. Weird
+				// case?
+				return num2;
+			}
+		}
+		default:
+			goto successsofar;
+		}
 	}
 successsofar:
 	// now there must be a proper separation after

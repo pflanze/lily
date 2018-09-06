@@ -103,7 +103,8 @@ class ParseResult {
 public:
 	ParseResult(const T result, StringCursor remainder)
 		: _result(result), _remainder(remainder) {
-		assert(result);
+		// assert(result); can't, as some T may not have a
+		// boolean check! Make this part of T!
 	}
 	const T value() const {
 		assert(_remainder.success());
