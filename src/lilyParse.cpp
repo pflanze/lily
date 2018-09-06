@@ -216,11 +216,13 @@ PR parseNegativeInteger(Sm s) {
 		char c= s.first();
 		if (isDigit(c)) {
 			s=s.rest();
-			auto d = c - '0';
-			try {
-				res= lily_sub(lily_mul(res, 10), d);
-			} catch (std::overflow_error) {
-				isoverflow= true;
+			if (!isoverflow) {
+				auto d = c - '0';
+				try {
+					res= lily_sub(lily_mul(res, 10), d);
+				} catch (std::overflow_error) {
+					isoverflow= true;
+				}
 			}
 			isnumber=true;
 		} else {
