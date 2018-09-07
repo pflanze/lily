@@ -5,6 +5,13 @@
 #include "lilyParse.hpp"
 #include "lilyUtil.hpp"
 
+// man exp10
+#ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+#endif
+#include <math.h>
+
+
 enum class ParseResultCode : char {
 	// the ones hard-coded in parse.cpp
 	Success=0,
@@ -336,6 +343,8 @@ PR parseFloat(int64_t predot, Sm s) {
 	if (s.isNull())
 		return parseError(s, ParseResultCode::NotAFloat);
 	int64_t postdot= 0;
+	int32_t postdotLength= 0;
+	// ^ signed so that we can negate it before passing to exp10
 	bool hasDot= false;
 	bool overflow= false;
 	char c0= s.first();
@@ -347,6 +356,14 @@ PR parseFloat(int64_t predot, Sm s) {
 		PR _postdot= parsePositiveInteger(s);
 		if (_postdot.success()) {
 			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value;
+			auto p0= s.position();
+			auto p1= _postdot.remainder().position();
+			assert(p1 > p0);
+			assert((p1 - p0) < 10000);
+			// ^ should have returned with Int64Overflow
+			//   long before that (can't have that many
+			//   digits in an int64_t)
+			postdotLength= p1 - p0;
 			s= _postdot.remainder();
 			WARN("  got postdot, " << postdot << ", " << show(s.string()));
 		} else {
@@ -369,14 +386,12 @@ PR parseFloat(int64_t predot, Sm s) {
 		// we have a suffix
 		char exponentMarker= suffix.value().first;
 		int64_t exponent= suffix.value().second;
-		return OK(STRING(STR("float with suffix: "
-				     << predot
-				     << " . "
-				     << postdot
-				     << " "
-				     << exponentMarker
-				     << " "
-				     << exponent)),
+
+		double f= exp10(-postdotLength);
+		return OK(DOUBLE((static_cast<double>(predot)
+				  + static_cast<double>(postdot)
+				  * f)
+				  * exp10(exponent)),
 			  suffix.remainder());
 	} else {
 		// there is no suffix
@@ -386,12 +401,14 @@ PR parseFloat(int64_t predot, Sm s) {
 				// it is following float syntax, but
 				// error parsing it
 				return parseError(s, ParseResultCode::Int64Overflow);
-			else
-				return OK(STRING(STR("float without suffix: "
-						     << predot
-						     << " . "
-						     << postdot)),
+			else {
+				double f= exp10(-postdotLength);
+				WARN("f= "<<f<<", postdotLength= "<<postdotLength);
+				return OK(DOUBLE(static_cast<double>(predot)
+						 + static_cast<double>(postdot)
+						 * f),
 					  s);
+			}
 		} else {
 			return parseError(s, ParseResultCode::NotAFloat);
 		}
@@ -400,10 +417,16 @@ PR parseFloat(int64_t predot, Sm s) {
 
 PR parseNumber(S s) {
 	PRm result= parseInteger(s);
-	if (! result.success())
+	if (result.error() == ParseResultCode::Int64Overflow)
+		// not success of course, but that will check for
+		// boundary, and the error is kept.
+		goto successsofar;
+	if (result.failed()) 
 		return result;
 
+	// parseInteger succeededç 
 	if (result.remainder().isNull())
+		// automatically a boundary
 		return result;
 
 	{
