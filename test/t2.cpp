@@ -44,6 +44,14 @@ int main () {
 	pr(" -1e400");
 	pr("-1e-400");
 	pr(" 1e-400");
+	pr("+.092"); // these are currently being printed with 0 in
+	pr("-.092"); // front of the dot, meh
+	pr("+0.092");
+	pr("-0.092");
+	pr("+1.");
+	pr("-1.");
+	pr("+.");
+	pr("-.");
 	// XX +nan.0, +inf.0, -inf.0
 
 	note("double overflow");

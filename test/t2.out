@@ -28,6 +28,14 @@ Double: +inf.0
 Double: -inf.0
 Double: -0.
 Double: 0.
+Double: 0.092
+Double: -0.092
+Double: 0.092
+Double: 0.092
+Double: 1.
+Double: -1.
+Symbol: +.
+Symbol: -.
 ---- double overflow ----
 ParseError: #<parse-error "Int64Overflow" 35>
 ---- fractional vs. symbol ----
