@@ -222,7 +222,7 @@ LilyDouble::write(std::ostream& out) {
 	if ((len >= 3)
 	    && (((s[0]=='i') && (s[1]=='n') && (s[2]=='f'))
 		    ||
-		((s[1]=='i') && (s[2]=='n') && (s[3]=='f')))) {
+		((s[1]=='i') && (s[2]=='n')))) {
 		out << ((s[0]=='-') ? "-inf.0" : "+inf.0");
 	} else {
 		auto e= s.find('e');
