@@ -57,6 +57,7 @@ public:
 		: _backingString(backingString),
 		  _error(error),
 		  _position(position) {}
+	StringCursor() {}
 	char first () const {
 		return (*_backingString)[_position];
 	}
