@@ -336,9 +336,11 @@ PR_suffix parseFloat_suffix(S s) {
 }
 
 
-// s is after the predot part; in the case of a leading dot, 0 is
-// passed as predot value
-PR parseFloat(int64_t predot, Sm s) {
+// s is after the predot part (including any possible sign); in the
+// case of a leading dot, 0 is passed as predot value. If negate is
+// true then the result needs to be negated (can also be false and
+// predot already negative).
+PR parseFloat(Sm s, bool negate, int64_t predot) {
 	WARN("parseFloat: " << predot << ", " << show(s.string()));
 	if (s.isNull())
 		return parseError(s, ParseResultCode::NotAFloat);
@@ -388,10 +390,12 @@ PR parseFloat(int64_t predot, Sm s) {
 		int64_t exponent= suffix.value().second;
 
 		double f= exp10(-postdotLength);
-		return OK(DOUBLE((static_cast<double>(predot)
-				  + static_cast<double>(postdot)
-				  * f)
-				  * exp10(exponent)),
+		double result=
+			(static_cast<double>(predot)
+			 + static_cast<double>(postdot)
+			 * f)
+			* exp10(exponent);
+		return OK(DOUBLE(negate ? -result : result),
 			  suffix.remainder());
 	} else {
 		// there is no suffix
@@ -404,9 +408,11 @@ PR parseFloat(int64_t predot, Sm s) {
 			else {
 				double f= exp10(-postdotLength);
 				WARN("f= "<<f<<", postdotLength= "<<postdotLength);
-				return OK(DOUBLE(static_cast<double>(predot)
-						 + static_cast<double>(postdot)
-						 * f),
+				double result=
+					static_cast<double>(predot)
+					+ static_cast<double>(postdot)
+					* f;
+				return OK(DOUBLE(negate ? -result : result),
 					  s);
 			}
 		} else {
@@ -415,8 +421,33 @@ PR parseFloat(int64_t predot, Sm s) {
 	}
 }
 
-PR parseNumber(S s) {
-	PRm result= parseInteger(s);
+PR parseNumber(Sm s) {
+	// if (s.isNull())
+	// 	return parseError(s, ParseResultCode::MissingInput);
+	//(^ automate such, please..; should never get here that way
+	//   tho--so *where* is MissingInput useful?)
+
+	bool isneg= false;
+	char c0= s.first();
+	if (c0=='-') {
+		isneg= true;
+		s= s.rest();
+	} else if (c0=='+') {
+		s= s.rest();
+	}
+
+	if (s.isNull())
+		return parseError(s, ParseResultCode::NotANumber);
+
+	PRm result;
+	if (s.first() == '.') {
+		result= parseFloat(s, isneg, 0);
+		// result is already corrected; yes labels is making
+		// this menu contain more spaghetti than sauce.
+		goto successsofar; // XX correct to do that in failure case? rename label!
+	}
+
+	result= isneg ? parseNegativeInteger(s) : parsePositiveInteger(s);
 	if (result.error() == ParseResultCode::Int64Overflow)
 		// not success of course, but that will check for
 		// boundary, and the error is kept.
@@ -430,8 +461,9 @@ PR parseNumber(S s) {
 		return result;
 
 	{
-		PR f= parseFloat(UNWRAP_AS(LilyInt64, result.value())->value,
-				 result.remainder());
+		PR f= parseFloat(result.remainder(),
+				 false,
+				 UNWRAP_AS(LilyInt64, result.value())->value);
 		if (f.success()) {
 			WARN("  parseFloat returned success, " << show(f.value()));
 			result= f;
