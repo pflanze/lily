@@ -205,12 +205,21 @@ LilyFractional64::write(std::ostream& out) {
 
 void
 LilyDouble::write(std::ostream& out) {
-	/* Boost has boost::lexical_cast which is said to work, but
-	   don't want to depend on that. This about works but not sure
-	   it's correct, it is giving back different values than
-	   parsed, who is to blame? */
-	out.precision(std::numeric_limits<double>::max_digits10);
-	out << value;
+	/* Boost has boost::lexical_cast which is said to work for
+	   choosing the correct number of digits, but don't want to
+	   depend on that. This about works but not sure it's correct,
+	   it is giving back different values than parsed, who is to
+	   blame? */
+
+	/* Have to check whether the output already contains a dot or
+	   exponent, hence capture into a string first, meh. */
+	std::ostringstream o;
+	o.precision(std::numeric_limits<double>::max_digits10);
+	o << value;
+	auto s= o.str();
+	out << s;
+	if ((s.find('.') == std::string::npos) && (s.find('e') == std::string::npos))
+		out << ".";
 }
 
 // could output addresses, but then testing via stringification
