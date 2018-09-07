@@ -30,6 +30,7 @@ int main () {
 
 	note("double vs. symbol");
 	pr("1e2");
+	pr("1e234");
 	pr("1.");
 	pr("1.|", false);
 	pr("1.3");
