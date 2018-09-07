@@ -55,7 +55,7 @@ class LilyObject {
 public:
 	std::string onelineString();
 	virtual const char* typeName()=0;
-	virtual void onelinePrint(std::ostream& out)=0;
+	virtual void write(std::ostream& out)=0;
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
 };
 
@@ -73,7 +73,7 @@ public:
 	virtual LilyObjectPtr cdr() = 0;
 	virtual bool isNull() = 0;
 	virtual bool isPair() = 0;
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	// virtual ~LilyList();
 };
 
@@ -141,7 +141,7 @@ public:
 	//^ XX evil?...
 	virtual bool isNull() { return false; }
 	virtual bool isPair() { return true; }
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyPair();
 	LilyObjectPtr _car;
@@ -162,7 +162,7 @@ private:
 public:
 	virtual bool isNull() { return true; }
 	static LilyObjectPtr singleton();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	// virtual ~LilyVoid();
 };
@@ -176,7 +176,7 @@ public:
 	bool value;
 	static LilyObjectPtr True();
 	static LilyObjectPtr False();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	//virtual ~LilyBoolean();
 };
@@ -187,7 +187,7 @@ public:
 		evalId= LilyEvalOpcode::String;
 	}
 	std::string string;
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyString();
 };
@@ -196,7 +196,7 @@ class LilySymbollike : public LilyObject {
 protected:
 	LilySymbollike(std::string s, symboltablehash_t h, bool nq)
 		: _string(s), hash(h), needsQuoting(nq) {}
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	const std::string _string;
 	const symboltablehash_t hash;
 	bool needsQuoting;
@@ -222,7 +222,7 @@ public:
 		evalId= LilyEvalOpcode::Keyword;
 	}
 	static LilyObjectPtr intern(std::string s, bool nq);
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyKeyword();
 };
@@ -250,7 +250,7 @@ public:
 		evalId= LilyEvalOpcode::Int64;
 	};
 	int64_t value;
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -268,7 +268,7 @@ public:
 	}
 	int64_t _numerator;
 	int64_t _denonimator;
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -284,7 +284,7 @@ public:
 		evalId= LilyEvalOpcode::Double;
 	}
 	double value;
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -400,7 +400,7 @@ public:
 		evalId= LilyEvalOpcode::NativeProcedure;
 	}
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
@@ -433,7 +433,7 @@ public:
 		// future in another context)
 	}
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* expressions,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
@@ -457,7 +457,7 @@ public:
 		evalId= LilyEvalOpcode::NativeEvaluator;
 	}
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
@@ -491,7 +491,7 @@ public:
 	LilyListPtr expressions() { return _expressions; }
 private: // XX make struct readonly?
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	LilyObjectPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
 	LilyListPtr _expressions; // i.e. unevaluated
@@ -516,7 +516,7 @@ public:
 	}
 	virtual std::string what();
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	std::string _msg;
 };
 
@@ -531,7 +531,7 @@ public:
 	virtual parse_position_t pos() { return _pos; };
 	virtual std::string what();
 	virtual const char* typeName();
-	virtual void onelinePrint(std::ostream& out);
+	virtual void write(std::ostream& out);
 	std::string _msg;
 	parse_position_t _pos;
 };

@@ -1,7 +1,7 @@
 #include "lilyConstruct.hpp"
 
 LilyObjectPtr WRITELN(LilyObjectPtr v, std::ostream& out) {
-	v->onelinePrint(out);
+	v->write(out);
 	out << "\n";
 	return VOID;
 }

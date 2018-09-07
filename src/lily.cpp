@@ -96,18 +96,18 @@ LilyDouble::~LilyDouble() {};
 std::string
 LilyObject::onelineString() {
 	std::ostringstream res;
-	this->onelinePrint(res);
+	this->write(res);
 	return res.str();
 }
 
 	
 void
-LilyList::onelinePrint(std::ostream& out) {
+LilyList::write(std::ostream& out) {
 	LilyList* p= this;
 	out << "(";
 	bool isNull= p->isNull();
 	while (!isNull) {
-		p->first()->onelinePrint(out);
+		p->first()->write(out);
 		p= LIST_UNWRAP(p->rest());
 		isNull= p->isNull();
 		if (isNull) {
@@ -123,7 +123,7 @@ LilyObjectPtr lilySymbol_quasiquote= SYMBOL("quasiquote", false);
 LilyObjectPtr lilySymbol_unquote= SYMBOL("unquote", false);
 
 void
-LilyPair::onelinePrint(std::ostream& out) {
+LilyPair::write(std::ostream& out) {
 	LETU_AS(cdr, LilyPair, _cdr);
 	if (cdr && is_LilyNull(&*(cdr->_cdr))) {
 		if (_car == lilySymbol_quote) { out << "'";  goto end_special; }
@@ -131,7 +131,7 @@ LilyPair::onelinePrint(std::ostream& out) {
 		else if (_car == lilySymbol_unquote) { out << ",";  goto end_special; }
 		else {goto otherwise; }
 	end_special:
-		cdr->_car->onelinePrint(out);
+		cdr->_car->write(out);
 		return;
 	}
 otherwise:
@@ -139,7 +139,7 @@ otherwise:
 	LilyPair* p= this;
 	out << "(";
 	while (true) {
-		p->_car->onelinePrint(out);
+		p->_car->write(out);
 		LilyObject* d= &(*(p->_cdr));
 		if ((p= is_LilyPair(d))) {
 			out << " ";
@@ -147,7 +147,7 @@ otherwise:
 			break;
 		} else {
 			out << " . ";
-			d->onelinePrint(out);
+			d->write(out);
 			break;
 		}
 	}
@@ -156,25 +156,25 @@ otherwise:
 
 
 void
-LilyBoolean::onelinePrint(std::ostream& out) {
+LilyBoolean::write(std::ostream& out) {
 	out << (value ? "#t" : "#f");
 }
 
 void
-LilyVoid::onelinePrint(std::ostream& out) {
+LilyVoid::write(std::ostream& out) {
 	out << "#!void";
 }
 
 
 void
-LilyString::onelinePrint(std::ostream& out) {
+LilyString::write(std::ostream& out) {
 	out << '"';
 	string_onelinePrint(string, out, '"');
 	out << '"';
 }
 
 void
-LilySymbollike::onelinePrint(std::ostream& out) {
+LilySymbollike::write(std::ostream& out) {
 	if (needsQuoting) {
 		out << '|';
 		string_onelinePrint(_string, out, '|');
@@ -188,23 +188,23 @@ LilySymbollike::onelinePrint(std::ostream& out) {
 }
 
 void
-LilyKeyword::onelinePrint(std::ostream& out) {
-	LilySymbollike::onelinePrint(out);
+LilyKeyword::write(std::ostream& out) {
+	LilySymbollike::write(out);
 	out << ":";
 }
 
 void
-LilyInt64::onelinePrint(std::ostream& out) {
+LilyInt64::write(std::ostream& out) {
 	out << value;
 }
 
 void
-LilyFractional64::onelinePrint(std::ostream& out) {
+LilyFractional64::write(std::ostream& out) {
 	out << _numerator << "/" << _denonimator;
 }
 
 void
-LilyDouble::onelinePrint(std::ostream& out) {
+LilyDouble::write(std::ostream& out) {
 	/* Boost has boost::lexical_cast which is said to work, but
 	   don't want to depend on that. This about works but not sure
 	   it's correct, it is giving back different values than
@@ -216,30 +216,30 @@ LilyDouble::onelinePrint(std::ostream& out) {
 // could output addresses, but then testing via stringification
 // becomes non-deterministic
 void
-LilyNativeProcedure::onelinePrint(std::ostream& out) {
+LilyNativeProcedure::write(std::ostream& out) {
 	out << "#<native-procedure "<< _name <<">";
 }
 
 void
-LilyNativeMacroexpander::onelinePrint(std::ostream& out) {
+LilyNativeMacroexpander::write(std::ostream& out) {
 	out << "#<native-macro-expander "<< _name <<">";
 }
 
 void
-LilyNativeEvaluator::onelinePrint(std::ostream& out) {
+LilyNativeEvaluator::write(std::ostream& out) {
 	out << "#<native-evaluator "<< _name <<">";
 }
 
 // and yeah, decided to make it a LilyObject, so now have to define
 // the stuff that might be user accessed
 void
-LilyContinuationFrame::onelinePrint(std::ostream& out) {
+LilyContinuationFrame::write(std::ostream& out) {
 	bool deep=1;
 	if (deep) {
 		(out << "#<continuation-frame "
 		 << (_maybeHead ? show(_maybeHead) : "NULL")
 		 << " "
-		 << show(_rvalues) // XX use onelinePrint directly please..
+		 << show(_rvalues) // XX use write directly please..
 		 << " "
 		 << show(_expressions)
 		 << ">");
@@ -254,7 +254,7 @@ LilyContinuationFrame::onelinePrint(std::ostream& out) {
 }
 
 void
-LilyDivisionByZeroError::onelinePrint(std::ostream& out) {
+LilyDivisionByZeroError::write(std::ostream& out) {
 	(out
 	 << "#<division-by-zero-error "
 	 << show(STRING(_msg))
@@ -262,7 +262,7 @@ LilyDivisionByZeroError::onelinePrint(std::ostream& out) {
 }
 
 void
-LilyParseError::onelinePrint(std::ostream& out) {
+LilyParseError::write(std::ostream& out) {
 	(out
 	 << "#<parse-error "
 	 << show(STRING(_msg)) // for string formatting
@@ -692,13 +692,13 @@ LilyListPtr reverse(LilyObjectPtr l) {
 
 std::string show(const LilyObjectPtr& v) {
 	std::ostringstream s;
-	v->onelinePrint(s);
+	v->write(s);
 	return s.str();
 }
 
 // XX completely stupid copy-paste; use templates?
 std::string show(LilyObject* v) {
 	std::ostringstream s;
-	v->onelinePrint(s);
+	v->write(s);
 	return s.str();
 }
