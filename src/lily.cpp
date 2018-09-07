@@ -218,8 +218,16 @@ LilyDouble::write(std::ostream& out) {
 	// ^ XX "- 1": evil, hide the parsing (or precision?) problems under the carpet
 	o << value;
 	auto s= o.str();
+	auto e= s.find('e');
+	bool has_e= !(e == std::string::npos);
+	if (has_e) {
+		e++;
+		if ((e < s.length()) && (s[e] == '+')) {
+			s.replace(e, 1, "");
+		}
+	}
 	out << s;
-	if ((s.find('.') == std::string::npos) && (s.find('e') == std::string::npos))
+	if ((s.find('.') == std::string::npos) && !has_e)
 		out << ".";
 }
 
