@@ -221,24 +221,25 @@ static LilyObjectPtr lilyBegin(LilyListPtr* es,
 	return NIL;
 }
 
+#define ENTRY(str, proc) PAIR(SYMBOL(str, false), NATIVE_PROCEDURE(proc, str))
 
 LilyListPtr lilyDefaultEnvironment() {
 	static LilyListPtr env= LIST(
-		PAIR(SYMBOL("+", false), NATIVE_PROCEDURE(lilyAdd, "+")),
-		PAIR(SYMBOL("*", false), NATIVE_PROCEDURE(lilyMult, "*")),
-		PAIR(SYMBOL("-", false), NATIVE_PROCEDURE(lilySub, "-")),
-		PAIR(SYMBOL("quotient", false), NATIVE_PROCEDURE(lilyQuotient, "quotient")),
-		PAIR(SYMBOL("remainder", false), NATIVE_PROCEDURE(lilyRemainder, "remainder")),
-		// PAIR(SYMBOL("integer./"), NATIVE_PROCEDURE(lilyDiv, "integer./")),
-		PAIR(SYMBOL("cons", false), NATIVE_PROCEDURE(lilyCons, "cons")),
-		PAIR(SYMBOL("car", false), NATIVE_PROCEDURE(lilyCar, "car")),
-		PAIR(SYMBOL("cdr", false), NATIVE_PROCEDURE(lilyCdr, "cdr")),
-		PAIR(SYMBOL("quote", false), NATIVE_EVALUATOR(lilyQuote, "quote")),
-		PAIR(SYMBOL("list", false), NATIVE_PROCEDURE(lilyList, "list")),
-		PAIR(SYMBOL("length", false), NATIVE_PROCEDURE(lilyLength, "length")),
-		PAIR(SYMBOL("reverse", false), NATIVE_PROCEDURE(lilyReverse, "reverse")),
-		PAIR(SYMBOL("define", false), NATIVE_EVALUATOR(lilyDefine, "define")),
-		PAIR(SYMBOL("begin", false), NATIVE_EVALUATOR(lilyBegin, "begin")),
+		ENTRY("+", lilyAdd),
+		ENTRY("*", lilyMult),
+		ENTRY("-", lilySub),
+		ENTRY("quotient", lilyQuotient),
+		ENTRY("remainder", lilyRemainder),
+		// ENTRY("integer./", lilyDiv),
+		ENTRY("cons", lilyCons),
+		ENTRY("car", lilyCar),
+		ENTRY("cdr", lilyCdr),
+		ENTRY("quote", lilyQuote),
+		ENTRY("list", lilyList),
+		ENTRY("length", lilyLength),
+		ENTRY("reverse", lilyReverse),
+		ENTRY("define", lilyDefine),
+		ENTRY("begin", lilyBegin),
 		);
 	return env;
 }
