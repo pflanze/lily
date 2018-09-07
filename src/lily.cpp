@@ -218,17 +218,25 @@ LilyDouble::write(std::ostream& out) {
 	// ^ XX "- 1": evil, hide the parsing (or precision?) problems under the carpet
 	o << value;
 	auto s= o.str();
-	auto e= s.find('e');
-	bool has_e= !(e == std::string::npos);
-	if (has_e) {
-		e++;
-		if ((e < s.length()) && (s[e] == '+')) {
-			s.replace(e, 1, "");
+	auto len= s.length();
+	if ((len >= 3)
+	    && (((s[0]=='i') && (s[1]=='n') && (s[2]=='f'))
+		    ||
+		((s[1]=='i') && (s[2]=='n') && (s[3]=='f')))) {
+		out << ((s[0]=='-') ? "-inf.0" : "+inf.0");
+	} else {
+		auto e= s.find('e');
+		bool has_e= !(e == std::string::npos);
+		if (has_e) {
+			e++;
+			if ((e < len) && (s[e] == '+')) {
+				s.replace(e, 1, "");
+			}
 		}
+		out << s;
+		if ((s.find('.') == std::string::npos) && !has_e)
+			out << ".";
 	}
-	out << s;
-	if ((s.find('.') == std::string::npos) && !has_e)
-		out << ".";
 }
 
 // could output addresses, but then testing via stringification
