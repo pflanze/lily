@@ -383,35 +383,40 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 		break;
 	}
 	}
+
+	double f= exp10(-postdotLength);
+	auto predotabs= (predot < 0) ? -predot : predot;
+	if (predot < 0)
+		negate= !negate;
+	WARN("  f= "<<f<<", predot= "<<predot<<", predotabs="<<predotabs<<", negate="<<negate);
+
 	PR_suffix suffix= parseFloat_suffix(s);
 	if (suffix.success()) {
 		// we have a suffix
 		char exponentMarker= suffix.value().first;
 		int64_t exponent= suffix.value().second;
 
-		double f= exp10(-postdotLength);
 		double result=
-			(static_cast<double>(predot)
+			(static_cast<double>(predotabs)
 			 + static_cast<double>(postdot)
 			 * f)
 			* exp10(exponent);
+		WARN("  have suffix. exponent="<<exponent<<", result="<<result);
 		return OK(DOUBLE(negate ? -result : result),
 			  suffix.remainder());
 	} else {
 		// there is no suffix
-		WARN("  there is no suffix, hasDot="<<hasDot<<", ç");
 		if (hasDot) {
 			if (overflow)
 				// it is following float syntax, but
 				// error parsing it
 				return parseError(s, ParseResultCode::Int64Overflow);
 			else {
-				double f= exp10(-postdotLength);
-				WARN("f= "<<f<<", postdotLength= "<<postdotLength);
 				double result=
-					static_cast<double>(predot)
+					static_cast<double>(predotabs)
 					+ static_cast<double>(postdot)
 					* f;
+				WARN("  no suffix. result="<<result);
 				return OK(DOUBLE(negate ? -result : result),
 					  s);
 			}
