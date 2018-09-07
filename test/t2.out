@@ -24,6 +24,10 @@ Double: .309
 Double: 13.
 Double: -13.
 Double: -.13
+Double: +inf.0
+Double: -inf.0
+Double: -0.
+Double: 0.
 ---- double overflow ----
 ParseError: #<parse-error "Int64Overflow" 35>
 ---- fractional vs. symbol ----

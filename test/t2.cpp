@@ -40,6 +40,10 @@ int main () {
 	pr("1.3e1");
 	pr("-1.3e1");
 	pr("-1.3e-1");
+	pr("1e2344");
+	pr(" -1e400");
+	pr("-1e-400");
+	pr(" 1e-400");
 	// XX +nan.0, +inf.0, -inf.0
 
 	note("double overflow");
