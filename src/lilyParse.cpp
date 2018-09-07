@@ -441,10 +441,15 @@ PR parseNumber(Sm s) {
 
 	PRm result;
 	if (s.first() == '.') {
+		// ugly? parseFloat is going to (and has to) analyze the dot again.
 		result= parseFloat(s, isneg, 0);
-		// result is already corrected; yes labels is making
-		// this menu contain more spaghetti than sauce.
-		goto successsofar; // XX correct to do that in failure case? rename label!
+		if (result.remainder().position() > s.rest().position())
+			goto successsofar; // XX correct to do that in failure case? rename label!
+		else
+			// no digits left to the dot and none (or
+			// suffix) right to it either: it's just a dot or
+			// +. by itself
+			return parseError(s, ParseResultCode::NotANumber);
 	}
 
 	result= isneg ? parseNegativeInteger(s) : parsePositiveInteger(s);
