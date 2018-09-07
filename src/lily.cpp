@@ -4,8 +4,7 @@
 #include "lilyConstruct.hpp" // oh well, why separate those then?
 #include "lilyParse.hpp"
 #include "lilyUtil.hpp"
-
-
+#include <limits>
 
 LilyObjectPtr
 LilyBoolean::True() {
@@ -206,6 +205,11 @@ LilyFractional64::onelinePrint(std::ostream& out) {
 
 void
 LilyDouble::onelinePrint(std::ostream& out) {
+	/* Boost has boost::lexical_cast which is said to work, but
+	   don't want to depend on that. This about works but not sure
+	   it's correct, it is giving back different values than
+	   parsed, who is to blame? */
+	out.precision(std::numeric_limits<double>::max_digits10);
 	out << value;
 }
 
