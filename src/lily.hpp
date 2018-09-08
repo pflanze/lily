@@ -36,6 +36,7 @@ enum class LilyEvalOpcode : char {
 class LilyObject;
 class LilyList;
 class LilyNumber;
+class LilyInt64;
 class LilyContinuationFrame;
 class LilySymbollike;
 
@@ -43,6 +44,7 @@ typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
 typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
 typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
+typedef std::shared_ptr<LilyInt64> LilyInt64Ptr;
 typedef std::shared_ptr<LilySymbollike> LilySymbollikePtr;
 
 

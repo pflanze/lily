@@ -3,6 +3,10 @@
 #include "lilyDefaultEnvironment.hpp"
 
 
+static LilyInt64Ptr _zero= std::dynamic_pointer_cast<LilyInt64>(INT(0));
+static LilyInt64Ptr _one= std::dynamic_pointer_cast<LilyInt64>(INT(1));
+
+
 template <typename LilyT, typename T>
 static
 T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
@@ -24,52 +28,85 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 	}
 }
 
-#define DEF_FOLD_UP_NATIVE(name, LilyT, T, OP, START)			\
+
+template <typename Tv, typename Tres>
+static
+Tres lilyFold(LilyList* vs,
+	      std::function<Tres(Tv, Tres)> fn,
+	      LilyObjectPtr start) {
+	Tres res= std::dynamic_pointer_cast<Tres>(start);
+	while (true) {
+		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
+			res= fn(std::dynamic_pointer_cast<Tv>(pair->_car),
+				res);
+			vs= XLIST_UNWRAP(pair->_cdr);
+		} else if (dynamic_cast<LilyNull*>(vs)) {
+			return res;
+		} else {
+			throw std::logic_error(STR("not a proper list, ending in: "
+						   << show(vs)));
+		}
+	}
+}
+
+
+#define DEF_FOLD_UP_NATIVE(name, Tv, Tres, OP, START)			\
 	static								\
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
 			   LilyListPtr* _cont) {			\
-		return LILY_NEW						\
-			(LilyT(_lilyFold<LilyT, T>			\
-			       (XLIST_UNWRAP(*vs),			\
-				[](LilyT* num, T res) -> T {		\
-				       /* XX check for overflow! */	\
-				       return res OP num->value;	\
-			        },					\
-				START)));				\
+		return lilyFold<Tv, Tres>(XLIST_UNWRAP(*vs),		\
+					  OP,				\
+					  START);			\
 	}
 
-DEF_FOLD_UP_NATIVE(lilyAdd, LilyInt64, int64_t, +, 0);
-DEF_FOLD_UP_NATIVE(lilyMult, LilyInt64, int64_t, *, 1);
+DEF_FOLD_UP_NATIVE(lilyAdd, LilyNumber, LilyNumber,
+		   [](LilyNumberPtr v, LilyNumberPtr res) {
+			   return res->add(v);
+		   }, _zero);
+DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
+		   [](LilyNumberPtr v, LilyNumberPtr res) {
+			   return res->multiply(v);
+		   }, _one);
 
 // LONESTART is used when there's only one argument
-#define DEF_FOLD_DOWN_NATIVE(name, LilyT, T, OP, LONESTART)		\
+#define DEF_FOLD_DOWN_NATIVE(name, Tv, Tres, OP, LONESTART)		\
 	static								\
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
 			   LilyListPtr* _cont) {			\
-	auto fn= [](LilyT* num, T res) -> T {				\
-		/* XX check for overflow? */				\
-		return res OP num->value;				\
-	};								\
-	LilyList* _vs= &**vs;						\
-	if (is_LilyNull(_vs))						\
-		throw std::logic_error(#OP ": wrong number of arguments"); \
-	T res;								\
-	LilyList* r= &*(_vs->rest());					\
-	if (is_LilyNull(r))						\
-		res= fn(XUNWRAP_AS(LilyT, _vs->first()), LONESTART);	\
-	else								\
-		res= _lilyFold<LilyT, T>				\
-			(r, fn, XUNWRAP_AS(LilyT, _vs->first())->value); \
-	return LILY_NEW(LilyT(res));					\
+		LilyList* _vs= &**vs;					\
+		if (is_LilyNull(_vs))					\
+			throw std::logic_error(#OP ": wrong number of arguments"); \
+		LilyList* r= &*(_vs->rest());				\
+		if (is_LilyNull(r))					\
+			return fn(std::dynamic_pointer_cast<Tv>(_vs->first()), \
+				  std::dynamic_pointer_cast<Tres>(LONESTART)); \
+		else							\
+			return lilyFold<Tv,Tres>(r, fn, _vs->first());	\
 	}
 
-DEF_FOLD_DOWN_NATIVE(lilySub, LilyInt64, int64_t, -, 0);
-DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, int64_t, /, 1);
-DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, int64_t, %, 1);
+DEF_FOLD_DOWN_NATIVE(lilySub, LilyNumber, LilyNumber,
+		     [](LilyNumberPtr v, LilyNumberPtr res){
+			     return res->subtract(v);
+		     }, _zero);
+// XX Gambit allows inexact integers here !
+DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, LilyInt64,
+		     [](LilyInt64Ptr v, LilyInt64Ptr res){
+			     return INT(lily_quotient(res->value(),
+						      v->value()));
+		     }, _one);
+DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, LilyInt64,
+		     [](LilyInt64Ptr v, LilyInt64Ptr res){
+			     return INT(lily_remainder(res->value(),
+						       v->value()));
+		     }, _one);
 
-// DEF_NATIVE(lilyDiv, LilyInt64, int64_t, /); // generic
+// inputs must be integers, but result can be fractionals.
+DEF_FOLD_DOWN_NATIVE(lilyIntegerDiv, LilyInt64, LilyNumber,
+		     [](LilyInt64Ptr v, LilyNumberPtr res) {
+			     return res->divideBy(v);
+		     }, _one);
 
 
 static
@@ -230,7 +267,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("-", lilySub),
 		ENTRY("quotient", lilyQuotient),
 		ENTRY("remainder", lilyRemainder),
-		// ENTRY("integer./", lilyDiv),
+		ENTRY("integer./", lilyIntegerDiv),
 		ENTRY("cons", lilyCons),
 		ENTRY("car", lilyCar),
 		ENTRY("cdr", lilyCdr),
