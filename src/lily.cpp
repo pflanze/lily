@@ -454,7 +454,14 @@ LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b) {
 	int64_t d= b->denominator();
 	return simplifiedFractional64(lily_sub(n, lily_mul(a->value, d)), d);
 }
-	
+
+LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64
+		(lily_add(lily_mul(a->numerator(), b->denominator()),
+			  lily_mul(b->numerator(), a->denominator())),
+		 lily_mul(a->denominator(), b->denominator()));
+}
 
 // XX test
 double LilyInt64::asDouble() {
@@ -515,6 +522,10 @@ LilyNumberPtr LilyFractional64::divideBy(const LilyNumberPtr& b) {
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::add(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Add(b0, this);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Add(this, b1);
 	throw std::logic_error(STR("unimplemented number operation: add "
 				   << show(this) << " " << show(b)));
 }

@@ -383,6 +383,7 @@ static inline LilyNumberPtr Add(LilyInt64* a, LilyInt64* b) {
 		(new LilyInt64(lily_add(a->value, b->value)));
 }
 LilyNumberPtr Add(LilyInt64* a, LilyFractional64* b);
+LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b);
 
 static inline LilyNumberPtr Subtract(LilyInt64* a, LilyInt64* b) {
 	return std::shared_ptr<LilyNumber>
