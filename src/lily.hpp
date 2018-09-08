@@ -271,12 +271,14 @@ public:
 
 class LilyFractional64 : public LilyExact {
 public:
-	LilyFractional64 (int64_t numerator, int64_t denonimator)
-		: _numerator(numerator), _denonimator(denonimator) {
+	LilyFractional64 (int64_t numerator, int64_t denominator)
+		: _numerator(numerator), _denominator(denominator) {
 		evalId= LilyEvalOpcode::Fractional64;
 	}
+	int64_t numerator() { return _numerator;}
+	int64_t denominator() { return _denominator;}
 	int64_t _numerator;
-	int64_t _denonimator;
+	int64_t _denominator;
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual double asDouble();
@@ -286,6 +288,7 @@ public:
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
 	virtual ~LilyFractional64();
 };
+LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d); // XX move into class
 
 class LilyDouble : public LilyInexact {
 public:
@@ -373,6 +376,19 @@ static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyInt64* b) {
 static inline LilyNumberPtr Multiply(LilyInt64* a, LilyInt64* b) {
 	return std::shared_ptr<LilyNumber>(new LilyInt64(lily_mul(a->value, b->value)));
 }
+
+
+static inline LilyNumberPtr Add(LilyInt64* a, LilyInt64* b) {
+	return std::shared_ptr<LilyNumber>
+		(new LilyInt64(lily_add(a->value, b->value)));
+}
+LilyNumberPtr Add(LilyInt64* a, LilyFractional64* b);
+
+static inline LilyNumberPtr Subtract(LilyInt64* a, LilyInt64* b) {
+	return std::shared_ptr<LilyNumber>
+		(new LilyInt64(lily_sub(a->value, b->value)));
+}
+LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b);
 
 
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b);

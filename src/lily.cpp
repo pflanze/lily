@@ -213,7 +213,7 @@ LilyInt64::write(std::ostream& out) {
 
 void
 LilyFractional64::write(std::ostream& out) {
-	out << _numerator << "/" << _denonimator;
+	out << _numerator << "/" << _denominator;
 }
 
 void
@@ -407,6 +407,26 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
 }
 
+LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
+	int64_t f= lily_gcd(n, d);
+	int64_t n1;
+	int64_t d1;
+	if (f > 1) {
+		n1= n / f;
+		d1= d / f;
+		if (d1 == 1) {
+			WARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1);
+			return std::shared_ptr<LilyNumber>
+				(new LilyInt64(n1));
+		}
+	} else {
+		n1= n;
+		d1= d;
+	}
+	assert(!(d1 == 1));
+	WARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1<<"/"<<d1);
+	return std::shared_ptr<LilyNumber>(new LilyFractional64(n1, d1));
+}
 
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
 	int64_t bv= b->value;
@@ -417,24 +437,24 @@ LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
 	if (bv == 1)
 		// stupid since might just refcnt++ a, but then the API wouldn't work.
 		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));
-	int64_t av= a->value;
-	int64_t d= lily_gcd(av, bv);
-	int64_t a1;
-	int64_t b1;
-	if (d > 1) {
-		a1= av / d;
-		b1= bv / d;
-		if (b1 == 1)
-			return std::shared_ptr<LilyNumber>
-				(new LilyInt64(a1));
-	} else {
-		a1= av;
-		b1= bv;
-	}
-	return std::shared_ptr<LilyNumber>(new LilyFractional64(a1, b1));
+	return simplifiedFractional64(a->value, bv);
 }
 
 
+LilyNumberPtr Add(LilyInt64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	int64_t n= b->numerator();
+	int64_t d= b->denominator();
+	return simplifiedFractional64(lily_add(n, lily_mul(a->value, d)), d);
+}
+
+LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	int64_t n= b->numerator();
+	int64_t d= b->denominator();
+	return simplifiedFractional64(lily_sub(n, lily_mul(a->value, d)), d);
+}
+	
 
 // XX test
 double LilyInt64::asDouble() {
@@ -464,10 +484,18 @@ LilyNumberPtr LilyInt64::divideBy(const LilyNumberPtr& b) {
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyInt64::add(const LilyNumberPtr& b) {
+	auto* b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Add(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Add(this, b1);
 	throw std::logic_error(STR("unimplemented number operation: add "
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyInt64::subtract(const LilyNumberPtr& b) {
+	auto* b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Subtract(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Subtract(this, b1);
 	throw std::logic_error(STR("unimplemented number operation: subtract "
 				   << show(this) << " " << show(b)));
 }
