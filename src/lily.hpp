@@ -231,12 +231,13 @@ public:
 
 class LilyNumber : public LilyObject {
 public:
-	virtual LilyNumberPtr multiply(const LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr add(const LilyNumberPtr& b)=0;
-	virtual LilyNumberPtr subtract(const LilyNumberPtr& b)=0;
-	virtual double asDouble()=0;
+	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
+	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
+	virtual LilyNumberPtr add(const LilyNumberPtr& b);
+	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
+	virtual double asDouble();
 
+	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 };
 

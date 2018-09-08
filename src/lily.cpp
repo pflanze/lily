@@ -8,7 +8,15 @@
 
 
 // XX weird wanted that to be fully abstract
+LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {XXX};
+LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {XXX};
+LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {XXX};
+LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {XXX};
+double LilyNumber::asDouble() {XXX};
+
+void LilyNumber::write(std::ostream& out) {XXX};
 const char* LilyNumber::typeName() { return "LilyNumber"; }
+// /weird
 
 
 LilyObjectPtr
