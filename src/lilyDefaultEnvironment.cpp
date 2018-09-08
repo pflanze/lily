@@ -114,6 +114,15 @@ DEF_FOLD_DOWN_NATIVE(lilyIntegerDiv, "integer./", LilyInt64, LilyNumber,
 			     return res->divideBy(v);
 		     }, _one);
 
+// XX also check the type of the start value
+DEF_FOLD_DOWN_NATIVE(lilyDoubleDiv, "double./", LilyDouble, LilyDouble,
+		     [](LilyDoublePtr v, LilyDoublePtr res) -> LilyDoublePtr {
+			     // return res->divideBy(v);
+			     // that's giving LilyNumberPtr, just do it directly?
+			     return DOUBLE(res->value / v->value);
+		     }, _one);
+
+
 
 static
 LilyObjectPtr lilyCons(LilyListPtr* vs,
@@ -274,6 +283,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("quotient", lilyQuotient),
 		ENTRY("remainder", lilyRemainder),
 		ENTRY("integer./", lilyIntegerDiv),
+		ENTRY("double./", lilyDoubleDiv),
 		ENTRY("cons", lilyCons),
 		ENTRY("car", lilyCar),
 		ENTRY("cdr", lilyCdr),

@@ -41,12 +41,14 @@ class LilyContinuationFrame;
 class LilySymbollike;
 class LilySymbol;
 class LilyKeyword;
+class LilyDouble;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
 typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
 typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
 typedef std::shared_ptr<LilyInt64> LilyInt64Ptr;
+typedef std::shared_ptr<LilyDouble> LilyDoublePtr;
 typedef std::shared_ptr<LilySymbollike> LilySymbollikePtr;
 typedef std::shared_ptr<LilySymbol> LilySymbolPtr;
 typedef std::shared_ptr<LilyKeyword> LilyKeywordPtr;
