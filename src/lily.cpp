@@ -6,6 +6,11 @@
 #include "lilyUtil.hpp"
 #include <limits>
 
+
+// XX weird wanted that to be fully abstract
+const char* LilyNumber::typeName() { return "LilyNumber"; }
+
+
 LilyObjectPtr
 LilyBoolean::True() {
 	static LilyObjectPtr v (new LilyBoolean(true));

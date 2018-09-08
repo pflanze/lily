@@ -236,6 +236,8 @@ public:
 	virtual LilyNumberPtr add(const LilyNumberPtr& b)=0;
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b)=0;
 	virtual double asDouble()=0;
+
+	virtual const char* typeName();
 };
 
 class LilyExact : public LilyNumber {
