@@ -793,3 +793,14 @@ std::string show(LilyObject* v) {
 	v->write(s);
 	return s.str();
 }
+
+
+void // noreturn;  use builtin excn values!
+throwTypeError(const char* tname, LilyObjectPtr v) {
+	// gcc is giving things like "10LilyDouble", sigh?
+	while (isDigit(*tname))
+		tname++;
+	throw std::logic_error(STR("not a " << tname << ": "
+				   << show(v)));
+}
+

@@ -593,9 +593,20 @@ apply1ary(const char* procname,
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 //#define LETU(var, e) LETU_AS(var, LilyObject, e)
 
+void // noreturn;  use builtin excn values!
+throwTypeError(const char* tname, LilyObjectPtr v);
+
 // casting without unwrapping
-#define LET_AS(var, t, e) auto var= \
-		std::dynamic_pointer_cast<t>(e)
+#define LET_AS(var, t, e) auto var= std::dynamic_pointer_cast<t>(e)
+
+template <typename T>
+std::shared_ptr<T> XAS(LilyObjectPtr v) {
+	auto res= std::dynamic_pointer_cast<T>(v);
+	if (!res) throwTypeError(typeid(T).name(), v);
+	return res;
+}
+//#define XLET_AS(var, t, e) auto var= XAS<t>(e)
+
 
 
 // Same thing but throws an exception on cast errors.

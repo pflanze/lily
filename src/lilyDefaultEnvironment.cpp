@@ -28,7 +28,6 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 	}
 }
 
-
 // Tv and Tres have to be the unwrapped types!
 template <typename Tv, typename Tres>
 static
@@ -37,7 +36,9 @@ lilyFold(LilyList* vs,
 	 std::function<std::shared_ptr<Tres>(std::shared_ptr<Tv>,
 					     std::shared_ptr<Tres>)> fn,
 	 LilyObjectPtr start) {
-	auto res= std::dynamic_pointer_cast<Tres>(start);
+	// assert(start);
+	auto res= XAS<Tres>(start);
+	
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
 			res= fn(std::dynamic_pointer_cast<Tv>(pair->_car),
