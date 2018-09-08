@@ -164,8 +164,8 @@ isAlphanumeric(char c) {
 	return isAlpha(c) || isDigit(c);
 }
 
-static bool
-isWordChar(char c) {
+static bool __attribute__((unused))
+isWordChar(char c)  {
 	return isAlphanumeric(c)
 		|| (c == '_');
 }
