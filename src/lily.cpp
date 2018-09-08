@@ -452,20 +452,24 @@ LilyNumberPtr LilyInt64::multiply(const LilyNumberPtr& b) {
 	if (b0) return Multiply(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Multiply(this, b1);
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: multiply "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyInt64::divideBy(const LilyNumberPtr& b) {
 	auto* b0= dynamic_cast<LilyInt64*>(&*b);
 	if (b0) return Divide(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Divide(this, b1);
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: divide "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyInt64::add(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: add "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyInt64::subtract(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: subtract "
+				   << show(this) << " " << show(b)));
 }
 
 // really copy-paste; XX templates possible?
@@ -474,32 +478,40 @@ LilyNumberPtr LilyFractional64::multiply(const LilyNumberPtr& b) {
 	if (b0) return Multiply(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Multiply(this, b1);
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: multiply "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::divideBy(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: divideBy "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::add(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: add "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::subtract(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: subtract "
+				   << show(this) << " " << show(b)));
 }
 
 
 LilyNumberPtr LilyDouble::multiply(const LilyNumberPtr& b) {
 	auto f= dynamic_cast<LilyDouble*>(&*b);
 	if (f) return Multiply(this, f);
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: multiply "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::divideBy(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: divideBy "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::add(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: add "
+				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::subtract(const LilyNumberPtr& b) {
-	throw std::logic_error("unimplemented number operation");
+	throw std::logic_error(STR("unimplemented number operation: subtract "
+				   << show(this) << " " << show(b)));
 }
 
 
