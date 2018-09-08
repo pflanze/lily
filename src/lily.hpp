@@ -343,6 +343,21 @@ inline int64_t lily_remainder(int64_t a, int64_t b) {
 		throwDivByZero(a, "%");
 	return a % b;
 }
+inline int64_t lily_modulo(int64_t a, int64_t b) {
+	// XX simpler algorithm?
+	if (b==0)
+		throwDivByZero(a, "%");
+	if (a < 0)
+		if (b < 0)
+			return a % b;
+		else
+			return -((-a % b) - b);
+	else
+		if (b < 0)
+			return (a % -b) + b;
+		else
+			return a % b;
+}
 inline int64_t lily_negate(int64_t a) {
 	// wow (= (- (arithmetic-shift 1 63)) (arithmetic-shift -1 63)) holds true
 	if (a == (-1ll << 63ll))

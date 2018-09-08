@@ -107,6 +107,11 @@ DEF_FOLD_DOWN_NATIVE(lilyRemainder, "remainder", LilyInt64, LilyInt64,
 			     return INT(lily_remainder(res->value,
 						       v->value));
 		     }, _one);
+DEF_FOLD_DOWN_NATIVE(lilyModulo, "modulo", LilyInt64, LilyInt64,
+		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
+			     return INT(lily_modulo(res->value,
+						    v->value));
+		     }, _one);
 
 // inputs must be integers, but result can be fractionals.
 // XX also check the type of the start value
@@ -289,6 +294,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("/", lilyDiv),
 		ENTRY("quotient", lilyQuotient),
 		ENTRY("remainder", lilyRemainder),
+		ENTRY("modulo", lilyModulo),
 		ENTRY("integer./", lilyIntegerDiv),
 		ENTRY("double./", lilyDoubleDiv),
 		ENTRY("cons", lilyCons),

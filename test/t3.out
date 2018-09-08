@@ -62,6 +62,15 @@ Fractional64: 10/3
 Fractional64: 10/3
 ERR: not a LilyDouble: 10
 Double: 3.333333333333333
+---- arithmetic r5rs tests ----
+Int64: 1
+Int64: 1
+Int64: 3
+Int64: -1
+Int64: -3
+Int64: 1
+Int64: -1
+Int64: -1
 ---- number tower ----
 Fractional64: 17/3
 Fractional64: 201/2

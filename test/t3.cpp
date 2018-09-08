@@ -120,6 +120,16 @@ int main () {
 	e("(double./ 10 3)"); // error
 	e("(double./ 10. 3.)"); // 3.3333
 
+	note("arithmetic r5rs tests");
+	e("(modulo 13 4)");
+	e("(remainder 13 4)");
+	e("(modulo -13 4)");
+	e("(remainder -13 4)");
+	e("(modulo 13 -4)");
+	e("(remainder 13 -4)");
+	e("(modulo -13 -4)");
+	e("(remainder -13 -4)");
+
 	note("number tower");
 	e("(+ 5 2/3)");
 	e("(+ 100 1/2)");
