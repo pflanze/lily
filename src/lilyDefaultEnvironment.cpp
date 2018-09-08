@@ -134,6 +134,15 @@ DEF_FOLD_DOWN_NATIVE(lilyDiv, "/", LilyNumber, LilyNumber,
 		     }, _one);
 
 
+static LilyObjectPtr
+lilyExactInexact(LilyListPtr* vs,
+		 LilyListPtr* _ctx,
+		 LilyListPtr* _cont) {
+	return apply1ary("exact->inexact", [](LilyObjectPtr v) {
+			// XX optim?: return v if already a double
+			return DOUBLE(XAS<LilyNumber>(v)->asDouble());
+		}, vs);
+}
 
 static
 LilyObjectPtr lilyCons(LilyListPtr* vs,
@@ -306,6 +315,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("reverse", lilyReverse),
 		ENTRY("define", lilyDefine),
 		ENTRY("begin", lilyBegin),
+		ENTRY("exact->inexact", lilyExactInexact),
 		);
 	return env;
 }
