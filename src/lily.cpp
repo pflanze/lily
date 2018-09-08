@@ -461,7 +461,8 @@ double LilyInt64::asDouble() {
 	return static_cast<double>(value);
 }
 double LilyFractional64::asDouble() {
-	return static_cast<double>(_numerator) / static_cast<double>(_numerator);
+	return static_cast<double>(_numerator)
+		/ static_cast<double>(_denominator);
 }
 double LilyDouble::asDouble() {
 	return value;
