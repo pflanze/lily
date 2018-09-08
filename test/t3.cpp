@@ -115,8 +115,8 @@ int main () {
 	e("(remainder 30)"); // 1 ? Gambit: Wrong number of arguments..
 	e("(remainder -10 3)"); // -1
 	e("(modulo -10 3)"); // 2
-	e("(/ 10 3)"); // 3.33333 ?
-	e("(integer./ 10 3)"); // 3
+	e("(/ 10 3)"); // fractional
+	e("(integer./ 10 3)"); // 3 -- ah, or now fractional, stupid?
 	e("(double./ 10 3)"); // error
 	e("(double./ 10. 3.)"); // 3.3333
 
