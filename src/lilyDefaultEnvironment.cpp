@@ -123,6 +123,11 @@ DEF_FOLD_DOWN_NATIVE(lilyDoubleDiv, "double./", LilyDouble, LilyDouble,
 			     return DOUBLE(res->value / v->value);
 		     }, _one);
 
+DEF_FOLD_DOWN_NATIVE(lilyDiv, "/", LilyNumber, LilyNumber,
+		     [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
+			     return res->divideBy(v);
+		     }, _one);
+
 
 
 static
@@ -281,6 +286,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("+", lilyAdd),
 		ENTRY("*", lilyMult),
 		ENTRY("-", lilySub),
+		ENTRY("/", lilyDiv),
 		ENTRY("quotient", lilyQuotient),
 		ENTRY("remainder", lilyRemainder),
 		ENTRY("integer./", lilyIntegerDiv),
