@@ -120,6 +120,14 @@ int main () {
 	e("(double./ 10 3)"); // error
 	e("(double./ 10. 3.)"); // 3.3333
 
+	note("number tower");
+	e("(+ 5 2/3)");
+	e("(+ 100 1/2)");
+	e("(+ 1/2 100)");
+	e("(+ 5/4 2/3)");
+	e(" (+ 1/6 1/3)");
+	e("(+ 5/6 1/3)");
+
 	note("invalid");
 	e("()"); // empty call
 	e("(+ 10 . 20)"); // improper list -- XX say 'argument list'
