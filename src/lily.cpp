@@ -50,19 +50,19 @@ LilyVoid::singleton() {
 // XX currently does not free unused symbols. Periodic sweep? Weak
 // somehow, how? (Special table needed, or weak will wrapper.)
 
-typedef std::unordered_map<std::string, LilyObjectPtr> lilySymbollikeTable;
+typedef std::unordered_map<std::string, LilySymbollikePtr> lilySymbollikeTable;
 
 template <typename T>
 static /* inline since only used once per type? But static should do the same, right? */
-LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
-				   bool mayNeedQuoting) {
+LilySymbollikePtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
+				       bool mayNeedQuoting) {
 	auto it= t->find(s);
 	if (it != t->end()) {
 		return it->second;
 		// why 'is this a tuple and iterator at same time?'?
 		// Overloaded dereference, right? (Uh?)
 	} else {
-		auto v= LILY_NEW(T(s, siphash(s), false));
+		auto v= LILY_NEW(T,(s, siphash(s), false));
 		if (mayNeedQuoting) {
 			// check whether it would work unquoted:
 			// simply try to parse its unquoted
@@ -70,7 +70,7 @@ LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 			auto v1= lilyParse(show(v), true);
 			LETU_AS(v1p, T, v1);
 			if (!v1p || !(v1p->string() == s))
-				v= LILY_NEW(T(s, siphash(s), true));
+				v= LILY_NEW(T,(s, siphash(s), true));
 		}
 		// else (did not come with quotes) we already showed
 		// that it doesn't need quoting.
@@ -80,13 +80,13 @@ LilyObjectPtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 }
 
 static lilySymbollikeTable lilySymbolTable {};
-LilyObjectPtr
+LilySymbollikePtr
 LilySymbol::intern(std::string s, bool nq) {
 	return lilySymbollikeIntern<LilySymbol>(&lilySymbolTable, s, nq);
 }
 
 static lilySymbollikeTable lilyKeywordTable {};
-LilyObjectPtr
+LilySymbollikePtr
 LilyKeyword::intern(std::string s, bool nq) {
 	return lilySymbollikeIntern<LilyKeyword>(&lilyKeywordTable, s, nq);
 }

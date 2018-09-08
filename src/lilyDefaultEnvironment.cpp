@@ -29,12 +29,15 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 }
 
 
+// Tv and Tres have to be the unwrapped types!
 template <typename Tv, typename Tres>
 static
-Tres lilyFold(LilyList* vs,
-	      std::function<Tres(Tv, Tres)> fn,
-	      LilyObjectPtr start) {
-	Tres res= std::dynamic_pointer_cast<Tres>(start);
+std::shared_ptr<Tres>
+lilyFold(LilyList* vs,
+	 std::function<std::shared_ptr<Tres>(std::shared_ptr<Tv>,
+					     std::shared_ptr<Tres>)> fn,
+	 LilyObjectPtr start) {
+	auto res= std::dynamic_pointer_cast<Tres>(start);
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
 			res= fn(std::dynamic_pointer_cast<Tv>(pair->_car),
@@ -60,12 +63,13 @@ Tres lilyFold(LilyList* vs,
 					  START);			\
 	}
 
-DEF_FOLD_UP_NATIVE(lilyAdd, LilyNumber, LilyNumber,
-		   [](LilyNumberPtr v, LilyNumberPtr res) {
+auto lilyAdd_op= [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			   return res->add(v);
-		   }, _zero);
+};
+DEF_FOLD_UP_NATIVE(lilyAdd, LilyNumber, LilyNumber,
+		   lilyAdd_op, _zero);
 DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
-		   [](LilyNumberPtr v, LilyNumberPtr res) {
+		   [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			   return res->multiply(v);
 		   }, _one);
 
@@ -75,6 +79,7 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
 			   LilyListPtr* _cont) {			\
+		auto fn= OP;						\
 		LilyList* _vs= &**vs;					\
 		if (is_LilyNull(_vs))					\
 			throw std::logic_error(#OP ": wrong number of arguments"); \
@@ -87,24 +92,25 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
 	}
 
 DEF_FOLD_DOWN_NATIVE(lilySub, LilyNumber, LilyNumber,
-		     [](LilyNumberPtr v, LilyNumberPtr res){
+		     [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			     return res->subtract(v);
 		     }, _zero);
 // XX Gambit allows inexact integers here !
 DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, LilyInt64,
-		     [](LilyInt64Ptr v, LilyInt64Ptr res){
-			     return INT(lily_quotient(res->value(),
-						      v->value()));
+		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
+			     return INT(lily_quotient(res->value,
+						      v->value));
 		     }, _one);
 DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, LilyInt64,
-		     [](LilyInt64Ptr v, LilyInt64Ptr res){
-			     return INT(lily_remainder(res->value(),
-						       v->value()));
+		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
+			     return INT(lily_remainder(res->value,
+						       v->value));
 		     }, _one);
 
 // inputs must be integers, but result can be fractionals.
+// XX also check the type of the start value
 DEF_FOLD_DOWN_NATIVE(lilyIntegerDiv, LilyInt64, LilyNumber,
-		     [](LilyInt64Ptr v, LilyNumberPtr res) {
+		     [](LilyInt64Ptr v, LilyNumberPtr res) -> LilyNumberPtr {
 			     return res->divideBy(v);
 		     }, _one);
 

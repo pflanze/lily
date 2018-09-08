@@ -39,6 +39,8 @@ class LilyNumber;
 class LilyInt64;
 class LilyContinuationFrame;
 class LilySymbollike;
+class LilySymbol;
+class LilyKeyword;
 
 typedef std::shared_ptr<LilyObject> LilyObjectPtr;
 typedef std::shared_ptr<LilyList> LilyListPtr;
@@ -46,6 +48,8 @@ typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
 typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
 typedef std::shared_ptr<LilyInt64> LilyInt64Ptr;
 typedef std::shared_ptr<LilySymbollike> LilySymbollikePtr;
+typedef std::shared_ptr<LilySymbol> LilySymbolPtr;
+typedef std::shared_ptr<LilyKeyword> LilyKeywordPtr;
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
@@ -212,7 +216,7 @@ public:
 		: LilySymbollike(s, h, nq) {
 		evalId= LilyEvalOpcode::Symbol;
 	}
-	static LilyObjectPtr intern(std::string s, bool nq);
+	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual const char* typeName();
 	virtual ~LilySymbol();
 };
@@ -223,7 +227,7 @@ public:
 		: LilySymbollike(s, h, nq) {
 		evalId= LilyEvalOpcode::Keyword;
 	}
-	static LilyObjectPtr intern(std::string s, bool nq);
+	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyKeyword();
@@ -587,6 +591,7 @@ apply1ary(const char* procname,
 // let unwrapped
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
+
 
 
 // Some special symbols
