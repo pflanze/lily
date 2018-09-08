@@ -393,7 +393,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	PR_suffix suffix= parseFloat_suffix(s);
 	if (suffix.success()) {
 		// we have a suffix
-		char exponentMarker= suffix.value().first;
+		//char exponentMarker= suffix.value().first;   XX verify
 		int64_t exponent= suffix.value().second;
 
 		double result=
