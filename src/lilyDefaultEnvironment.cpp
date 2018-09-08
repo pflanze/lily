@@ -53,7 +53,7 @@ lilyFold(LilyList* vs,
 }
 
 
-#define DEF_FOLD_UP_NATIVE(name, Tv, Tres, OP, START)			\
+#define DEF_FOLD_UP_NATIVE(name, _opschemename, Tv, Tres, OP, START)	\
 	static								\
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
@@ -66,15 +66,15 @@ lilyFold(LilyList* vs,
 auto lilyAdd_op= [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			   return res->add(v);
 };
-DEF_FOLD_UP_NATIVE(lilyAdd, LilyNumber, LilyNumber,
+DEF_FOLD_UP_NATIVE(lilyAdd, "+", LilyNumber, LilyNumber,
 		   lilyAdd_op, _zero);
-DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
+DEF_FOLD_UP_NATIVE(lilyMult, "*", LilyNumber, LilyNumber,
 		   [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			   return res->multiply(v);
 		   }, _one);
 
 // LONESTART is used when there's only one argument
-#define DEF_FOLD_DOWN_NATIVE(name, Tv, Tres, OP, LONESTART)		\
+#define DEF_FOLD_DOWN_NATIVE(name, opschemename, Tv, Tres, OP, LONESTART) \
 	static								\
 	LilyObjectPtr name(LilyListPtr* vs,				\
 			   LilyListPtr* _ctx,				\
@@ -82,7 +82,7 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
 		auto fn= OP;						\
 		LilyList* _vs= &**vs;					\
 		if (is_LilyNull(_vs))					\
-			throw std::logic_error(#OP ": wrong number of arguments"); \
+			throw std::logic_error(opschemename ": wrong number of arguments"); \
 		LilyList* r= &*(_vs->rest());				\
 		if (is_LilyNull(r))					\
 			return fn(std::dynamic_pointer_cast<Tv>(_vs->first()), \
@@ -91,17 +91,17 @@ DEF_FOLD_UP_NATIVE(lilyMult, LilyNumber, LilyNumber,
 			return lilyFold<Tv,Tres>(r, fn, _vs->first());	\
 	}
 
-DEF_FOLD_DOWN_NATIVE(lilySub, LilyNumber, LilyNumber,
+DEF_FOLD_DOWN_NATIVE(lilySub, "-", LilyNumber, LilyNumber,
 		     [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			     return res->subtract(v);
 		     }, _zero);
 // XX Gambit allows inexact integers here !
-DEF_FOLD_DOWN_NATIVE(lilyQuotient, LilyInt64, LilyInt64,
+DEF_FOLD_DOWN_NATIVE(lilyQuotient, "quotient", LilyInt64, LilyInt64,
 		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
 			     return INT(lily_quotient(res->value,
 						      v->value));
 		     }, _one);
-DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, LilyInt64,
+DEF_FOLD_DOWN_NATIVE(lilyRemainder, "remainder", LilyInt64, LilyInt64,
 		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
 			     return INT(lily_remainder(res->value,
 						       v->value));
@@ -109,7 +109,7 @@ DEF_FOLD_DOWN_NATIVE(lilyRemainder, LilyInt64, LilyInt64,
 
 // inputs must be integers, but result can be fractionals.
 // XX also check the type of the start value
-DEF_FOLD_DOWN_NATIVE(lilyIntegerDiv, LilyInt64, LilyNumber,
+DEF_FOLD_DOWN_NATIVE(lilyIntegerDiv, "integer./", LilyInt64, LilyNumber,
 		     [](LilyInt64Ptr v, LilyNumberPtr res) -> LilyNumberPtr {
 			     return res->divideBy(v);
 		     }, _one);
