@@ -410,7 +410,7 @@ LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b);
 
 static inline
 LilyNumberPtr Add(LilyExact* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->asDouble() * b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->asDouble() + b->value));
 }
 
 static inline
@@ -420,7 +420,7 @@ LilyNumberPtr Add(LilyDouble* a, LilyExact* b) {
 
 static inline
 LilyNumberPtr Add(LilyDouble* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value + b->value));
 }
 
 static inline

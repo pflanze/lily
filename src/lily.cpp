@@ -452,7 +452,8 @@ LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
 	int64_t n= b->numerator();
 	int64_t d= b->denominator();
-	return simplifiedFractional64(lily_sub(n, lily_mul(a->value, d)), d);
+	return simplifiedFractional64(lily_sub(lily_mul(a->value, d), n),
+				      d);
 }
 
 LilyNumberPtr Subtract(LilyFractional64* a, LilyInt64* b) {
