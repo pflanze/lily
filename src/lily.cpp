@@ -415,7 +415,7 @@ LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
 		n1= n / f;
 		d1= d / f;
 		if (d1 == 1) {
-			WARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1);
+			DEBUGWARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1);
 			return std::shared_ptr<LilyNumber>
 				(new LilyInt64(n1));
 		}
@@ -424,7 +424,7 @@ LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
 		d1= d;
 	}
 	assert(!(d1 == 1));
-	WARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1<<"/"<<d1);
+	DEBUGWARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1<<"/"<<d1);
 	return std::shared_ptr<LilyNumber>(new LilyFractional64(n1, d1));
 }
 

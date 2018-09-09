@@ -94,7 +94,7 @@ static bool isSeparation (char c) {
 }
 static bool isSeparation (S s) {
 	bool r= s.isNull() || isSeparation(s.first());
-	WARN("isSeparation on " << show(s.string()) << " = " << r);
+	DEBUGWARN("isSeparation on " << show(s.string()) << " = " << r);
 	return r;
 }
 
@@ -343,7 +343,7 @@ PR_suffix parseFloat_suffix(S s) {
 // true then the result needs to be negated (can also be false and
 // predot already negative).
 PR parseFloat(Sm s, bool negate, int64_t predot) {
-	WARN("parseFloat: " << predot << ", " << show(s.string()));
+	DEBUGWARN("parseFloat: " << predot << ", " << show(s.string()));
 	if (s.isNull())
 		return parseError(s, ParseResultCode::NotAFloat);
 	int64_t postdot= 0;
@@ -354,7 +354,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	char c0= s.first();
 	switch (c0) {
 	case '.': {
-		WARN("  has dot, " << show(s.rest().string()));
+		DEBUGWARN("  has dot, " << show(s.rest().string()));
 		hasDot= true;
 		s= s.rest();
 		PR _postdot= parsePositiveInteger(s);
@@ -369,7 +369,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 			//   digits in an int64_t)
 			postdotLength= p1 - p0;
 			s= _postdot.remainder();
-			WARN("  got postdot, " << postdot << ", " << show(s.string()));
+			DEBUGWARN("  got postdot, " << postdot << ", " << show(s.string()));
 		} else {
 			if (_postdot.error() == ParseResultCode::Int64Overflow) {
 				overflow= true;
@@ -377,9 +377,9 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 				// success; will then fail again at
 				// the end via checking 'overflow'
 				s= _postdot.remainder().setSucceeded();
-				WARN("  postdot but overflowed");
+				DEBUGWARN("  postdot but overflowed");
 			} else {
-				WARN("  no postdot");
+				DEBUGWARN("  no postdot");
 			}
 		}
 		break;
@@ -390,7 +390,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	auto predotabs= (predot < 0) ? -predot : predot;
 	if (predot < 0)
 		negate= !negate;
-	WARN("  f= "<<f<<", predot= "<<predot<<", predotabs="<<predotabs<<", negate="<<negate);
+	DEBUGWARN("  f= "<<f<<", predot= "<<predot<<", predotabs="<<predotabs<<", negate="<<negate);
 
 	PR_suffix suffix= parseFloat_suffix(s);
 	if (suffix.succeeded()) {
@@ -403,7 +403,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 			 + static_cast<double>(postdot)
 			 * f)
 			* exp10(exponent);
-		WARN("  have suffix. exponent="<<exponent<<", result="<<result);
+		DEBUGWARN("  have suffix. exponent="<<exponent<<", result="<<result);
 		return OK(DOUBLE(negate ? -result : result),
 			  suffix.remainder());
 	} else {
@@ -418,7 +418,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 					static_cast<double>(predotabs)
 					+ static_cast<double>(postdot)
 					* f;
-				WARN("  no suffix. result="<<result);
+				DEBUGWARN("  no suffix. result="<<result);
 				return OK(DOUBLE(negate ? -result : result),
 					  s);
 			}
@@ -477,7 +477,7 @@ PR parseNumber(Sm s) {
 				 false,
 				 UNWRAP_AS(LilyInt64, result.value())->value);
 		if (f.succeeded()) {
-			WARN("  parseFloat returned success, " << show(f.value()));
+			DEBUGWARN("  parseFloat returned success, " << show(f.value()));
 			result= f;
 			goto successsofar;
 		}
@@ -489,7 +489,7 @@ PR parseNumber(Sm s) {
 			result= f;
 			goto successsofar;
 		}
-		WARN("  parseFloat returned failure, " << ParseResultCode_string(f.error()));
+		DEBUGWARN("  parseFloat returned failure, " << ParseResultCode_string(f.error()));
 	}
 
 	{
@@ -543,7 +543,7 @@ successsofar:
 	// otherwise it's not one. (XX could there be cases where
 	// other options should be tried? I.e. every option should be
 	// followed by isSeparation check?)
-	WARN("successsofar: checking remainder "<<show(result.remainder().string()));
+	DEBUGWARN("successsofar: checking remainder "<<show(result.remainder().string()));
 	if (isSeparation(result.remainder()))
 		return result;
 notanumber:
@@ -598,7 +598,7 @@ PR parseList(Sm s) {
 		// dotted pair; expect 1 element then ")"
 		auto s0 = skipWhitespaceAndComments
 			(res.remainder().setSucceeded());
-		WARN("parse remainder after dot: "<<show(s0.string()));
+		DEBUGWARN("parse remainder after dot: "<<show(s0.string()));
 		if (s0.isNull())
 			return parseError(s0, ParseResultCode::UnexpectedEof);
 		if (s0.first() == ')')
@@ -619,7 +619,7 @@ PR parseList(Sm s) {
 			return res;
 
 		LETU_AS(sym, LilySymbol, res.value());
-		WARN("parseList: got a "<<show(res.value()->typeName())<<", "
+		DEBUGWARN("parseList: got a "<<show(res.value()->typeName())<<", "
 		     << (sym ? show(sym->string()) : "not a symbol")
 		     << ", now going to parse: "<<show(res.remainder().string()));
 		auto tail= parseList(skipWhitespaceAndComments(res.remainder()));
@@ -658,7 +658,7 @@ PR lilyParse (Sm s) {
 	} else if (c=='"') {
 		return parseStringLike(s1, '"', newString);
 	} else if (c=='|') {
-		WARN("parseStringLike on: "<<show(s1.string())); 
+		DEBUGWARN("parseStringLike on: "<<show(s1.string())); 
 		return parseStringLike(s1, '|', newSymbolOrKeyword);
 	} else if (c==';') {
 		// until the end of the line; if s is 1 line then that
