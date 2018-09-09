@@ -593,11 +593,13 @@ PR parseList(Sm s) {
 	PR res= lilyParse(s);
 	if (res.error() == ParseResultCode::ImproperlyPlacedDot) {
 		// dotted pair; expect 1 element then ")"
-		auto r1= lilyParse(res.remainder().setSuccess());
-		if (!r1.success())
+		auto _r = skipWhitespaceAndComments
+			(res.remainder().setSuccess());
+		WARN("parse remainder after dot: "<<show(_r.string()));
+		auto r1= lilyParse(_r);
+		if (r1.failed())
 			return r1; // cutting away all the stored stuff. OK?
-		auto s2= r1.remainder();
-		s2= skipWhitespaceAndComments(s2);
+		auto s2= skipWhitespaceAndComments(r1.remainder());
 		if (s2.isNull())
 			return parseError(s2, ParseResultCode::UnexpectedEof);
 		char c2= s2.first();
@@ -606,10 +608,15 @@ PR parseList(Sm s) {
 		else
 			return parseError(s2, ParseResultCode::InvalidDottedList);
 	} else {
-		if (!res.success())
+		if (res.failed())
 			return res;
-		auto tail= parseList(res.remainder());
-		if (!tail.success())
+
+		LETU_AS(sym, LilySymbol, res.value());
+		WARN("parseList: got a "<<show(res.value()->typeName())<<", "
+		     << (sym ? show(sym->string()) : "not a symbol")
+		     << ", now going to parse: "<<show(res.remainder().string()));
+		auto tail= parseList(skipWhitespaceAndComments(res.remainder()));
+		if (tail.failed())
 			return tail;
 		return OK(CONS(res.value(), tail.value()),
 			  tail.remainder());
@@ -644,6 +651,7 @@ PR lilyParse (Sm s) {
 	} else if (c=='"') {
 		return parseStringLike(s1, '"', newString);
 	} else if (c=='|') {
+		WARN("parseStringLike on: "<<show(s1.string())); 
 		return parseStringLike(s1, '|', newSymbolOrKeyword);
 	} else if (c==';') {
 		// until the end of the line; if s is 1 line then that
