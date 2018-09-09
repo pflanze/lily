@@ -98,6 +98,12 @@ Double: 2.75
 Double: 1.75
 Double: 1.125
 Double: 4.5
+Fractional64: 1/6
+Fractional64: 5/6
+Double: 1.6666666666666667
+Fractional64: 3/8
+Fractional64: 3/8
+Fractional64: 8/3
 ---- exact->inexact ----
 Double: 3.
 Double: 0.3
