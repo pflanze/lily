@@ -55,8 +55,10 @@ typedef std::shared_ptr<LilyKeyword> LilyKeywordPtr;
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
-std::string show(const LilyObjectPtr& v);
-std::string show(LilyObject* v);
+namespace lily {
+	std::string show(const LilyObjectPtr& v);
+	std::string show(LilyObject* v);
+}
 
 
 class LilyObject {
@@ -132,7 +134,7 @@ public:
 			return *((LilyListPtr*)(&_cdr));
 		} else {
 			throw std::logic_error(STR("improper list: " <<
-						   show(_cdr)));
+						   lily::show(_cdr)));
 		}
 #else
 		// Does this cost a pair of reference counting
@@ -140,7 +142,7 @@ public:
 		auto res= std::dynamic_pointer_cast<LilyList>(_cdr);
 		if (!res)
 			throw std::logic_error(STR("improper list: " <<
-						   show(_cdr)));
+						   lily::show(_cdr)));
 		return res;
 #endif
 	}

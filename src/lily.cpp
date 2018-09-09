@@ -6,6 +6,7 @@
 #include "lilyUtil.hpp"
 #include <limits>
 
+using namespace lily;
 
 // XX weird wanted that to be fully abstract
 LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {XXX};
@@ -877,14 +878,14 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	return res;
 }
 
-std::string show(const LilyObjectPtr& v) {
+std::string lily::show(const LilyObjectPtr& v) {
 	std::ostringstream s;
 	v->write(s);
 	return s.str();
 }
 
 // XX completely stupid copy-paste; use templates?
-std::string show(LilyObject* v) {
+std::string lily::show(LilyObject* v) {
 	std::ostringstream s;
 	v->write(s);
 	return s.str();

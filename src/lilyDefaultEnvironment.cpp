@@ -2,6 +2,8 @@
 #include "lilyConstruct.hpp"
 #include "lilyDefaultEnvironment.hpp"
 
+using namespace lily;
+
 
 static LilyInt64Ptr _zero= std::dynamic_pointer_cast<LilyInt64>(INT(0));
 static LilyInt64Ptr _one= std::dynamic_pointer_cast<LilyInt64>(INT(1));
