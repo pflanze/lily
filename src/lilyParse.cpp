@@ -123,7 +123,7 @@ typedef ParseResult<LilyObjectPtr> PRm;
 
 static
 PR OK(LilyObjectPtr v, S s) {
-	assert(s.success());
+	assert(s.succeeded());
 	return PR(v,s);
 }
 
@@ -143,7 +143,7 @@ PR parseHashitem(S s) {
 	if (c1 == '!') {
 		// special object
 		r= expectString(r, "void");
-		if (r.success()) {
+		if (r.succeeded()) {
 			if (isWordEndBoundary(r))
 				return OK(VOID, r);
 		}
@@ -251,7 +251,7 @@ PR parseNegativeInteger(Sm s) {
 }
 
 PR parseNegate(PR pr) {
-	if (!pr.success())
+	if (!pr.succeeded())
 		return pr;
 	LETU_AS(v, LilyInt64, pr.value());
 	assert(v);
@@ -358,7 +358,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 		hasDot= true;
 		s= s.rest();
 		PR _postdot= parsePositiveInteger(s);
-		if (_postdot.success()) {
+		if (_postdot.succeeded()) {
 			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value;
 			auto p0= s.position();
 			auto p1= _postdot.remainder().position();
@@ -393,7 +393,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	WARN("  f= "<<f<<", predot= "<<predot<<", predotabs="<<predotabs<<", negate="<<negate);
 
 	PR_suffix suffix= parseFloat_suffix(s);
-	if (suffix.success()) {
+	if (suffix.succeeded()) {
 		// we have a suffix
 		//char exponentMarker= suffix.value().first;   XX verify
 		int64_t exponent= suffix.value().second;
@@ -476,7 +476,7 @@ PR parseNumber(Sm s) {
 		PR f= parseFloat(result.remainder(),
 				 false,
 				 UNWRAP_AS(LilyInt64, result.value())->value);
-		if (f.success()) {
+		if (f.succeeded()) {
 			WARN("  parseFloat returned success, " << show(f.value()));
 			result= f;
 			goto successsofar;
@@ -504,7 +504,7 @@ PR parseNumber(Sm s) {
 			if (s.isNull())
 				goto notanumber;
 			auto num2= parsePositiveInteger(s);
-			if (num2.success()) {
+			if (num2.succeeded()) {
 				// Oh, and we have to check again what
 				// follows it. Evil syntax? Tokenizer
 				// actually makes sense for *this*
@@ -676,7 +676,7 @@ PR lilyParse (Sm s) {
 
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
-		if (v.success())
+		if (v.succeeded())
 			return v;
 		// if it was a proper number but just overflowed,
 		// return it as such:
@@ -685,7 +685,7 @@ PR lilyParse (Sm s) {
 		// not parseable as a number (even potentially
 		// bignum), try symbol:
 		v= parseSymbolOrKeyword(s);
-		if (v.success())
+		if (v.succeeded())
 			return v;
 		// return parseError(s, ParseResultCode::UnknownSyntax);
 
@@ -704,7 +704,7 @@ special:
 // convenience function
 LilyObjectPtr lilyParse (std::string s, bool requireTotal) /* noexcept */ {
 	PR r= lilyParse(StringCursor(&s));
-	if (r.success()) {
+	if (r.succeeded()) {
 		if (requireTotal) {
 		    // check that there's nothing after the parsed
 		    // expression

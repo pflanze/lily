@@ -76,7 +76,7 @@ public:
 	ParseResultCode error () const {
 		return _error;
 	}
-	bool success () const {
+	bool succeeded () const {
 		return (_error==ParseResultCode_Success);
 	}
 	const StringCursor setError (ParseResultCode error) const {
@@ -112,17 +112,17 @@ public:
 	}
 	ParseResult() {}
 	const T value() const {
-		assert(_remainder.success());
+		assert(_remainder.succeeded());
 		return _result;
 	}
 	ParseResultCode error () const {
 		return _remainder.error();
 	}
-	bool success() const {
-		return _remainder.success();
+	bool succeeded() const {
+		return _remainder.succeeded();
 	}
 	bool failed() const {
-		return ! success();
+		return ! succeeded();
 	}
 	const StringCursor remainder() const {
 		return _remainder;

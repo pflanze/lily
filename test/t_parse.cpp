@@ -9,7 +9,7 @@ S SC(const char* str) {
 }
 
 void p(StringCursor s) {
-	if (s.success()) {
+	if (s.succeeded()) {
 		std::cout << "success: ";
 	} else {
 		std::cout << "failure (code " << (int)s.error()
