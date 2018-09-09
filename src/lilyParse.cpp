@@ -25,6 +25,7 @@ enum class ParseResultCode : char {
 	UnknownSyntax,
 	UnknownBangSpecial,
 	UnknownSpecial,
+	ImproperlyPlacedDot,
 	NotAnInteger,
 	NotAFloatSuffix,
 	NotAFloat,
@@ -48,6 +49,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::UnknownSyntax: return "UnknownSyntax";
 	case ParseResultCode::UnknownBangSpecial: return "UnknownBangSpecial";
 	case ParseResultCode::UnknownSpecial: return "UnknownSpecial";
+	case ParseResultCode::ImproperlyPlacedDot: return "ImproperlyPlacedDot";
 	case ParseResultCode::NotAnInteger: return "NotAnInteger";
 	case ParseResultCode::NotAFloatSuffix: return "NotAFloatSuffix";
 	case ParseResultCode::NotAFloat: return "NotAFloat";
@@ -584,43 +586,26 @@ PR parseList(Sm s) {
 	char c=s.first();
 	if (c==')')
 		return OK(NIL, s.rest());
-	if (c=='.') {
-		auto s1=s.rest();
-		if (s1.isNull())
-			return parseError(s1, ParseResultCode::UnexpectedEof);
-		auto s2= skipWhitespaceAndComments(s1);
-		if (s2.position() > s1.position()) {
-			// dot stands by itself, i.e. dotted pair; expect 1 element then ")"
-			auto r1= lilyParse(s2);
-			if (!r1.success())
-				return r1; // cutting away all the stored stuff. OK?
-			auto s2= r1.remainder();
-			s2= skipWhitespaceAndComments(s2);
-			if (s2.isNull())
-				return parseError(s2, ParseResultCode::UnexpectedEof);
-			char c2= s2.first();
-			if (c2 == ')')
-				return OK(r1.value(), s2.rest());
-			else
-				return parseError(s2, ParseResultCode::InvalidDottedList);
-		} else {
-			// must be a symbol starting with a dot, right?  XX
-			auto res= parseSymbol(s);
-			if (!res.success()) {
-				if (res.error() == ParseResultCode::NotASymbol)
-					return parseError(s2, ParseResultCode::InvalidDottedList);
-				else
-					return res; // ditto cutting away
-			}
-			auto tail= parseList(res.remainder());
-			if (!tail.success())
-				return tail; // ditto, and, this is our 'failure monad'
-			return OK(CONS(res.value(), tail.value()),
-				  tail.remainder());
-		}
+	// parse an item, then the remainder of the list; parsing the
+	// dot the same way as other items except that it won't be a
+	// success result; handle that case (the only place where it
+	// isn't to be returned to the user)
+	PR res= lilyParse(s);
+	if (res.error() == ParseResultCode::ImproperlyPlacedDot) {
+		// dotted pair; expect 1 element then ")"
+		auto r1= lilyParse(res.remainder().setSuccess());
+		if (!r1.success())
+			return r1; // cutting away all the stored stuff. OK?
+		auto s2= r1.remainder();
+		s2= skipWhitespaceAndComments(s2);
+		if (s2.isNull())
+			return parseError(s2, ParseResultCode::UnexpectedEof);
+		char c2= s2.first();
+		if (c2 == ')')
+			return OK(r1.value(), s2.rest());
+		else
+			return parseError(s2, ParseResultCode::InvalidDottedList);
 	} else {
-		// parse an item, then the remainder of the list
-		PR res= lilyParse(s);
 		if (!res.success())
 			return res;
 		auto tail= parseList(res.remainder());
@@ -671,6 +656,9 @@ PR lilyParse (Sm s) {
 	} else if (c==',') {
 		special_symbol= &lilySymbol_unquote; goto special;
 	} else {
+		if ((c=='.') && isSeparation(s1))
+			return parseError(s1, ParseResultCode::ImproperlyPlacedDot);
+
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
 		if (v.success())
