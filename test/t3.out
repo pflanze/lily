@@ -82,6 +82,22 @@ Double: 0.75
 Double: 0.75
 Double: -0.25
 Double: 0.25
+Int64: -100
+Int64: 100
+Fractional64: -3/4
+Fractional64: 3/4
+Double: -100.
+Double: 100.
+Int64: 100
+Fractional64: 1/100
+Fractional64: 3/4
+Fractional64: 4/3
+Double: 100.
+Double: 0.01
+Double: 2.75
+Double: 1.75
+Double: 1.125
+Double: 4.5
 ---- exact->inexact ----
 Double: 3.
 Double: 0.3
