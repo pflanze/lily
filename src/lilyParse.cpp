@@ -596,10 +596,14 @@ PR parseList(Sm s) {
 	PR res= lilyParse(s);
 	if (res.error() == ParseResultCode::ImproperlyPlacedDot) {
 		// dotted pair; expect 1 element then ")"
-		auto _r = skipWhitespaceAndComments
+		auto s0 = skipWhitespaceAndComments
 			(res.remainder().setSuccess());
-		WARN("parse remainder after dot: "<<show(_r.string()));
-		auto r1= lilyParse(_r);
+		WARN("parse remainder after dot: "<<show(s0.string()));
+		if (s0.isNull())
+			return parseError(s0, ParseResultCode::UnexpectedEof);
+		if (s0.first() == ')')
+			return parseError(s0, ParseResultCode::InvalidDottedList);
+		auto r1= lilyParse(s0);
 		if (r1.failed())
 			return r1; // cutting away all the stored stuff. OK?
 		auto s2= skipWhitespaceAndComments(r1.remainder());
