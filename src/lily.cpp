@@ -12,7 +12,7 @@ LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {XXX};
 LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {XXX};
 LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {XXX};
 LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {XXX};
-double LilyNumber::asDouble() {XXX};
+double LilyNumber::toDouble() {XXX};
 
 void LilyNumber::write(std::ostream& out) {XXX};
 const char* LilyNumber::typeName() { return "LilyNumber"; }
@@ -510,14 +510,14 @@ LilyNumberPtr Divide(LilyFractional64* a, LilyFractional64* b) {
 
 
 // XX test
-double LilyInt64::asDouble() {
+double LilyInt64::toDouble() {
 	return static_cast<double>(value);
 }
-double LilyFractional64::asDouble() {
+double LilyFractional64::toDouble() {
 	return static_cast<double>(_numerator)
 		/ static_cast<double>(_denominator);
 }
-double LilyDouble::asDouble() {
+double LilyDouble::toDouble() {
 	return value;
 }
 

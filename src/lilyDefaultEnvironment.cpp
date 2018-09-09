@@ -140,7 +140,7 @@ lilyExactInexact(LilyListPtr* vs,
 		 LilyListPtr* _cont) {
 	return apply1ary("exact->inexact", [](LilyObjectPtr v) {
 			// XX optim?: return v if already a double
-			return DOUBLE(XAS<LilyNumber>(v)->asDouble());
+			return DOUBLE(XAS<LilyNumber>(v)->toDouble());
 		}, vs);
 }
 
