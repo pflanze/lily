@@ -455,6 +455,21 @@ LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b) {
 	return simplifiedFractional64(lily_sub(n, lily_mul(a->value, d)), d);
 }
 
+LilyNumberPtr Subtract(LilyFractional64* a, LilyInt64* b) {
+	// XX better algo less likely to hit max int?
+	int64_t n= a->numerator();
+	int64_t d= a->denominator();
+	return simplifiedFractional64(lily_sub(n, lily_mul(b->value, d)), d);
+}
+
+LilyNumberPtr Subtract(LilyFractional64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64
+		(lily_sub(lily_mul(a->numerator(), b->denominator()),
+			  lily_mul(b->numerator(), a->denominator())),
+		 lily_mul(a->denominator(), b->denominator()));
+}
+
 LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
 	return simplifiedFractional64
@@ -462,6 +477,36 @@ LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b) {
 			  lily_mul(b->numerator(), a->denominator())),
 		 lily_mul(a->denominator(), b->denominator()));
 }
+
+LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64(lily_mul(b->numerator(), a->value),
+				      b->denominator());
+}
+
+LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64(lily_mul(a->numerator(), b->numerator()),
+				      lily_mul(a->denominator(), b->denominator()));
+}
+
+LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64(lily_mul(b->denominator(), a->value),
+				      b->numerator());
+}
+LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64(a->numerator(),
+				      lily_mul(a->denominator(), b->value));
+}
+LilyNumberPtr Divide(LilyFractional64* a, LilyFractional64* b) {
+	// XX better algo less likely to hit max int?
+	return simplifiedFractional64(lily_mul(a->numerator(), b->denominator()),
+				      lily_mul(a->denominator(), b->numerator()));
+}
+
+
 
 // XX test
 double LilyInt64::asDouble() {
@@ -480,6 +525,8 @@ LilyNumberPtr LilyInt64::multiply(const LilyNumberPtr& b) {
 	if (b0) return Multiply(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Multiply(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Multiply(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: multiply "
 				   << show(this) << " " << show(b)));
 }
@@ -488,6 +535,8 @@ LilyNumberPtr LilyInt64::divideBy(const LilyNumberPtr& b) {
 	if (b0) return Divide(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Divide(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Divide(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: divide "
 				   << show(this) << " " << show(b)));
 }
@@ -506,6 +555,8 @@ LilyNumberPtr LilyInt64::subtract(const LilyNumberPtr& b) {
 	if (b0) return Subtract(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Subtract(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Subtract(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: subtract "
 				   << show(this) << " " << show(b)));
 }
@@ -516,10 +567,18 @@ LilyNumberPtr LilyFractional64::multiply(const LilyNumberPtr& b) {
 	if (b0) return Multiply(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Multiply(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Multiply(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: multiply "
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::divideBy(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Divide(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Divide(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Divide(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: divideBy "
 				   << show(this) << " " << show(b)));
 }
@@ -534,26 +593,49 @@ LilyNumberPtr LilyFractional64::add(const LilyNumberPtr& b) {
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyFractional64::subtract(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyInt64*>(&*b);
+	if (b0) return Subtract(this, b0);
+	auto b1= dynamic_cast<LilyFractional64*>(&*b);
+	if (b1) return Subtract(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Subtract(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: subtract "
 				   << show(this) << " " << show(b)));
 }
 
 
 LilyNumberPtr LilyDouble::multiply(const LilyNumberPtr& b) {
-	auto f= dynamic_cast<LilyDouble*>(&*b);
-	if (f) return Multiply(this, f);
+	auto b0= dynamic_cast<LilyExact*>(&*b);
+	if (b0) return Multiply(this, b0);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Multiply(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: multiply "
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::divideBy(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyExact*>(&*b);
+	if (b0) return Divide(this, b0);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Divide(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: divideBy "
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::add(const LilyNumberPtr& b) {
+	// can't flip the arguments (which would allow to use the
+	// dispatch tree there) as the current api wants a Ptr as b,
+	// and this is not a Ptr. XX solution?
+	auto b0= dynamic_cast<LilyExact*>(&*b);
+	if (b0) return Add(b0, this);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Add(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: add "
 				   << show(this) << " " << show(b)));
 }
 LilyNumberPtr LilyDouble::subtract(const LilyNumberPtr& b) {
+	auto b0= dynamic_cast<LilyExact*>(&*b);
+	if (b0) return Subtract(this, b0);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Subtract(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: subtract "
 				   << show(this) << " " << show(b)));
 }

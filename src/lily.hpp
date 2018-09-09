@@ -379,45 +379,92 @@ static inline LilyNumberPtr Multiply(LilyDouble* a, LilyDouble* b) {
 }
 // don't need all the combinations: only inexact*inexact and then the
 // combinations of the exact variants; complex numbers pending.
-static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b) {
-	// return lilyGcd();
-	XXX
+
+static inline LilyNumberPtr Multiply(LilyDouble* a, LilyExact* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->asDouble()));
 }
-static inline LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b) {
-	// return lilyGcd();
-	XXX
+static inline LilyNumberPtr Multiply(LilyExact* a, LilyDouble* b) {
+	return Multiply(b, a);
 }
+
+LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b);
+
+LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b);
+
 static inline LilyNumberPtr Multiply(LilyFractional64* a, LilyInt64* b) {
-	return Multiply(b,a);
+	return Multiply(b, a); 
 }
+
 static inline LilyNumberPtr Multiply(LilyInt64* a, LilyInt64* b) {
 	return std::shared_ptr<LilyNumber>(new LilyInt64(lily_mul(a->value, b->value)));
 }
-
 
 static inline LilyNumberPtr Add(LilyInt64* a, LilyInt64* b) {
 	return std::shared_ptr<LilyNumber>
 		(new LilyInt64(lily_add(a->value, b->value)));
 }
+
 LilyNumberPtr Add(LilyInt64* a, LilyFractional64* b);
+
 LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b);
+
 static inline
 LilyNumberPtr Add(LilyExact* a, LilyDouble* b) {
 	return std::shared_ptr<LilyNumber>(new LilyDouble(a->asDouble() * b->value));
 }
 
-static inline LilyNumberPtr Subtract(LilyInt64* a, LilyInt64* b) {
+static inline
+LilyNumberPtr Add(LilyDouble* a, LilyExact* b) {
+	return Add(b, a);
+}
+
+static inline
+LilyNumberPtr Add(LilyDouble* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->value));
+}
+
+static inline
+LilyNumberPtr Subtract(LilyInt64* a, LilyInt64* b) {
 	return std::shared_ptr<LilyNumber>
 		(new LilyInt64(lily_sub(a->value, b->value)));
 }
+
 LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b);
+
+LilyNumberPtr Subtract(LilyFractional64* a, LilyInt64* b);
+
+static inline
+LilyNumberPtr Subtract(LilyExact* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->asDouble() - b->value));
+}
+
+static inline
+LilyNumberPtr Subtract(LilyDouble* a, LilyExact* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value - b->asDouble()));
+}
+
+static inline
+LilyNumberPtr Subtract(LilyDouble* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value - b->value));
+}
 
 
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b);
-
-static inline LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b) {
-	XXX
+static inline LilyNumberPtr Divide(LilyExact* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->asDouble() / b->value));
 }
+
+static inline LilyNumberPtr Divide(LilyDouble* a, LilyExact* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value / b->asDouble()));
+}
+
+static inline LilyNumberPtr Divide(LilyDouble* a, LilyDouble* b) {
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value / b->value));
+}
+
+LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b);
+
+LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b);
 
 
 
