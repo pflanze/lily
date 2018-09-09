@@ -78,10 +78,11 @@ Fractional64: 201/2
 Fractional64: 23/12
 Fractional64: 1/2
 Fractional64: 7/6
-Double: .75
-Double: .75
-Double: -.25
-Double: .25
+Double: 0.75
+Double: 0.75
+Double: -0.25
+Double: 0.25
+---- exact->inexact ----
 Double: 3.
 Double: 0.3
 Double: 1.5

@@ -141,6 +141,8 @@ int main () {
 	e("(+ 0.5 1/4)");
 	e("(- 1/4 0.5)");
 	e("(- 0.5 1/4)");
+
+	note("exact->inexact");
 	e("(exact->inexact 3)");
 	e("(exact->inexact .3)");
 	e("(exact->inexact 3/2)");
