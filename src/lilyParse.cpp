@@ -376,7 +376,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 				// need to go on parsing, hence force
 				// success; will then fail again at
 				// the end via checking 'overflow'
-				s= _postdot.remainder().setSuccess();
+				s= _postdot.remainder().setSucceeded();
 				WARN("  postdot but overflowed");
 			} else {
 				WARN("  no postdot");
@@ -597,7 +597,7 @@ PR parseList(Sm s) {
 	if (res.error() == ParseResultCode::ImproperlyPlacedDot) {
 		// dotted pair; expect 1 element then ")"
 		auto s0 = skipWhitespaceAndComments
-			(res.remainder().setSuccess());
+			(res.remainder().setSucceeded());
 		WARN("parse remainder after dot: "<<show(s0.string()));
 		if (s0.isNull())
 			return parseError(s0, ParseResultCode::UnexpectedEof);
