@@ -83,7 +83,7 @@ Double: .75
 Double: -.25
 Double: .25
 Double: 3.
-Double: .3
+Double: 0.3
 Double: 1.5
 ---- invalid ----
 ERR: empty call
