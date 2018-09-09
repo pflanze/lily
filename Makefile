@@ -50,6 +50,9 @@ bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyPa
 bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvironment.hpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -Wall src/lilyDefaultEnvironment.cpp -o bin/lilyDefaultEnvironment.o
 
+# library for linking 
+bin/lily.a: bin/lilyUtil.o bin/parse.o bin/symboltable.o bin/lilyDefaultEnvironment.o bin/lily.o bin/lilyParse.o src/lilyConstruct.o
+	ar rcs bin/lily.a  bin/lilyUtil.o bin/parse.o bin/symboltable.o bin/lilyDefaultEnvironment.o bin/lily.o bin/lilyParse.o src/lilyConstruct.o
 
 # t1 needs a symbol from lilyParse.o which needs parse.o
 bin/test/t1: test/t1.cpp bin/lilyUtil.o bin/lily.o bin/parse.o bin/lilyParse.o src/lilyConstruct.o bin/symboltable.o
