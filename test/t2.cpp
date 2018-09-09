@@ -50,6 +50,8 @@ int main () {
 	pr("-0.092");
 	pr("+1.");
 	pr("-1.");
+	// pr("+.1");
+	// pr("-.1");
 	pr("+.");
 	pr("-.");
 	// XX +nan.0, +inf.0, -inf.0
@@ -133,12 +135,17 @@ int main () {
 	pr(" #| |#  234|",false); // 234
 	pr("  234|",false); // 234
 
-	note("  all: (hi . x)");
-	pr("(hi .#||#x)"); // Gambit parses .#| as invalid token!
-	pr("(hi .#|||#x)");
-	pr("(hi .#||\\|#x)"); // Gambit does not allow escaping of the end marker
-	pr("(hi .#|\n|#x)");
-	pr("(hi .#||; |\n||# x)");
+	note("dot & in-line comments");
+	pr("(hi .#||#x)"); // error as it is parsed as .# || #x
+	pr("(hi .# #||#x)");
+	pr("(hi . #||#x)");
+	pr("(hi . #|||#x)");
+	pr("(hi #|||#x)"); // (hi x)
+	pr("(hi .#||\\|#x)"); // Gambit parses this as six syntax ( .# || \\|...| )
+	// Gambit does not allow escaping of the end marker:
+	pr("(hi . #||\\|#x)"); // (hi . x)
+	pr("(hi . #|\n|#x)");
+	pr("(hi . #||; |\n||# x)");
 
 	note("symbol, unknown special, symbols:");
 	pr(".#a"); // symbol

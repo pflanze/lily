@@ -106,9 +106,13 @@ Int64: 234
 Symbol: | 234|
 Int64: 234
 Int64: 234
-----   all: (hi . x) ----
+---- dot & in-line comments ----
+ParseError: #<parse-error "UnknownSpecial" 9>
+Pair: (hi .# x)
 Pair: (hi . x)
 Pair: (hi . x)
+Pair: (hi x)
+ParseError: #<parse-error "NotASymbol" 8>
 Pair: (hi . x)
 Pair: (hi . x)
 Pair: (hi . x)
