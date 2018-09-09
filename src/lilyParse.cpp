@@ -550,8 +550,8 @@ notanumber:
 	return parseError(s, ParseResultCode::NotANumber);
 }
 
-// unquoted (no '|' around it) symbols
-PR parseSymbol(Sm s) {
+// unquoted (no '|' around it) symbols or keywords
+PR parseSymbolOrKeyword(Sm s) {
 	std::string str;
 	while (true) {
 		if (s.isNull())
@@ -677,7 +677,7 @@ PR lilyParse (Sm s) {
 			return v;
 		// not parseable as a number (even potentially
 		// bignum), try symbol:
-		v= parseSymbol(s);
+		v= parseSymbolOrKeyword(s);
 		if (v.success())
 			return v;
 		// return parseError(s, ParseResultCode::UnknownSyntax);
