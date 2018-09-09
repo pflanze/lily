@@ -227,8 +227,8 @@ LilyDouble::write(std::ostream& out) {
 	/* Have to check whether the output already contains a dot or
 	   exponent, hence capture into a string first, meh. */
 	std::ostringstream o;
-	o.precision(std::numeric_limits<double>::max_digits10 - 1);
-	// ^ XX "- 1": evil, hide the parsing (or precision?) problems under the carpet
+	o.precision(std::numeric_limits<double>::max_digits10 - 2);
+	// ^ XX "- 2": evil, hide the parsing (or precision?) problems under the carpet
 	o << value;
 	auto s= o.str();
 	auto len= s.length();
