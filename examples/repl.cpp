@@ -3,6 +3,9 @@
 #include <lilyParse.hpp>
 #include <lilyDefaultEnvironment.hpp>
 
+static bool useAbort= true;
+// ^ add function to environment to change this setting?
+
 auto environment= lilyDefaultEnvironment();
 
 int main (int argc, const char** argv) {
@@ -17,11 +20,19 @@ int main (int argc, const char** argv) {
 		if (err) {
 			std::cout << "PARSE_ERR: " << err->what() << std::endl;
 		} else {
-			try {
-				LilyObjectPtr res= eval(expr, environment);
+			if (useAbort) {
+				LilyObjectPtr res=
+					eval(expr, environment);
 				WRITELN(res);
-			} catch (std::logic_error& e) {
-				std::cout << "ERR: " << e.what() << std::endl;
+			} else {
+				try {
+					LilyObjectPtr res=
+						eval(expr, environment);
+					WRITELN(res);
+				} catch (std::logic_error& e) {
+					std::cout << "ERR: " <<
+						e.what() << std::endl;
+				}
 			}
 		}
 	}
