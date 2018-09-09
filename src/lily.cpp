@@ -496,6 +496,8 @@ LilyNumberPtr LilyInt64::add(const LilyNumberPtr& b) {
 	if (b0) return Add(this, b0);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Add(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Add(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: add "
 				   << show(this) << " " << show(b)));
 }
@@ -526,6 +528,8 @@ LilyNumberPtr LilyFractional64::add(const LilyNumberPtr& b) {
 	if (b0) return Add(b0, this);
 	auto b1= dynamic_cast<LilyFractional64*>(&*b);
 	if (b1) return Add(this, b1);
+	auto b3= dynamic_cast<LilyDouble*>(&*b);
+	if (b3) return Add(this, b3);
 	throw std::logic_error(STR("unimplemented number operation: add "
 				   << show(this) << " " << show(b)));
 }
