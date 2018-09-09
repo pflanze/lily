@@ -565,14 +565,17 @@ PR parseSymbolOrKeyword(Sm s) {
 	}
 	auto len= str.length();
 	if ((len == 1) && str[0] == '.')
-		return parseError(s, ParseResultCode::NotASymbol);
+		//return parseError(s, ParseResultCode::NotASymbol);
+		throw std::logic_error("bug, dot should already have been checked");
 	else if ((len > 1) && (str[len-1] == ':')) {
 		str.pop_back();
 		return OK(KEYWORD(str, false), s);
 	}
 	// check (str[0] == ':') for CL style keywords, give them another type?
-	else
+	else if (len >= 1)
 		return OK(SYMBOL(str, false), s);
+	else
+		return parseError(s, ParseResultCode::NotASymbol);
 }
 
 // move to header file? but then also need to move the above classes.
