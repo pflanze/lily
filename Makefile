@@ -4,7 +4,11 @@ ifndef INSIDE_EMACS
 	CFLAGS_COLOR=-fdiagnostics-color=always
 endif
 
-CFLAGS=-fmax-errors=1 -O0 -std=c++11 -gdwarf-4 -g3 $(CFLAGS_COLOR)
+CFLAGS += -O0 -std=c++11 -gdwarf-4 -g3 $(CFLAGS_COLOR)
+
+ifdef ONE
+CFLAGS += -fmax-errors=1
+endif
 
 all: dirs bin/examples/repl tests
 
