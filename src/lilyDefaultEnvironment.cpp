@@ -43,7 +43,7 @@ lilyFold(LilyList* vs,
 	
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
-			res= fn(std::dynamic_pointer_cast<Tv>(pair->_car),
+			res= fn(XAS<Tv>(pair->_car),
 				res);
 			vs= XLIST_UNWRAP(pair->_cdr);
 		} else if (dynamic_cast<LilyNull*>(vs)) {
