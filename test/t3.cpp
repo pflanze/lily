@@ -179,4 +179,7 @@ int main () {
 	e("(+ 10 . 20)"); // improper list -- XX say 'argument list'
 	e("(+ . 10)"); // improper list -- XX say 'argument list'
 	e("(10 20)"); // not a function error
+
+	note("chars");
+	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\"");
 }

@@ -210,3 +210,6 @@ ERR: improper list: 20
 ERR: improper list: 10
 > (10 20)
 ERR: not a function: 10
+---- chars ----
+> (string->list "Hello\0 World\b\a\f\t\r\n")
+(#\H #\e #\l #\l #\o #\nul #\space #\W #\o #\r #\l #\d #\backspace #\alarm #\page #\tab #\return #\newline)
