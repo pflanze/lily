@@ -91,6 +91,16 @@ public:
 	const std::string& backingString() const {
 		return *_backingString;
 	}
+	const std::string takeString(parse_position_t len) const {
+		return _backingString->substr(_position, len);
+	}
+	bool subStringEq(const char* str, parse_position_t len) const {
+		for (parse_position_t i = 0; i < len; i++) {
+			if (!((*_backingString)[_position + i] == str[i]))
+				return false;
+		}
+		return true;
+	}
 	const std::string string() const {
 		return _backingString
 			->substr(_position,
