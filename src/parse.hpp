@@ -4,6 +4,7 @@
 #include <string>
 #include <assert.h>
 #include <stdexcept>
+#include <functional>
 
 
 // StringCursor, shortened S, is the argument for all parsers and the
@@ -88,8 +89,8 @@ public:
 	parse_position_t position() const {
 		return _position;
 	}
-	const std::string& backingString() const {
-		return *_backingString;
+	const std::string* backingString() const {
+		return _backingString;
 	}
 	const std::string takeString(parse_position_t len) const {
 		return _backingString->substr(_position, len);
@@ -105,6 +106,11 @@ public:
 		return _backingString
 			->substr(_position,
 				 _backingString->length() - _position);
+	}
+	parse_position_t positionDifferenceTo(StringCursor& s2) {
+		assert(s2._position >= _position);
+		// assert(s2._backingString == _backingString);
+		return s2._position - _position;
 	}
 private:
 	const std::string* _backingString;
@@ -196,6 +202,8 @@ static inline
 S skipUntilAfter (S s, const char* str) {
 	return skipUntil(s, str, true);
 }
+
+S dropWhile (S s, std::function<bool(char)> pred);
 
 bool isWordEndBoundary(S s);
 

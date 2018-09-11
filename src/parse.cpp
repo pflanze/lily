@@ -67,6 +67,15 @@ eof:
 	return s.setError(ParseResultCode_UnexpectedEof);
 }
 
+S dropWhile (S s, std::function<bool(char)> pred) {
+	parse_position_t i= s.position();
+	const std::string* str= s.backingString();
+	auto len= str->length();
+	while ((i < len) && pred((*str)[i]))
+		i++;
+	return S(str, i, s.error());
+}
+
 bool isWordEndBoundary(S s) {
 	return (s.isNull()) || ! isWordChar(s.first());
 }
