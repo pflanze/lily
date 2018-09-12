@@ -266,6 +266,15 @@ static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 		}, arguments);
 }
 
+static LilyObjectPtr lilyCharToInteger(LilyListPtr* arguments,
+				       LilyListPtr* _ctx,
+				       LilyListPtr* _cont) {
+	return apply1ary("char->integer", [](LilyObjectPtr v) {
+			XLETU_AS(i, LilyChar, v);
+			return INT(i->asChar());
+		}, arguments);
+}
+
 
 
 
@@ -344,6 +353,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("exact->inexact", lilyExactInexact),
 		ENTRY("string->list", lilyStringToList),
 		ENTRY("integer->char", lilyIntegerToChar),
+		ENTRY("char->integer", lilyCharToInteger),
 		);
 	return env;
 }

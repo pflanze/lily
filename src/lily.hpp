@@ -201,6 +201,7 @@ public:
 	LilyChar(lily_char_t c) : _char(c) {
 		evalId= LilyEvalOpcode::Char;
 	};
+	lily_char_t asChar() { return _char; }
 	lily_char_t _char;
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
