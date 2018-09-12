@@ -6,7 +6,7 @@
 LilyListPtr environment= NIL;
 
 int main (int argc, const char** argv) {
-	lilySymbollikeTable_init();
+	lily_init();
 	environment= lilyDefaultEnvironment();
 	std::string line;
 	while (true) {

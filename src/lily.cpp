@@ -132,7 +132,7 @@ LilyObjectPtr lilySymbol_quote;
 LilyObjectPtr lilySymbol_quasiquote;
 LilyObjectPtr lilySymbol_unquote;
 
-void lilySymbollikeTable_init() {
+void lily_init() {
 	lilySymbolTable= new lilySymbollikeTable();
 	lilyKeywordTable= new lilySymbollikeTable();
 	lilySymbol_quote= SYMBOL("quote", false);
