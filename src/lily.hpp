@@ -19,6 +19,7 @@ enum class LilyEvalOpcode : char {
 	Void,
 	Pair,
 	Boolean,
+	Char,
 	String,
 	Symbol,
 	Keyword,
@@ -189,6 +190,17 @@ public:
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	//virtual ~LilyBoolean();
+};
+
+class LilyChar : public LilyObject {
+public:
+	LilyChar(char c) : _char(c) {
+		evalId= LilyEvalOpcode::Char;
+	};
+	char _char;
+	virtual void write(std::ostream& out);
+	virtual const char* typeName();
+	virtual ~LilyChar();
 };
 
 class LilyString : public LilyObject {

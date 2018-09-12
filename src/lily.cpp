@@ -96,6 +96,7 @@ LilyKeyword::intern(std::string s, bool nq) {
 LilyPair::~LilyPair() {};
 //LilyVoid::~LilyVoid() {};
 //LilyBoolean::~LilyBoolean() {};
+LilyChar::~LilyChar() {};
 LilyString::~LilyString() {};
 LilySymbol::~LilySymbol() {};
 LilyKeyword::~LilyKeyword() {};
@@ -177,6 +178,10 @@ otherwise:
 	out << ")";
 }
 
+void
+LilyVoid::write(std::ostream& out) {
+	out << "#!void";
+}
 
 void
 LilyBoolean::write(std::ostream& out) {
@@ -184,10 +189,19 @@ LilyBoolean::write(std::ostream& out) {
 }
 
 void
-LilyVoid::write(std::ostream& out) {
-	out << "#!void";
+LilyChar::write(std::ostream& out) {
+	char c= _char;
+	out << "#\\";
+	const char* maybeStr= lilyCharMaybeName(c);
+	if (maybeStr)
+		out << maybeStr;
+	else if ((c >= 33) && (c <= 126))
+		out << _char;
+	else if (c < 256) // XX aha, we've got a bad definition of c!
+		out << "x" << std::hex << (c < 16 ? "0" : "") << (int)c << std::dec;
+	else
+		throw std::logic_error("bug, unfinished char implementation");
 }
-
 
 void
 LilyString::write(std::ostream& out) {
@@ -337,6 +351,7 @@ const char* LilyNull::typeName() {return "Null";}
 const char* LilyVoid::typeName() {return "Void";}
 const char* LilyPair::typeName() {return "Pair";}
 const char* LilyBoolean::typeName() {return "Boolean";}
+const char* LilyChar::typeName() {return "Char";}
 const char* LilyString::typeName() {return "String";}
 const char* LilySymbol::typeName() {return "Symbol";}
 const char* LilyKeyword::typeName() {return "Keyword";}
@@ -765,6 +780,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		case LilyEvalOpcode::Int64:
 		case LilyEvalOpcode::Fractional64:
 		case LilyEvalOpcode::Double:
+		case LilyEvalOpcode::Char:
 			acc= code;
 			break;
 			

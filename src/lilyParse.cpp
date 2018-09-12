@@ -86,6 +86,26 @@ bool needsSymbolQuoting (char c) {
 		);
 }
 
+
+// (map (lambda (i) (list i (.char i))) (.. 0 260))
+
+const char* lilyCharMaybeName(char c) {
+	switch (c) {
+	case 0: return "nul";
+	case 7: return "alarm";
+	case 8: return "backspace";
+	case 9: return "tab";
+	case 10: return "newline";
+	case 11: return "vtab";
+	case 12: return "page";
+	case 13: return "return";
+	case 27: return "esc";
+	case 32: return "space";
+	case 127: return "delete";
+	default: return 0;
+	}
+}
+
 // all the character that will introduce another token after a number,
 // or also symbol or keyword?
 static bool isSeparation (char c) {

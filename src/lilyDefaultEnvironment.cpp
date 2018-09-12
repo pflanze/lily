@@ -245,6 +245,21 @@ static LilyObjectPtr lilyReverse(LilyListPtr* arguments,
 		}, arguments);
 }
 
+static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
+				      LilyListPtr* _ctx,
+				      LilyListPtr* _cont) {
+	return apply1ary("string->list", [](LilyObjectPtr v) {
+			XLETU_AS(s, LilyString, v);
+			LilyListPtr res= NIL;
+			for (auto i= s->string.rbegin(); i != s->string.rend(); i++)
+				res= CONS(CHAR(*i), res);
+			return res;
+		}, arguments);
+}
+
+
+
+
 
 static LilyObjectPtr lilyDefine(LilyListPtr* es,
 				LilyListPtr* ctx,
@@ -318,6 +333,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("define", lilyDefine),
 		ENTRY("begin", lilyBegin),
 		ENTRY("exact->inexact", lilyExactInexact),
+		ENTRY("string->list", lilyStringToList),
 		);
 	return env;
 }

@@ -22,7 +22,11 @@
 #define FRACTIONAL(n,d) LILY_NEW(LilyFractional64,(n,d))
 #define DOUBLE(a) LILY_NEW(LilyDouble,(a))
 #define STRING(a) LILY_NEW(LilyString,(a))
-		
+
+inline LilyObjectPtr CHAR(char c) {
+	return LILY_NEW(LilyChar,(c));
+}
+
 inline LilySymbollikePtr SYMBOL(std::string str, bool mayNeedQuoting) {
 	return LilySymbol::intern(str, mayNeedQuoting);
 }
