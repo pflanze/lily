@@ -4,6 +4,7 @@
 #include "lilyConstruct.hpp"
 #include "lilyParse.hpp"
 #include "lilyUtil.hpp"
+#include "functional.hpp"
 
 // man exp10
 #ifndef _GNU_SOURCE
@@ -34,6 +35,8 @@ enum class ParseResultCode : char {
 	DivisionByZero,
 	NotASymbol,
 	InvalidDottedList,
+	InvalidCharname,
+	InvalidHexdigit,
 };
 
 const char* ParseResultCode_string (ParseResultCode c) {
@@ -58,6 +61,8 @@ const char* ParseResultCode_string (ParseResultCode c) {
 	case ParseResultCode::DivisionByZero: return "DivisionByZero";
 	case ParseResultCode::NotASymbol: return "NotASymbol";
 	case ParseResultCode::InvalidDottedList: return "InvalidDottedList";
+	case ParseResultCode::InvalidCharname: return "InvalidCharname";
+	case ParseResultCode::InvalidHexdigit: return "InvalidHexdigit";
 	}
 	// how can I make the compiler warn about missing cases but
 	// otherwise be silent, without the throw ?
@@ -89,6 +94,7 @@ bool needsSymbolQuoting (char c) {
 
 // (map (lambda (i) (list i (.char i))) (.. 0 260))
 
+// regenerate lilyParse_name2char.hpp if changed!
 const char* lilyCharMaybeName(char c) {
 	switch (c) {
 	case 0: return "nul";
@@ -105,6 +111,9 @@ const char* lilyCharMaybeName(char c) {
 	default: return 0;
 	}
 }
+
+#include "lilyParse_name2char.hpp"
+
 
 // all the character that will introduce another token after a number,
 // or also symbol or keyword?
@@ -152,6 +161,43 @@ PR parseError(S s, ParseResultCode error) {
 	return PR(VOID, s.setError(error));
 }
 
+static
+int64_t hexdigit2int (char c) {
+	if ((c >= '0') && (c <= '9'))
+		return c - '0';
+	else if ((c >= 'a') && (c <= 'f'))
+		return c - 'a' + 10;
+	else if ((c >= 'A') && (c <= 'F'))
+		return c - 'A' + 10;
+	else
+		return -1;
+}
+
+static
+PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
+	if (lenToRead != lenTillSeparator)
+		// might be because of eof, though, ?
+		return parseError(s, ParseResultCode::InvalidCharname);
+
+	// assert(lenToRead <= 8);
+	uint32_t c= 0;
+	for (int i=0; i < lenToRead; i++) {
+		// if (s.isNull())
+		// 	return parseError(s, ParseResultCode::UnexpectedEof);
+		// ^ can't happen since checked beforehand
+
+		// use PR for hexdigit2int?... 'heavy'?
+		auto d= hexdigit2int(s.first());
+		WARN("hexdigit2int("<<s.first()<<")="<<d);
+		if (d < 0) {
+			return parseError(s, ParseResultCode::InvalidHexdigit);
+		}
+		c = (c << 4) + d;
+		s= s.rest();
+	}
+	return PR(CHAR(c), s);
+}
+
 
 // s is after '#'
 static
@@ -172,6 +218,28 @@ PR parseHashitem(S s) {
 		// skipWhitespaceAndComments should have eliminated
 		// this case
 		throw std::logic_error("bug");
+	} else if (c1 == '\\') {
+		// character
+		if (r.isNull())
+			return parseError(s, ParseResultCode::UnexpectedEof);
+		auto r1= dropWhile(r.rest(),
+				   COMPLEMENT(char, isSeparation));
+		auto len= r.positionDifferenceTo(r1);
+		if (len > 1) {
+			switch (r.first()) {
+			case 'x':
+				return hex2char(r.rest(), 2, len-1);
+			case 'u':
+				return hex2char(r.rest(), 4, len-1);
+			case 'U':
+				return hex2char(r.rest(), 8, len-1);
+			}
+			// default: not a hex code
+		}
+		auto c= name2char(r, len);
+		if (c == -1)
+			return parseError(r1, ParseResultCode::InvalidCharname);
+		return PR(CHAR(c), r1);
 	} else {
 		if (isWordEndBoundary(r)) {
 			if (c1 == 'f') {
