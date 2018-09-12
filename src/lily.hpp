@@ -696,6 +696,8 @@ extern LilyObjectPtr lilySymbol_quasiquote;
 extern LilyObjectPtr lilySymbol_unquote;
 
 
+void lilySymbollikeTable_init();
+
 
 #endif
 

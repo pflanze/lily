@@ -79,20 +79,17 @@ LilySymbollikePtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 	}
 }
 
-static lilySymbollikeTable lilySymbolTable {};
+static lilySymbollikeTable * lilySymbolTable;
 LilySymbollikePtr
 LilySymbol::intern(std::string s, bool nq) {
-	return lilySymbollikeIntern<LilySymbol>(&lilySymbolTable, s, nq);
+	return lilySymbollikeIntern<LilySymbol>(lilySymbolTable, s, nq);
 }
 
-static lilySymbollikeTable lilyKeywordTable {};
+static lilySymbollikeTable * lilyKeywordTable;
 LilySymbollikePtr
 LilyKeyword::intern(std::string s, bool nq) {
-	return lilySymbollikeIntern<LilyKeyword>(&lilyKeywordTable, s, nq);
+	return lilySymbollikeIntern<LilyKeyword>(lilyKeywordTable, s, nq);
 }
-
-
-
 
 
 LilyPair::~LilyPair() {};
@@ -131,9 +128,21 @@ LilyList::write(std::ostream& out) {
 }
 
 // XX const? can we bring it into the program segment?
-LilyObjectPtr lilySymbol_quote= SYMBOL("quote", false);
-LilyObjectPtr lilySymbol_quasiquote= SYMBOL("quasiquote", false);
-LilyObjectPtr lilySymbol_unquote= SYMBOL("unquote", false);
+LilyObjectPtr lilySymbol_quote;
+LilyObjectPtr lilySymbol_quasiquote;
+LilyObjectPtr lilySymbol_unquote;
+
+void lilySymbollikeTable_init() {
+	lilySymbolTable= new lilySymbollikeTable();
+	lilyKeywordTable= new lilySymbollikeTable();
+	lilySymbol_quote= SYMBOL("quote", false);
+	lilySymbol_quasiquote= SYMBOL("quasiquote", false);
+	lilySymbol_unquote= SYMBOL("unquote", false);
+
+}
+
+
+
 
 void
 LilyPair::write(std::ostream& out) {

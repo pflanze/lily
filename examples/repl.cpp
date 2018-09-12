@@ -3,9 +3,11 @@
 #include <lilyParse.hpp>
 #include <lilyDefaultEnvironment.hpp>
 
-auto environment= lilyDefaultEnvironment();
+LilyListPtr environment= NIL;
 
 int main (int argc, const char** argv) {
+	lilySymbollikeTable_init();
+	environment= lilyDefaultEnvironment();
 	std::string line;
 	while (true) {
 		std::cout << "> " << std::flush;
