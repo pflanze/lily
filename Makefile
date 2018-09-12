@@ -48,7 +48,7 @@ bin/lily.o: src/lily.cpp src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lil
 bin/parse.o: src/parse.cpp src/parse.hpp 
 	$(CXX) $(CFLAGS) -c -Wall src/parse.cpp -o bin/parse.o
 
-bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp src/lilyUtil.hpp src/parse.hpp
+bin/lilyParse.o: src/lilyParse.hpp src/lily.hpp src/lilyConstruct.hpp src/lilyParse.cpp src/lilyUtil.hpp src/parse.hpp src/functional.hpp
 	$(CXX) $(CFLAGS) -c -Wall src/lilyParse.cpp -o bin/lilyParse.o
 
 bin/lilyDefaultEnvironment.o: src/lilyDefaultEnvironment.cpp src/lilyDefaultEnvironment.hpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
