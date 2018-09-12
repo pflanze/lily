@@ -190,7 +190,7 @@ LilyBoolean::write(std::ostream& out) {
 
 void
 LilyChar::write(std::ostream& out) {
-	char c= _char;
+	lily_char_t c= _char;
 	out << "#\\";
 	const char* maybeStr= lilyCharMaybeName(c);
 	if (maybeStr)

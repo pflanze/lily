@@ -3,9 +3,9 @@
 
 #include "parse.hpp"
 
-bool needsSymbolQuoting (char c);
+bool needsSymbolQuoting (lily_char_t c);
 
-const char* lilyCharMaybeName(char c);
+const char* lilyCharMaybeName(lily_char_t c);
 
 // never throws exceptions: 1/0 is parsed as a symbol, parsing errors
 // are returned as LilyParseError objects

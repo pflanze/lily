@@ -23,7 +23,7 @@
 #define DOUBLE(a) LILY_NEW(LilyDouble,(a))
 #define STRING(a) LILY_NEW(LilyString,(a))
 
-inline LilyObjectPtr CHAR(char c) {
+inline LilyObjectPtr CHAR(lily_char_t c) {
 	return LILY_NEW(LilyChar,(c));
 }
 

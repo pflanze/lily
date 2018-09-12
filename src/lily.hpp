@@ -14,6 +14,10 @@
 #include "xxx.hpp"
 
 
+typedef char32_t lily_char_t;
+
+
+
 enum class LilyEvalOpcode : char {
 	Null,
 	Void,
@@ -194,10 +198,10 @@ public:
 
 class LilyChar : public LilyObject {
 public:
-	LilyChar(char c) : _char(c) {
+	LilyChar(lily_char_t c) : _char(c) {
 		evalId= LilyEvalOpcode::Char;
 	};
-	char _char;
+	lily_char_t _char;
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyChar();

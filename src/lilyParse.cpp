@@ -70,7 +70,7 @@ const char* ParseResultCode_string (ParseResultCode c) {
 }
 
 
-bool needsSymbolQuoting (char c) {
+bool needsSymbolQuoting (lily_char_t c) {
 	return !(isWordChar(c)
 		 || (c == '!')
 		 || (c == '?')
@@ -95,7 +95,7 @@ bool needsSymbolQuoting (char c) {
 // (map (lambda (i) (list i (.char i))) (.. 0 260))
 
 // regenerate lilyParse_name2char.hpp if changed!
-const char* lilyCharMaybeName(char c) {
+const char* lilyCharMaybeName(lily_char_t c) {
 	switch (c) {
 	case 0: return "nul";
 	case 7: return "alarm";
@@ -117,7 +117,7 @@ const char* lilyCharMaybeName(char c) {
 
 // all the character that will introduce another token after a number,
 // or also symbol or keyword?
-static bool isSeparation (char c) {
+static bool isSeparation (lily_char_t c) {
 	return isWhitespace(c)
 		|| needsSymbolQuoting(c);
 }
@@ -133,7 +133,7 @@ S skipWhitespaceAndComments (Sm s) {
 	s= skipWhitespaceOnly(s);
 	if (s.isNull())
 		return s;
-	char c= s.first();
+	lily_char_t c= s.first();
 	if (c == ';') {
 		return skipWhitespaceAndComments(skipUntilAfterEol(s));
 	} else {
@@ -162,7 +162,7 @@ PR parseError(S s, ParseResultCode error) {
 }
 
 static
-int64_t hexdigit2int (char c) {
+int64_t hexdigit2int (lily_char_t c) {
 	if ((c >= '0') && (c <= '9'))
 		return c - '0';
 	else if ((c >= 'a') && (c <= 'f'))
@@ -223,7 +223,7 @@ PR parseHashitem(S s) {
 		if (r.isNull())
 			return parseError(s, ParseResultCode::UnexpectedEof);
 		auto r1= dropWhile(r.rest(),
-				   COMPLEMENT(char, isSeparation));
+				   COMPLEMENT(lily_char_t, isSeparation));
 		auto len= r.positionDifferenceTo(r1);
 		if (len > 1) {
 			switch (r.first()) {
@@ -388,7 +388,7 @@ PR parseInteger(S s) {
 // (sign) -> (empty) | + | -
 
 
-typedef std::pair<char,int64_t> suffixValue; // <exponent marker, exponent>
+typedef std::pair<lily_char_t,int64_t> suffixValue; // <exponent marker, exponent>
 typedef ParseResult<suffixValue> PR_suffix;
 static PR_suffix parseError_suffix(S s, ParseResultCode error) {
 	return PR_suffix(suffixValue(0,0), s.setError(error));
@@ -644,7 +644,7 @@ PR parseSymbolOrKeyword(Sm s) {
 	while (true) {
 		if (s.isNull())
 			break;
-		char c= s.first();
+		lily_char_t c= s.first();
 		if (!needsSymbolQuoting(c))
 			str.push_back(c);
 		else
@@ -674,7 +674,7 @@ PR parseList(Sm s) {
 	s= skipWhitespaceAndComments(s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::UnexpectedEof);
-	char c=s.first();
+	lily_char_t c=s.first();
 	if (c==')')
 		return OK(NIL, s.rest());
 	// parse an item, then the remainder of the list; parsing the
@@ -697,7 +697,7 @@ PR parseList(Sm s) {
 		auto s2= skipWhitespaceAndComments(r1.remainder());
 		if (s2.isNull())
 			return parseError(s2, ParseResultCode::UnexpectedEof);
-		char c2= s2.first();
+		lily_char_t c2= s2.first();
 		if (c2 == ')')
 			return OK(r1.value(), s2.rest());
 		else
@@ -736,7 +736,7 @@ PR lilyParse (Sm s) {
 	s= skipWhitespaceAndComments (s);
 	if (s.isNull())
 		return parseError(s, ParseResultCode::MissingInput);
-	char c= s.first();
+	lily_char_t c= s.first();
 	auto s1= s.rest();
 	LilyObjectPtr* special_symbol;
 	if (c=='(') {
