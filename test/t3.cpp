@@ -182,4 +182,7 @@ int main () {
 
 	note("chars");
 	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\"");
+	e("(list #\\f #\\esc #\\return)");
+	e("(list->string (list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe))");
+	e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")";
 }
