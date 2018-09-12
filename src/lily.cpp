@@ -188,19 +188,38 @@ LilyBoolean::write(std::ostream& out) {
 	out << (value ? "#t" : "#f");
 }
 
+static
+char unsafe_hexdigit (int d) {
+	return (d < 10) ? (d + '0') : (d + 'a');
+}
+
+static
+void writehex(std::ostream& out, uint32_t v, int numdigits) {
+	for (int i=0; i< numdigits; i++) {
+		out << unsafe_hexdigit((v >> ((numdigits - 1 - i) * 4)) & 15);
+	}
+}
+
+
 void
 LilyChar::write(std::ostream& out) {
 	lily_char_t c= _char;
 	out << "#\\";
 	const char* maybeStr= lilyCharMaybeName(c);
-	if (maybeStr)
+	if (maybeStr) {
 		out << maybeStr;
-	else if ((c >= 33) && (c <= 126))
-		out << _char;
-	else if (c < 256) // XX aha, we've got a bad definition of c!
-		out << "x" << std::hex << (c < 16 ? "0" : "") << (int)c << std::dec;
-	else
-		throw std::logic_error("bug, unfinished char implementation");
+	} else if ((c >= 33) && (c <= 126)) {
+		out << (char)_char; // XXX properly handle with locale based encoding lib
+	} else if (c < (1<<(2*4))) {
+		out << "x";
+		writehex(out, c, 2);
+	} else if (c < (1<<(4*4))) {
+		out << "u";
+		writehex(out, c, 4);
+	} else {
+		out << "U";
+		writehex(out, c, 8);
+	}
 }
 
 void
