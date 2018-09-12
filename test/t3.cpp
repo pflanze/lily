@@ -3,7 +3,7 @@
 #include <lilyParse.hpp>
 #include <lilyDefaultEnvironment.hpp>
 
-auto environment= lilyDefaultEnvironment();
+LilyListPtr environment;
 
 void note(const char* s) {
 	std::cout << "---- " << s << " ----\n";
@@ -28,6 +28,9 @@ void _e(const char* codestring) {
 }
 
 int main () {
+	lily_init();
+	environment= lilyDefaultEnvironment();
+
 	note("string and symbol pointer comparison");
 	// Yes, == on the pointer is a pointer comparison, and
 	// interning works

@@ -13,6 +13,7 @@ void note(const char* s) {
 }
 
 int main () {
+	lily_init();
 	pr(" \n \"Hi,\nand\\n \\\"you\" 123");
 	pr(" \n \"Hi,\nand\\n \\\"you\" \n ");
 	pr("7");

@@ -2,6 +2,7 @@
 #include <lilyConstruct.hpp>
 
 int main () {
+	lily_init();
 	LilyObjectPtr n= LILY_NEW(LilyInt64,(-4113));
 	WRITELN(n);
 	WRITELN(CONS(INT(10), CONS(INT(20), NIL)));
