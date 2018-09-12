@@ -184,5 +184,12 @@ int main () {
 	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\"");
 	e("(list #\\f #\\esc #\\return)");
 	e("(list->string (list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe))");
-	e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")";
+	e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")");
+	e("(char->integer #\\xef)");
+	e("#\\xef");
+	e("(char->integer #\\uffff)");
+	e("(char->integer #\\UFFFE)");
+	e("(char->integer #\\uFFFE)");
+	e("(char->integer #\\UFFFFffff)");
+	e("(char->integer #\\UFFFFFFFF)");
 }

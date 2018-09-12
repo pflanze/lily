@@ -219,3 +219,17 @@ ERR: not a function: 10
 "f\33\r\377\ufffe\U0001effe"
 > (string->list "f\33\r\377\ufffe\U0001effe")
 (#\f #\esc #\return #\xff #\ufffe #\U0001effe)
+> (char->integer #\xef)
+239
+> #\xef
+#\xef
+> (char->integer #\uffff)
+65535
+> (char->integer #\UFFFE)
+PARSE_ERR: parse error: InvalidCharname (position 18)
+> (char->integer #\uFFFE)
+65534
+> (char->integer #\UFFFFffff)
+4294967295
+> (char->integer #\UFFFFFFFF)
+4294967295
