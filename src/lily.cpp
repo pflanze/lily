@@ -203,13 +203,13 @@ void writehex(std::ostream& out, uint32_t v, int numdigits) {
 
 void
 LilyChar::write(std::ostream& out) {
-	lily_char_t c= _char;
+	lily_char_t c= _value;
 	out << "#\\";
 	const char* maybeStr= lilyCharMaybeName(c);
 	if (maybeStr) {
 		out << maybeStr;
 	} else if ((c >= 33) && (c <= 126)) {
-		out << (char)_char; // XXX properly handle with locale based encoding lib
+		out << (char)c; // XXX properly handle with locale based encoding lib
 	} else if (c < (1<<(2*4))) {
 		out << "x";
 		writehex(out, c, 2);

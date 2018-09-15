@@ -189,12 +189,12 @@ public:
 };
 
 class LilyChar : public LilyObject {
-	lily_char_t _char;
+	lily_char_t _value;
 public:
-	LilyChar(lily_char_t c) : _char(c) {
+	LilyChar(lily_char_t c) : _value(c) {
 		evalId= LilyEvalOpcode::Char;
 	};
-	lily_char_t asChar() { return _char; }
+	lily_char_t value() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyChar();
