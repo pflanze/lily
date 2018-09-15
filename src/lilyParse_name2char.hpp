@@ -1,11 +1,11 @@
 // This was partially auto-generated. Better don't edit!
 
 static
-int32_t name2char (S str, int32_t len) {
+char32_t name2char (S str, int32_t len) {
 	auto stringEq= [=](S& str, const char* str2) -> bool {
 		return str.subStringEq(str2, len);
 	};
-	auto otherwise= [=]() -> int32_t {
+	auto otherwise= [=]() -> char32_t {
 		return -1;
 	};
 	if (len > 100)
