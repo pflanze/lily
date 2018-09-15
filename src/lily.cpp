@@ -185,7 +185,7 @@ LilyVoid::write(std::ostream& out) {
 
 void
 LilyBoolean::write(std::ostream& out) {
-	out << (value ? "#t" : "#f");
+	out << (_value ? "#t" : "#f");
 }
 
 static

@@ -175,11 +175,12 @@ public:
 
 class LilyBoolean : public LilyObject {
 private:
-	LilyBoolean(bool v) : value(v) {
+	LilyBoolean(bool v) : _value(v) {
 		evalId= LilyEvalOpcode::Boolean;
 	};
+	bool _value;
 public:
-	bool value;
+	bool value() { return _value; }
 	static LilyObjectPtr True();
 	static LilyObjectPtr False();
 	virtual void write(std::ostream& out);
