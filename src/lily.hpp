@@ -617,14 +617,15 @@ public:
 // base error class, but will not work that well anymore once guest
 // language structs exist and are to be allowed to inherit from a
 // separate error base
-struct LilyErrorBase : public LilyObject {
+class LilyErrorBase : public LilyObject {
 };
-struct LilyErrorWithWhat : public LilyObject {
+class LilyErrorWithWhat : public LilyObject {
 	virtual std::string what()=0;
 };
 
 
-struct LilyDivisionByZeroError : public LilyErrorWithWhat {
+class LilyDivisionByZeroError : public LilyErrorWithWhat {
+	std::string _msg;
 public:
 	LilyDivisionByZeroError(const std::string msg)
 		: _msg(msg) {
@@ -633,11 +634,12 @@ public:
 	virtual std::string what();
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
-	std::string _msg;
 };
 
 
-struct LilyParseError : public LilyErrorWithWhat {
+class LilyParseError : public LilyErrorWithWhat {
+	std::string _msg;
+	parse_position_t _pos;
 public:
 	LilyParseError(const std::string msg, parse_position_t pos)
 		: _msg(msg), _pos(pos) {
@@ -648,8 +650,6 @@ public:
 	virtual std::string what();
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
-	std::string _msg;
-	parse_position_t _pos;
 };
 
 
