@@ -161,8 +161,10 @@ PR ERR(ParseResultCode error, S s) {
 	return PR(VOID, s.setError(error));
 }
 
+
+
 static
-int64_t hexdigit2int (lily_char_t c) {
+int hexdigit2int (lily_char_t c) {
 	if ((c >= '0') && (c <= '9'))
 		return c - '0';
 	else if ((c >= 'a') && (c <= 'f'))
@@ -173,8 +175,9 @@ int64_t hexdigit2int (lily_char_t c) {
 		return -1;
 }
 
+// read a hex-encoded LilyChar
 static
-PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
+PR parseCharInHex(Sm s, int lenToRead, int lenTillSeparator) {
 	if (lenToRead != lenTillSeparator)
 		// might be because of eof, though, ?
 		return ERR(ParseResultCode::InvalidCharname, s);
@@ -189,9 +192,8 @@ PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
 		// use PR for hexdigit2int?... 'heavy'?
 		auto d= hexdigit2int(s.first());
 		WARN("hexdigit2int("<<s.first()<<")="<<d);
-		if (d < 0) {
+		if (d < 0)
 			return ERR(ParseResultCode::InvalidHexdigit, s);
-		}
 		c = (c << 4) + d;
 		s= s.rest();
 	}
@@ -228,11 +230,11 @@ PR parseHashitem(S s) {
 		if (len > 1) {
 			switch (r.first()) {
 			case 'x':
-				return hex2char(r.rest(), 2, len-1);
+				return parseCharInHex(r.rest(), 2, len-1);
 			case 'u':
-				return hex2char(r.rest(), 4, len-1);
+				return parseCharInHex(r.rest(), 4, len-1);
 			case 'U':
-				return hex2char(r.rest(), 8, len-1);
+				return parseCharInHex(r.rest(), 8, len-1);
 			}
 			// default: not a hex code
 		}
