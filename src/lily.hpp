@@ -62,7 +62,6 @@ namespace lily {
 
 class LilyObject {
 public:
-	std::string onelineString();
 	virtual const char* typeName()=0;
 	virtual void write(std::ostream& out)=0;
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?

@@ -106,14 +106,6 @@ LilyFractional64::~LilyFractional64() {};
 LilyDouble::~LilyDouble() {};
 
 
-std::string
-LilyObject::onelineString() {
-	std::ostringstream res;
-	this->write(res);
-	return res.str();
-}
-
-	
 void
 LilyList::write(std::ostream& out) {
 	LilyList* p= this;
