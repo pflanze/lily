@@ -197,7 +197,7 @@ PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
 		c = (c << 4) + d;
 		s= s.rest();
 	}
-	return PR(CHAR(c), s);
+	return OK(CHAR(c), s);
 }
 
 
@@ -241,7 +241,7 @@ PR parseHashitem(S s) {
 		auto c= name2char(r, len);
 		if (c == -1)
 			return ERR(r1, ParseResultCode::InvalidCharname);
-		return PR(CHAR(c), r1);
+		return OK(CHAR(c), r1);
 	} else {
 		if (isWordEndBoundary(r)) {
 			if (c1 == 'f') {
