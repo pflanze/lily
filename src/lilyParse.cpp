@@ -156,6 +156,8 @@ PR OK(LilyObjectPtr v, S s) {
 	return PR(v,s);
 }
 
+// pass s first in this one because it's more visible this way (short
+// variables), and it's not embedded directly in PR anyway, so, OK?
 static
 PR ERR(S s, ParseResultCode error) {
 	return PR(VOID, s.setError(error));
