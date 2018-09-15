@@ -286,13 +286,13 @@ public:
 
 class LilyFractional64 : public LilyExact {
 public:
-	LilyFractional64 (int64_t numerator, int64_t denominator)
-		: _numerator(numerator), _denominator(denominator) {
+	LilyFractional64 (int64_t enumerator, int64_t denominator)
+		: _enumerator(enumerator), _denominator(denominator) {
 		evalId= LilyEvalOpcode::Fractional64;
 	}
-	int64_t numerator() { return _numerator;}
+	int64_t enumerator() { return _enumerator;}
 	int64_t denominator() { return _denominator;}
-	int64_t _numerator;
+	int64_t _enumerator;
 	int64_t _denominator;
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
