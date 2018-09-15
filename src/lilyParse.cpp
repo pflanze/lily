@@ -733,26 +733,27 @@ PR lilyParse (Sm s) {
 	lily_char_t c= s.first();
 	auto s1= s.rest();
 	LilyObjectPtr* special_symbol;
-	if (c=='(') {
+	switch (c) {
+	case '(':
 		return parseList(s1);
-	} else if (c=='#') {
+	case '#':
 		return parseHashitem(s1);
-	} else if (c=='"') {
+	case '"':
 		return parseStringLike(s1, '"', newString);
-	} else if (c=='|') {
+	case '|':
 		DEBUGWARN("parseStringLike on: "<<show(s1.string())); 
 		return parseStringLike(s1, '|', newSymbolOrKeyword);
-	} else if (c==';') {
+	case ';':
 		// until the end of the line; if s is 1 line then that
 		// will be eof, but make it generic so actually check:
 		return lilyParse(skipUntilAfterEol(s1));
-	} else if (c=='\'') {
+	case '\'':
 		special_symbol= &lilySymbol_quote; goto special;
-	} else if (c=='`') {
+	case '`':
 		special_symbol= &lilySymbol_quasiquote; goto special;
-	} else if (c==',') {
+	case ',':
 		special_symbol= &lilySymbol_unquote; goto special;
-	} else {
+	default: {
 		if ((c=='.') && isSeparation(s1))
 			return ERR(ParseResultCode::ImproperlyPlacedDot, s1);
 
@@ -775,6 +776,7 @@ PR lilyParse (Sm s) {
 		// symbol is what it remains to be interpreted as
 		// anyway?
 		return v;
+	}
 	}
 	throw std::logic_error("unreachable");
 special:
