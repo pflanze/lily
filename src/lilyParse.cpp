@@ -108,7 +108,7 @@ const char* lilyCharMaybeName(lily_char_t c) {
 	case 27: return "esc";
 	case 32: return "space";
 	case 127: return "delete";
-	default: return 0;
+	default: return NULL;
 	}
 }
 
@@ -308,20 +308,18 @@ PR parseNegativeInteger(Sm s) {
 		if (s.isNull())
 			break;
 		char c= s.first();
-		if (isDigit(c)) {
-			s=s.rest();
-			if (!isoverflow) {
-				auto d = c - '0';
-				try {
-					res= lily_sub(lily_mul(res, 10), d);
-				} catch (std::overflow_error) {
-					isoverflow= true;
-				}
-			}
-			isnumber=true;
-		} else {
+		if (!isDigit(c))
 			break;
+		s=s.rest();
+		if (!isoverflow) {
+			auto d = c - '0';
+			try {
+				res= lily_sub(lily_mul(res, 10), d);
+			} catch (std::overflow_error) {
+				isoverflow= true;
+			}
 		}
+		isnumber=true;
 	}
 	if (isnumber) {
 		if (isoverflow)
@@ -432,8 +430,8 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	if (s.isNull())
 		return ERR(ParseResultCode::NotAFloat, s);
 	int64_t postdot= 0;
-	int32_t postdotLength= 0;
-	// ^ signed so that we can negate it before passing to exp10
+	int32_t postdotLength= 0; // signed so that we can negate it
+				  // before passing to exp10
 	bool hasDot= false;
 	bool overflow= false;
 	char c0= s.first();
@@ -549,10 +547,10 @@ PR parseNumber(Sm s) {
 		// not success of course, but that will check for
 		// boundary, and the error is kept.
 		goto successsofar;
-	if (result.failed()) 
+	if (result.failed())
 		return result;
 
-	// parseInteger succeededç 
+	// parseInteger succeeded
 	if (result.remainder().isNull())
 		// automatically a boundary
 		return result;
