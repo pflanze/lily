@@ -578,6 +578,9 @@ public:
 	}
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
+	// LilyNativeEvaluator::call is actually never called
+	// currently, right? But can't omit it since we have to
+	// implement the abstract interface?
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
