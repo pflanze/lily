@@ -210,17 +210,13 @@ LilyChar::write(std::ostream& out) {
 
 void
 LilyString::write(std::ostream& out) {
-	out << '"';
-	string_onelinePrint(_value, out, '"');
-	out << '"';
+	stringlike_write(_value, out, '"');
 }
 
 void
 LilySymbollike::write(std::ostream& out) {
 	if (_needsQuoting) {
-		out << '|';
-		string_onelinePrint(_string, out, '|');
-		out << '|';
+		stringlike_write(_string, out, '|');
 	} else {
 		out << _string;
 	}

@@ -6,9 +6,10 @@
 #include "lilyUtil.hpp"
 
 
-void string_onelinePrint(const std::string& str,
-			 std::ostream& out,
-			 char quoteChar) {
+void stringlike_write(const std::string& str,
+		      std::ostream& out,
+		      char quoteChar) {
+	out << quoteChar;
 	for (char c : str) {
 		if (c==quoteChar) {
 			out << '\\' << c;
@@ -28,14 +29,13 @@ void string_onelinePrint(const std::string& str,
 			out << str;
 		}
 	}
+	out << quoteChar;
 }
 
 
 std::string show(std::string str) {
 	std::ostringstream out;
-	out << '"';
-	string_onelinePrint(str, out, '"');
-	out << '"';
+	stringlike_write(str, out, '"');
 	return out.str();
 }
 

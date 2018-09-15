@@ -7,7 +7,7 @@
 #include <string>
 
 
-void string_onelinePrint(const std::string& str,
+void stringlike_write(const std::string& str,
 			 std::ostream& out,
 			 char quoteChar);
 
