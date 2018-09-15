@@ -69,8 +69,6 @@ public:
 };
 
 
-// -- type-enforced proper lists
-
 class LilyNull;
 class LilyPair;
 
@@ -83,7 +81,6 @@ public:
 	virtual bool isNull() = 0;
 	virtual bool isPair() = 0;
 	virtual void write(std::ostream& out);
-	// virtual ~LilyList();
 };
 
 struct LilyNull : public LilyList {
@@ -147,7 +144,6 @@ public:
 	}
 	virtual LilyObjectPtr car() { return _car; }
 	virtual LilyObjectPtr cdr() { return _cdr; }
-	//^ XX evil?...
 	virtual bool isNull() { return false; }
 	virtual bool isPair() { return true; }
 	virtual void write(std::ostream& out);
