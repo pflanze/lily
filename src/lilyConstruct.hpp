@@ -27,18 +27,12 @@ inline LilyObjectPtr CHAR(lily_char_t c) {
 	return LILY_NEW(LilyChar,(c));
 }
 
-inline LilySymbollikePtr SYMBOL(std::string str, bool mayNeedQuoting) {
+inline LilySymbollikePtr SYMBOL(std::string str, bool mayNeedQuoting = true) {
 	return LilySymbol::intern(str, mayNeedQuoting);
 }
-inline LilySymbollikePtr SYMBOL(std::string str) {
-	return SYMBOL(str, true);
-}
 
-inline LilySymbollikePtr KEYWORD(std::string str, bool mayNeedQuoting) {
+inline LilySymbollikePtr KEYWORD(std::string str, bool mayNeedQuoting = true) {
 	return LilyKeyword::intern(str, mayNeedQuoting);
-}
-inline LilySymbollikePtr KEYWORD(std::string str) {
-	return KEYWORD(str, true);
 }
 
 #define BOOLEAN(a) ((a) ? TRUE : FALSE)
