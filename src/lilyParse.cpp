@@ -156,10 +156,8 @@ PR OK(LilyObjectPtr v, S s) {
 	return PR(v,s);
 }
 
-// pass s first in this one because it's more visible this way (short
-// variables), and it's not embedded directly in PR anyway, so, OK?
 static
-PR ERR(S s, ParseResultCode error) {
+PR ERR(ParseResultCode error, S s) {
 	return PR(VOID, s.setError(error));
 }
 
@@ -179,20 +177,20 @@ static
 PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
 	if (lenToRead != lenTillSeparator)
 		// might be because of eof, though, ?
-		return ERR(s, ParseResultCode::InvalidCharname);
+		return ERR(ParseResultCode::InvalidCharname, s);
 
 	// assert(lenToRead <= 8);
 	uint32_t c= 0;
 	for (int i=0; i < lenToRead; i++) {
 		// if (s.isNull())
-		// 	return ERR(s, ParseResultCode::UnexpectedEof);
+		// 	return ERR(ParseResultCode::UnexpectedEof, s);
 		// ^ can't happen since checked beforehand
 
 		// use PR for hexdigit2int?... 'heavy'?
 		auto d= hexdigit2int(s.first());
 		WARN("hexdigit2int("<<s.first()<<")="<<d);
 		if (d < 0) {
-			return ERR(s, ParseResultCode::InvalidHexdigit);
+			return ERR(ParseResultCode::InvalidHexdigit, s);
 		}
 		c = (c << 4) + d;
 		s= s.rest();
@@ -205,7 +203,7 @@ PR hex2char(Sm s, int lenToRead, int lenTillSeparator) {
 static
 PR parseHashitem(S s) {
 	if (s.isNull())
-		return ERR(s, ParseResultCode::UnexpectedEof);
+		return ERR(ParseResultCode::UnexpectedEof, s);
 	char c1= s.first();
 	auto r= s.rest();
 	if (c1 == '!') {
@@ -215,7 +213,7 @@ PR parseHashitem(S s) {
 			if (isWordEndBoundary(r))
 				return OK(VOID, r);
 		}
-		return ERR(r, ParseResultCode::UnknownBangSpecial);
+		return ERR(ParseResultCode::UnknownBangSpecial, r);
 	} else if (c1 == '|') {
 		// skipWhitespaceAndComments should have eliminated
 		// this case
@@ -223,7 +221,7 @@ PR parseHashitem(S s) {
 	} else if (c1 == '\\') {
 		// character
 		if (r.isNull())
-			return ERR(s, ParseResultCode::UnexpectedEof);
+			return ERR(ParseResultCode::UnexpectedEof, s);
 		auto r1= dropWhile(r.rest(),
 				   COMPLEMENT(lily_char_t, isSeparation));
 		auto len= r.positionDifferenceTo(r1);
@@ -240,7 +238,7 @@ PR parseHashitem(S s) {
 		}
 		auto c= name2char(r, len);
 		if (c == -1)
-			return ERR(r1, ParseResultCode::InvalidCharname);
+			return ERR(ParseResultCode::InvalidCharname, r1);
 		return OK(CHAR(c), r1);
 	} else {
 		if (isWordEndBoundary(r)) {
@@ -249,10 +247,10 @@ PR parseHashitem(S s) {
 			} else if (c1 == 't') {
 				return OK(TRUE, r);
 			} else {
-				return ERR(s, ParseResultCode::UnknownSpecial);
+				return ERR(ParseResultCode::UnknownSpecial, s);
 			}
 		} else {
-			return ERR(r, ParseResultCode::UnknownSpecial);
+			return ERR(ParseResultCode::UnknownSpecial, r);
 		}
 	}
 }
@@ -266,14 +264,14 @@ PR parseStringLike(Sm s,
 	std::string str;
 	while (true) {
 		if (s.isNull())
-			return ERR(s, ParseResultCode::UnexpectedEof);
+			return ERR(ParseResultCode::UnexpectedEof, s);
 		char c= s.first();
 		s= s.rest();
 		if (c == quoteChar)
 			return cont(str, s);
 		if (c == '\\') {
 			if (s.isNull())
-				return ERR(s, ParseResultCode::UnexpectedEof);
+				return ERR(ParseResultCode::UnexpectedEof, s);
 			c = s.first();
 			s= s.rest();
 			if (c=='n') {
@@ -305,7 +303,7 @@ PR parseStringLike(Sm s,
 // of parseFloat, too.
 PR parseNegativeInteger(Sm s) {
 	if (s.isNull())
-		return ERR(s, ParseResultCode::MissingInput);
+		return ERR(ParseResultCode::MissingInput, s);
 	int64_t res=0;
 	bool isnumber= false;
 	bool isoverflow= false;
@@ -330,13 +328,13 @@ PR parseNegativeInteger(Sm s) {
 	}
 	if (isnumber) {
 		if (isoverflow)
-			return ERR(s, ParseResultCode::Int64Overflow);
+			return ERR(ParseResultCode::Int64Overflow, s);
 		else
 			return OK(INT(res), s);
 	} else {
 		// length is not zero. isnumber is an odd (left-over)
 		// way to do that perhaps.
-		return ERR(s, ParseResultCode::NotAnInteger);
+		return ERR(ParseResultCode::NotAnInteger, s);
 	}
 }
 
@@ -348,7 +346,7 @@ PR parseNegate(PR pr) {
 	try {
 		return OK(INT(lily_negate(v->value)), pr.remainder());
 	} catch (std::overflow_error) {
-		return ERR(pr.remainder(), ParseResultCode::Int64Overflow);
+		return ERR(ParseResultCode::Int64Overflow, pr.remainder());
 	}
 }
 
@@ -362,7 +360,7 @@ PR parsePositiveInteger(S s) {
 // integer
 PR parseInteger(S s) {
 	if (s.isNull())
-		return ERR(s, ParseResultCode::MissingInput);
+		return ERR(ParseResultCode::MissingInput, s);
 	char c0= s.first();
 	if (c0=='-') {
 		return parseNegativeInteger(s.rest());
@@ -435,7 +433,7 @@ PR_suffix parseFloat_suffix(S s) {
 PR parseFloat(Sm s, bool negate, int64_t predot) {
 	DEBUGWARN("parseFloat: " << predot << ", " << show(s.string()));
 	if (s.isNull())
-		return ERR(s, ParseResultCode::NotAFloat);
+		return ERR(ParseResultCode::NotAFloat, s);
 	int64_t postdot= 0;
 	int32_t postdotLength= 0;
 	// ^ signed so that we can negate it before passing to exp10
@@ -502,7 +500,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 			if (overflow)
 				// it is following float syntax, but
 				// error parsing it
-				return ERR(s, ParseResultCode::Int64Overflow);
+				return ERR(ParseResultCode::Int64Overflow, s);
 			else {
 				double result=
 					static_cast<double>(predotabs)
@@ -513,14 +511,14 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 					  s);
 			}
 		} else {
-			return ERR(s, ParseResultCode::NotAFloat);
+			return ERR(ParseResultCode::NotAFloat, s);
 		}
 	}
 }
 
 PR parseNumber(Sm s) {
 	// if (s.isNull())
-	// 	return ERR(s, ParseResultCode::MissingInput);
+	// 	return ERR(ParseResultCode::MissingInput, s);
 	//(^ automate such, please..; should never get here that way
 	//   tho--so *where* is MissingInput useful?)
 
@@ -534,7 +532,7 @@ PR parseNumber(Sm s) {
 	}
 
 	if (s.isNull())
-		return ERR(s, ParseResultCode::NotANumber);
+		return ERR(ParseResultCode::NotANumber, s);
 
 	PRm result;
 	if (s.first() == '.') {
@@ -546,7 +544,7 @@ PR parseNumber(Sm s) {
 			// no digits left to the dot and none (or
 			// suffix) right to it either: it's just a dot or
 			// +. by itself
-			return ERR(s, ParseResultCode::NotANumber);
+			return ERR(ParseResultCode::NotANumber, s);
 	}
 
 	result= isneg ? parseNegativeInteger(s) : parsePositiveInteger(s);
@@ -637,7 +635,7 @@ successsofar:
 	if (isSeparation(result.remainder()))
 		return result;
 notanumber:
-	return ERR(s, ParseResultCode::NotANumber);
+	return ERR(ParseResultCode::NotANumber, s);
 }
 
 // unquoted (no '|' around it) symbols or keywords
@@ -655,7 +653,7 @@ PR parseSymbolOrKeyword(Sm s) {
 	}
 	auto len= str.length();
 	if ((len == 1) && str[0] == '.')
-		//return ERR(s, ParseResultCode::NotASymbol);
+		//return ERR(ParseResultCode::NotASymbol, s);
 		throw std::logic_error("bug, dot should already have been checked");
 	else if ((len > 1) && (str[len-1] == ':')) {
 		str.pop_back();
@@ -665,7 +663,7 @@ PR parseSymbolOrKeyword(Sm s) {
 	else if (len >= 1)
 		return OK(SYMBOL(str, false), s);
 	else
-		return ERR(s, ParseResultCode::NotASymbol);
+		return ERR(ParseResultCode::NotASymbol, s);
 }
 
 // move to header file? but then also need to move the above classes.
@@ -675,7 +673,7 @@ PR lilyParse (S s);
 PR parseList(Sm s) {
 	s= skipWhitespaceAndComments(s);
 	if (s.isNull())
-		return ERR(s, ParseResultCode::UnexpectedEof);
+		return ERR(ParseResultCode::UnexpectedEof, s);
 	lily_char_t c=s.first();
 	if (c==')')
 		return OK(NIL, s.rest());
@@ -690,20 +688,20 @@ PR parseList(Sm s) {
 			(res.remainder().setSucceeded());
 		DEBUGWARN("parse remainder after dot: "<<show(s0.string()));
 		if (s0.isNull())
-			return ERR(s0, ParseResultCode::UnexpectedEof);
+			return ERR(ParseResultCode::UnexpectedEof, s0);
 		if (s0.first() == ')')
-			return ERR(s0, ParseResultCode::InvalidDottedList);
+			return ERR(ParseResultCode::InvalidDottedList, s0);
 		auto r1= lilyParse(s0);
 		if (r1.failed())
 			return r1; // cutting away all the stored stuff. OK?
 		auto s2= skipWhitespaceAndComments(r1.remainder());
 		if (s2.isNull())
-			return ERR(s2, ParseResultCode::UnexpectedEof);
+			return ERR(ParseResultCode::UnexpectedEof, s2);
 		lily_char_t c2= s2.first();
 		if (c2 == ')')
 			return OK(r1.value(), s2.rest());
 		else
-			return ERR(s2, ParseResultCode::InvalidDottedList);
+			return ERR(ParseResultCode::InvalidDottedList, s2);
 	} else {
 		if (res.failed())
 			return res;
@@ -737,7 +735,7 @@ PR newSymbolOrKeyword(const std::string& str, S rest) {
 PR lilyParse (Sm s) {
 	s= skipWhitespaceAndComments (s);
 	if (s.isNull())
-		return ERR(s, ParseResultCode::MissingInput);
+		return ERR(ParseResultCode::MissingInput, s);
 	lily_char_t c= s.first();
 	auto s1= s.rest();
 	LilyObjectPtr* special_symbol;
@@ -762,7 +760,7 @@ PR lilyParse (Sm s) {
 		special_symbol= &lilySymbol_unquote; goto special;
 	} else {
 		if ((c=='.') && isSeparation(s1))
-			return ERR(s1, ParseResultCode::ImproperlyPlacedDot);
+			return ERR(ParseResultCode::ImproperlyPlacedDot, s1);
 
 		// attempt numbers, plain symbol (correct in that order?)
 		auto v= parseNumber(s);
@@ -777,7 +775,7 @@ PR lilyParse (Sm s) {
 		v= parseSymbolOrKeyword(s);
 		if (v.succeeded())
 			return v;
-		// return ERR(s, ParseResultCode::UnknownSyntax);
+		// return ERR(ParseResultCode::UnknownSyntax, s);
 
 		// actually return the symbol parsing error since
 		// symbol is what it remains to be interpreted as
