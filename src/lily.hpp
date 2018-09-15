@@ -592,7 +592,6 @@ public:
 // not a callabe (directly), at least not obviously the right thing to
 // do for now
 class LilyContinuationFrame : public LilyObject {
-private: // XX make struct readonly?
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
 	LilyObjectPtr _maybeHead;
