@@ -9,13 +9,13 @@
 using namespace lily;
 
 // XX weird wanted that to be fully abstract
-LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {XXX};
-LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {XXX};
-LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {XXX};
-LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {XXX};
-double LilyNumber::toDouble() {XXX};
+LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {UNIMPLEMENTED};
+LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {UNIMPLEMENTED};
+LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {UNIMPLEMENTED};
+LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {UNIMPLEMENTED};
+double LilyNumber::toDouble() {UNIMPLEMENTED};
 
-void LilyNumber::write(std::ostream& out) {XXX};
+void LilyNumber::write(std::ostream& out) {UNIMPLEMENTED};
 const char* LilyNumber::typeName() { return "LilyNumber"; }
 // /weird
 
