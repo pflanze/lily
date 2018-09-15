@@ -15,9 +15,9 @@ T _lilyFold(LilyList* vs, std::function<T(LilyT*,T)> fn, T start) {
 	T res= start;
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
-			if (auto v=  UNWRAP_AS(LilyT, pair->_car)) {
+			if (auto v=  UNWRAP_AS(LilyT, pair->car())) {
 				res= fn(v, res);
-				vs= LIST_UNWRAP(pair->_cdr);
+				vs= LIST_UNWRAP(pair->cdr());
 			} else {
 				throw std::logic_error("not an integer");
 			}
@@ -43,9 +43,9 @@ lilyFold(LilyList* vs,
 	
 	while (true) {
 		if (auto pair= dynamic_cast<LilyPair*>(vs)) {
-			res= fn(XAS<Tv>(pair->_car),
+			res= fn(XAS<Tv>(pair->car()),
 				res);
-			vs= XLIST_UNWRAP(pair->_cdr);
+			vs= XLIST_UNWRAP(pair->cdr());
 		} else if (dynamic_cast<LilyNull*>(vs)) {
 			return res;
 		} else {
@@ -152,11 +152,11 @@ LilyObjectPtr lilyCons(LilyListPtr* vs,
 	// WARN("cons: "<<show(vs));
 	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
-		LETU_AS(vs1, LilyPair, vs0->_cdr);
+		LETU_AS(vs1, LilyPair, vs0->cdr());
 		if (vs1) {
-			LETU_AS(vs2, LilyNull, vs1->_cdr);
+			LETU_AS(vs2, LilyNull, vs1->cdr());
 			if (vs2) {
-				return CONS(vs0->_car, vs1->_car);
+				return CONS(vs0->car(), vs1->car());
 			}
 		}
 	}
@@ -169,7 +169,7 @@ static LilyObjectPtr lilyCar(LilyListPtr* vs,
 	return apply1ary("car", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)
-				return p->_car;
+				return p->car();
 			else
 				throw std::logic_error(STR("not a pair: "
 							   << show(v)));
@@ -182,7 +182,7 @@ static LilyObjectPtr lilyCdr(LilyListPtr* vs,
 	return apply1ary("cdr", [](LilyObjectPtr v) {
 			LETU_AS(p, LilyPair, v);
 			if (p)
-				return p->_cdr;
+				return p->cdr();
 			else
 				throw std::logic_error(STR("not a pair: "
 							   << show(v)));

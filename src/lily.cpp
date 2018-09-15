@@ -733,9 +733,9 @@ apply1ary(const char* procname,
 	  LilyListPtr* vs) {
 	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
-		LETU_AS(vs1, LilyNull, vs0->_cdr);
+		LETU_AS(vs1, LilyNull, vs0->cdr());
 		if (vs1) {
-			return proc(vs0->_car);
+			return proc(vs0->car());
 		}
 	}
 	throw std::logic_error(STR(procname << " needs 1 argument"));
@@ -902,8 +902,8 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	LilyListPtr res= NIL;
 	while (true) {
 		if (LilyPair*p= is_LilyPair(&*l)) {
-			res= LIST_CONS(p->_car, res);
-			l= p->_cdr;
+			res= LIST_CONS(p->car(), res);
+			l= p->cdr();
 		} else if (is_LilyNull(&*l)) {
 			break;
 		} else {

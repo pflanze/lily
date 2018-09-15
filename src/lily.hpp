@@ -149,6 +149,7 @@ public:
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyPair();
+private:
 	LilyObjectPtr _car;
 	LilyObjectPtr _cdr;
 };
