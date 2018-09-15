@@ -193,6 +193,8 @@ isWordChar(char c)  {
 
 bool isWhitespace (char c);
 
+// not called skipWhitespace because there will be user-defined
+// skipWhitespaceAndComments or similar, too.
 S skipWhitespaceOnly (S s);
 
 // return the position after the end of this line, or eof (always
@@ -212,6 +214,8 @@ S dropWhile (S s, std::function<bool(char)> pred);
 
 bool isWordEndBoundary(S s);
 
+// returns failure if str is not at the start of s, and position at
+// the point of error or (success case) after str
 S expectString(S s, const char* str);
 
 
