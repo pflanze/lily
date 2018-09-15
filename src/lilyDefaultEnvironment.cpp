@@ -328,7 +328,7 @@ static LilyObjectPtr lilyBegin(LilyListPtr* es,
 	return NIL;
 }
 
-#define ENTRY(str, proc) PAIR(SYMBOL(str, false), NATIVE_PROCEDURE(proc, str))
+#define ENTRY(str, proc) PAIR(SYMBOL(str), NATIVE_PROCEDURE(proc, str))
 
 LilyListPtr lilyDefaultEnvironment() {
 	static LilyListPtr env= LIST(
