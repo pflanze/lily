@@ -495,7 +495,7 @@ LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b);
 
 // LilyNative_t is also used for syntax, hence args could be values or
 // expressions
-typedef std::function<LilyObjectPtr(LilyListPtr* args,  // XX const LilyListPtr&? Say const about the pointer target, really, well, both. Refcounting ?
+typedef std::function<LilyObjectPtr(LilyListPtr* args,
 				    LilyListPtr* ctx,
 				    LilyListPtr* cont)> LilyNative_t;
 
@@ -504,8 +504,9 @@ typedef std::function<LilyObjectPtr(LilyListPtr* args,  // XX const LilyListPtr&
 // phases; not sure this can remain that way in the future.
 class LilyCallable : public LilyObject {
 public:
-	//XXQ do I have to use () syntax for making it clear it's a
-	//method or would something using LilyNative_t work?
+	//XX C++ Q: do I have to declare the call method using this ()
+	//syntax to make it clear it's a method, or would something
+	//using LilyNative_t work?
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont) = 0;
@@ -528,7 +529,7 @@ public:
 };
 
 
-// A macro expander takes code (as an LilyObject) and returns code;
+// A macro expander takes code (as a LilyObject) and returns code;
 // it's like a function but used in an earlier phase during evaluation
 class LilyMacroexpander : public LilyCallable {
 public:
@@ -568,7 +569,7 @@ public:
 // requires context(s?), too. Ah but then would want to give macros
 // access to the same, too.
 
-struct LilyNativeEvaluator : public LilyCallable {
+class LilyNativeEvaluator : public LilyCallable {
 public:
 	LilyNativeEvaluator(LilyNative_t eval,
 			    const char* name)
@@ -587,7 +588,13 @@ public:
 
 // not a callabe (directly), at least not obviously the right thing to
 // do for now
-struct LilyContinuationFrame : public LilyObject {
+class LilyContinuationFrame : public LilyObject {
+private: // XX make struct readonly?
+	virtual const char* typeName();
+	virtual void write(std::ostream& out);
+	LilyObjectPtr _maybeHead;
+	LilyListPtr _rvalues; // i.e. evaluated
+	LilyListPtr _expressions; // i.e. unevaluated
 public:
 	LilyContinuationFrame(LilyObjectPtr maybeHead,
 			      LilyListPtr rvalues, // arguments only
@@ -595,25 +602,12 @@ public:
 		)
 		: _maybeHead(maybeHead), _rvalues(rvalues), _expressions(expressions) {
 		assert(rvalues);
-		// WARN("expressions="<<expressions); this is sick:
-		// showing 0, assert fails, in upper frame gdb reports
-		// as zero, but in this frame gdb insists that it
-		// isn't. In both "p expressions ? true : false"
-		// (true) as well as "p &*expressions" ((LilyList *)
-		// 0x7fffffffd960). Assert works as designed but gdb
-		// doesn't agree.
 		assert(expressions);
 		evalId= LilyEvalOpcode::InvalidIsFrame;
 	}
 	LilyObjectPtr maybeHead() { return _maybeHead; }
 	LilyListPtr rvalues() { return _rvalues; }
 	LilyListPtr expressions() { return _expressions; }
-private: // XX make struct readonly?
-	virtual const char* typeName();
-	virtual void write(std::ostream& out);
-	LilyObjectPtr _maybeHead;
-	LilyListPtr _rvalues; // i.e. evaluated
-	LilyListPtr _expressions; // i.e. unevaluated
 };
 
 
