@@ -66,11 +66,10 @@ lilyFold(LilyList* vs,
 					  START);			\
 	}
 
-auto lilyAdd_op= [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
-			   return res->add(v);
-};
 DEF_FOLD_UP_NATIVE(lilyAdd, "+", LilyNumber, LilyNumber,
-		   lilyAdd_op, _zero);
+		   [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
+			   return res->add(v);
+		   }, _zero);
 DEF_FOLD_UP_NATIVE(lilyMult, "*", LilyNumber, LilyNumber,
 		   [](LilyNumberPtr v, LilyNumberPtr res) -> LilyNumberPtr {
 			   return res->multiply(v);
