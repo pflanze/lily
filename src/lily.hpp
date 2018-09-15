@@ -83,7 +83,7 @@ public:
 	virtual void write(std::ostream& out);
 };
 
-struct LilyNull : public LilyList {
+class LilyNull : public LilyList {
 public:
 	LilyNull () {
 		evalId= LilyEvalOpcode::Null;
@@ -111,7 +111,7 @@ static inline LilyNull* is_LilyNull(LilyObject* v) {
 }
 
 
-struct LilyPair : public LilyList {
+class LilyPair : public LilyList {
 public:
 	LilyPair(LilyObjectPtr car, LilyObjectPtr cdr)
 		: _car(car), _cdr(cdr) {
@@ -512,7 +512,7 @@ public:
 				   LilyListPtr* cont) = 0;
 };
 
-struct LilyNativeProcedure : public LilyCallable {
+class LilyNativeProcedure : public LilyCallable {
 public:
 	LilyNativeProcedure(LilyNative_t proc,
 			    const char* name)
@@ -541,7 +541,7 @@ public:
 };
 
 
-struct LilyNativeMacroexpander : public LilyMacroexpander {
+class LilyNativeMacroexpander : public LilyMacroexpander {
 public:
 	LilyNativeMacroexpander(LilyNative_t expander,
 				const char* name)
