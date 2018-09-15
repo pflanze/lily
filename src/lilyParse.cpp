@@ -778,7 +778,7 @@ PR lilyParse (Sm s) {
 		return v;
 	}
 	}
-	throw std::logic_error("unreachable");
+	assert(0);
 special:
 	auto r= lilyParse(s1);
 	return OK(CONS(*special_symbol, CONS(r.value(), NIL)),
