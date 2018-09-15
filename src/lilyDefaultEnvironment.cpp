@@ -228,7 +228,6 @@ static LilyObjectPtr lilyLength(LilyListPtr* arguments,
 	} else {
 		throw std::logic_error("length received more than one argument");
 	}
-		
 }
 
 static LilyObjectPtr lilyList(LilyListPtr* arguments,
