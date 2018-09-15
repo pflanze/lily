@@ -123,7 +123,6 @@ static bool isSeparation (lily_char_t c) {
 }
 static bool isSeparation (S s) {
 	bool r= s.isNull() || isSeparation(s.first());
-	DEBUGWARN("isSeparation on " << show(s.string()) << " = " << r);
 	return r;
 }
 
@@ -426,7 +425,6 @@ PR_suffix parseFloat_suffix(S s) {
 // true then the result needs to be negated (can also be false and
 // predot already negative).
 PR parseFloat(Sm s, bool negate, int64_t predot) {
-	DEBUGWARN("parseFloat: " << predot << ", " << show(s.string()));
 	if (s.isNull())
 		return ERR(ParseResultCode::NotAFloat, s);
 	int64_t postdot= 0;
@@ -437,7 +435,6 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	char c0= s.first();
 	switch (c0) {
 	case '.': {
-		DEBUGWARN("  has dot, " << show(s.rest().string()));
 		hasDot= true;
 		s= s.rest();
 		PR _postdot= parsePositiveInteger(s);
@@ -452,7 +449,6 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 			//   digits in an int64_t)
 			postdotLength= p1 - p0;
 			s= _postdot.remainder();
-			DEBUGWARN("  got postdot, " << postdot << ", " << show(s.string()));
 		} else {
 			if (_postdot.error() == ParseResultCode::Int64Overflow) {
 				overflow= true;
@@ -460,9 +456,8 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 				// success; will then fail again at
 				// the end via checking 'overflow'
 				s= _postdot.remainder().setSucceeded();
-				DEBUGWARN("  postdot but overflowed");
 			} else {
-				DEBUGWARN("  no postdot");
+				// no postdot
 			}
 		}
 		break;
@@ -473,7 +468,6 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 	auto predotabs= (predot < 0) ? -predot : predot;
 	if (predot < 0)
 		negate= !negate;
-	DEBUGWARN("  f= "<<f<<", predot= "<<predot<<", predotabs="<<predotabs<<", negate="<<negate);
 
 	PR_suffix suffix= parseFloat_suffix(s);
 	if (suffix.succeeded()) {
@@ -486,7 +480,6 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 			 + static_cast<double>(postdot)
 			 * f)
 			* exp10(exponent);
-		DEBUGWARN("  have suffix. exponent="<<exponent<<", result="<<result);
 		return OK(DOUBLE(negate ? -result : result),
 			  suffix.remainder());
 	} else {
@@ -501,7 +494,6 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 					static_cast<double>(predotabs)
 					+ static_cast<double>(postdot)
 					* f;
-				DEBUGWARN("  no suffix. result="<<result);
 				return OK(DOUBLE(negate ? -result : result),
 					  s);
 			}
@@ -558,7 +550,6 @@ PR parseNumber(Sm s) {
 				 false,
 				 UNWRAP_AS(LilyInt64, result.value())->value);
 		if (f.succeeded()) {
-			DEBUGWARN("  parseFloat returned success, " << show(f.value()));
 			result= f;
 			goto checkboundary;
 		}
@@ -570,13 +561,11 @@ PR parseNumber(Sm s) {
 			result= f;
 			goto checkboundary;
 		}
-		DEBUGWARN("  parseFloat returned failure, " << ParseResultCode_string(f.error()));
 	}
 
 	{
 		// XX make a parseFractional like parseFloat ?
 		char c= result.remainder().first();
-		DEBUGWARN("     c="<<c);
 		switch (c) {
 		case '/': {
 			// 1/-3 should be parsed as a symbol, at least
@@ -625,7 +614,6 @@ checkboundary:
 	// one. (XX could there be cases where other options should be
 	// tried? I.e. every option should be followed by isSeparation
 	// check?)
-	DEBUGWARN("checkboundary: checking remainder "<<show(result.remainder().string()));
 	if (isSeparation(result.remainder()))
 		return result;
 notanumber:
@@ -680,7 +668,6 @@ PR parseList(Sm s) {
 		// dotted pair; expect 1 element then ")"
 		auto s0 = skipWhitespaceAndComments
 			(res.remainder().setSucceeded());
-		DEBUGWARN("parse remainder after dot: "<<show(s0.string()));
 		if (s0.isNull())
 			return ERR(ParseResultCode::UnexpectedEof, s0);
 		if (s0.first() == ')')
@@ -701,9 +688,6 @@ PR parseList(Sm s) {
 			return res;
 
 		LETU_AS(sym, LilySymbol, res.value());
-		DEBUGWARN("parseList: got a "<<show(res.value()->typeName())<<", "
-		     << (sym ? show(sym->string()) : "not a symbol")
-		     << ", now going to parse: "<<show(res.remainder().string()));
 		auto tail= parseList(skipWhitespaceAndComments(res.remainder()));
 		if (tail.failed())
 			return tail;
@@ -741,7 +725,6 @@ PR lilyParse (Sm s) {
 	case '"':
 		return parseStringLike(s1, '"', newString);
 	case '|':
-		DEBUGWARN("parseStringLike on: "<<show(s1.string())); 
 		return parseStringLike(s1, '|', newSymbolOrKeyword);
 	case ';':
 		// until the end of the line; if s is 1 line then that
