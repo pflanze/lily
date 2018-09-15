@@ -124,15 +124,15 @@ private:
 template <typename T>
 class ParseResult {
 public:
-	ParseResult(const T result, StringCursor remainder)
-		: _result(result), _remainder(remainder) {
-		// assert(result); can't, as some T may not have a
+	ParseResult(const T value, StringCursor remainder)
+		: _value(value), _remainder(remainder) {
+		// assert(value); can't, as some T may not have a
 		// boolean check! Make this part of T!
 	}
 	ParseResult() {}
 	const T value() const {
 		assert(_remainder.succeeded());
-		return _result;
+		return _value;
 	}
 	ParseResultCode error () const {
 		return _remainder.error();
@@ -147,7 +147,7 @@ public:
 		return _remainder;
 	}
 private:
-	T _result;
+	T _value;
 	StringCursor _remainder;
 };
 
