@@ -534,7 +534,7 @@ PR parseNumber(Sm s) {
 		// ugly? parseFloat is going to (and has to) analyze the dot again.
 		result= parseFloat(s, isneg, 0);
 		if (result.remainder().position() > s.rest().position())
-			goto successsofar; // XX correct to do that in failure case? rename label!
+			goto checkboundary; // even in failure case
 		else
 			// no digits left to the dot and none (or
 			// suffix) right to it either: it's just a dot or
@@ -544,9 +544,7 @@ PR parseNumber(Sm s) {
 
 	result= isneg ? parseNegativeInteger(s) : parsePositiveInteger(s);
 	if (result.error() == ParseResultCode::Int64Overflow)
-		// not success of course, but that will check for
-		// boundary, and the error is kept.
-		goto successsofar;
+		goto checkboundary;
 	if (result.failed())
 		return result;
 
@@ -562,7 +560,7 @@ PR parseNumber(Sm s) {
 		if (f.succeeded()) {
 			DEBUGWARN("  parseFloat returned success, " << show(f.value()));
 			result= f;
-			goto successsofar;
+			goto checkboundary;
 		}
 		if (f.error() == ParseResultCode::Int64Overflow) {
 			// syntax follows float, just couldn't hold in
@@ -570,7 +568,7 @@ PR parseNumber(Sm s) {
 			// is actually fine to let result be an error
 			// case.
 			result= f;
-			goto successsofar;
+			goto checkboundary;
 		}
 		DEBUGWARN("  parseFloat returned failure, " << ParseResultCode_string(f.error()));
 	}
@@ -602,7 +600,7 @@ PR parseNumber(Sm s) {
 				try {
 					// todo location keeping
 					result= OK(Divide(n, d), s);
-					goto successsofar;
+					goto checkboundary;
 				} catch (LilyDivisionByZeroError) {
 					// XX ever report start, not end?
 					goto notanumber;
@@ -618,15 +616,16 @@ PR parseNumber(Sm s) {
 			}
 		}
 		default:
-			goto successsofar;
+			goto checkboundary;
 		}
 	}
-successsofar:
-	// now there must be a proper separation after the number,
-	// otherwise it's not one. (XX could there be cases where
-	// other options should be tried? I.e. every option should be
-	// followed by isSeparation check?)
-	DEBUGWARN("successsofar: checking remainder "<<show(result.remainder().string()));
+checkboundary:
+	// (Used in both success and failure cases.) There must be a
+	// proper separation after the number, otherwise it's not
+	// one. (XX could there be cases where other options should be
+	// tried? I.e. every option should be followed by isSeparation
+	// check?)
+	DEBUGWARN("checkboundary: checking remainder "<<show(result.remainder().string()));
 	if (isSeparation(result.remainder()))
 		return result;
 notanumber:
