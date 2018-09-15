@@ -50,6 +50,7 @@ enum class ParseResultCode : char; // to be defined by user
 
 typedef uint32_t parse_position_t;
 
+
 class StringCursor {
 public:
 	StringCursor(const std::string* backingString,
@@ -97,7 +98,7 @@ public:
 	}
 	bool subStringEq(const char* str, parse_position_t len) const {
 		for (parse_position_t i = 0; i < len; i++) {
-			if (!((*_backingString)[_position + i] == str[i]))
+			if (! ((*_backingString)[_position + i] == str[i]))
 				return false;
 		}
 		return true;
@@ -117,6 +118,8 @@ private:
 	ParseResultCode _error;
 	parse_position_t _position;
 };
+
+
 
 template <typename T>
 class ParseResult {
@@ -147,6 +150,8 @@ private:
 	T _result;
 	StringCursor _remainder;
 };
+
+
 
 typedef const StringCursor S;
 typedef StringCursor Sm;
