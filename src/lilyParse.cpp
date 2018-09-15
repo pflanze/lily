@@ -14,12 +14,12 @@
 
 
 enum class ParseResultCode : char {
-	// the ones hard-coded in parse.cpp
+	// the ones hard-coded in parse.hpp
 	Success=0,
 	UnexpectedEof=1,
 	UnexpectedString=2,
 
-	Whitespace, // parser found whitespace at point, not object
+	Whitespace, // parser found whitespace at cursor, not object
 	MissingInput,
 	Unimplemented,
 
@@ -115,8 +115,8 @@ const char* lilyCharMaybeName(lily_char_t c) {
 #include "lilyParse_name2char.hpp"
 
 
-// all the character that will introduce another token after a number,
-// or also symbol or keyword?
+// all the characters that will introduce another token after a
+// number, or also symbol or keyword?
 static bool isSeparation (lily_char_t c) {
 	return isWhitespace(c)
 		|| needsSymbolQuoting(c);
