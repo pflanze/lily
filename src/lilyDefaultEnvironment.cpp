@@ -262,6 +262,7 @@ static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 				       LilyListPtr* _cont) {
 	return apply1ary("integer->char", [](LilyObjectPtr v) {
 			XLETU_AS(i, LilyInt64, v);
+			// XX check for correct range
 			return CHAR(i->value);
 		}, arguments);
 }
