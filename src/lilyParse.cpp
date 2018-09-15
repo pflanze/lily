@@ -334,8 +334,8 @@ PR parseNegativeInteger(Sm s) {
 		else
 			return OK(INT(res), s);
 	} else {
-		// length is not zero. isnumber is an odd (left-over)
-		// way to do that perhaps.
+		// length is zero. isnumber is an odd (left-over) way
+		// to do that perhaps.
 		return ERR(ParseResultCode::NotAnInteger, s);
 	}
 }
