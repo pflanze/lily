@@ -392,13 +392,13 @@ PR parseInteger(S s) {
 
 typedef std::pair<lily_char_t,int64_t> suffixValue; // <exponent marker, exponent>
 typedef ParseResult<suffixValue> PR_suffix;
-static PR_suffix ERR_suffix(S s, ParseResultCode error) {
+static PR_suffix ERR_suffix(ParseResultCode error, S s) {
 	return PR_suffix(suffixValue(0,0), s.setError(error));
 }
 
 PR_suffix parseFloat_suffix(S s) {
 	if (s.isNull())
-		return ERR_suffix(s, ParseResultCode::NotAFloatSuffix);
+		return ERR_suffix(ParseResultCode::NotAFloatSuffix, s);
 	char c0= s.first();
 	switch (c0) {
 	case 'e':
@@ -412,8 +412,8 @@ PR_suffix parseFloat_suffix(S s) {
 			// so as to pass along overflow errors;
 			// overflow must be 'sticky' in the error
 			// path. (Automate?)
-			return ERR_suffix(exponent.remainder(),
-						 exponent.error());
+			return ERR_suffix(exponent.error(),
+					  exponent.remainder());
 		// if (isSeparation(exponent.remainder())) // XX or is this done outside?
 		// 	return
 		return PR_suffix
@@ -423,7 +423,7 @@ PR_suffix parseFloat_suffix(S s) {
 			 exponent.remainder());
 	}
 	default:
-		return ERR_suffix(s, ParseResultCode::NotAFloatSuffix);
+		return ERR_suffix(ParseResultCode::NotAFloatSuffix, s);
 	}
 }
 
