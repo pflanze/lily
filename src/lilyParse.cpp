@@ -190,7 +190,6 @@ PR parseCharInHex(Sm s, int lenToRead, int lenTillSeparator) {
 
 		// use PR for hexdigit2int?... 'heavy'?
 		auto d= hexdigit2int(s.first());
-		WARN("hexdigit2int("<<s.first()<<")="<<d);
 		if (d < 0)
 			return ERR(ParseResultCode::InvalidHexdigit, s);
 		c = (c << 4) + d;
