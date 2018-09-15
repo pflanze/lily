@@ -46,7 +46,7 @@ void throwWithStrerror(const std::string &msg) {
 	// https://en.cppreference.com/w/c/string/byte/strerror
 	// describes strerror_s but not available
 	//strerror_s(buf, SIZ, errno);
-	char* err= strerror_r(errno, buf, SIZ);
+	const char* err= strerror_r(errno, buf, SIZ);
 	
 	throw std::runtime_error(STR(msg << ": " << err));
 #undef SIZ
