@@ -215,12 +215,14 @@ public:
 class LilySymbollike : public LilyObject {
 protected:
 	LilySymbollike(std::string s, symboltablehash_t h, bool nq)
-		: _string(s), hash(h), needsQuoting(nq) {}
+		: _string(s), _hash(h), _needsQuoting(nq) {}
 	virtual void write(std::ostream& out);
 	const std::string _string;
-	const symboltablehash_t hash;
-	bool needsQuoting;
+	const symboltablehash_t _hash;
+	bool _needsQuoting;
 public:
+	bool needsQuoting() { return _needsQuoting; }
+	void needsQuoting(bool v) { _needsQuoting= v; } // evil?
 	const std::string string() { return _string; }
 };
 

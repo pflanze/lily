@@ -71,7 +71,8 @@ LilySymbollikePtr lilySymbollikeIntern(lilySymbollikeTable* t, std::string s,
 			auto v1= lilyParse(show(v), true);
 			LETU_AS(v1p, T, v1);
 			if (!v1p || !(v1p->string() == s))
-				v= LILY_NEW(T,(s, siphash(s), true));
+				// v= LILY_NEW(T,(s, siphash(s), true));
+				v->needsQuoting(true);
 		}
 		// else (did not come with quotes) we already showed
 		// that it doesn't need quoting.
@@ -231,7 +232,7 @@ LilyString::write(std::ostream& out) {
 
 void
 LilySymbollike::write(std::ostream& out) {
-	if (needsQuoting) {
+	if (_needsQuoting) {
 		out << '|';
 		string_onelinePrint(_string, out, '|');
 		out << '|';
