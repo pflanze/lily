@@ -212,24 +212,24 @@ ERR: improper list: 10
 ERR: not a function: 10
 ---- chars ----
 > (string->list "Hello\0 World\b\a\f\t\r\n")
-(#\H #\e #\l #\l #\o #\nul #\space #\W #\o #\r #\l #\d #\backspace #\alarm #\page #\tab #\return #\newline)
+Pair: (#\H #\e #\l #\l #\o #\nul #\space #\W #\o #\r #\l #\d #\backspace #\alarm #\page #\tab #\return #\newline)
 > (list #\f #\esc #\return)
-(#\f #\esc #\return)
+Pair: (#\f #\esc #\return)
 > (list->string (list #\f #\esc #\return #\xff #\ufffe #\U0001effe))
-"f\33\r\377\ufffe\U0001effe"
+String: "f\33\r\377\ufffe\U0001effe"
 > (string->list "f\33\r\377\ufffe\U0001effe")
-(#\f #\esc #\return #\xff #\ufffe #\U0001effe)
+Pair: (#\f #\esc #\return #\xff #\ufffe #\U0001effe)
 > (char->integer #\xef)
-239
+Int64: 239
 > #\xef
-#\xef
+Char: #\xef
 > (char->integer #\uffff)
-65535
+Int64: 65535
 > (char->integer #\UFFFE)
 PARSE_ERR: parse error: InvalidCharname (position 18)
 > (char->integer #\uFFFE)
-65534
+Int64: 65534
 > (char->integer #\UFFFFffff)
-4294967295
+Int64: 4294967295
 > (char->integer #\UFFFFFFFF)
-4294967295
+Int64: 4294967295
