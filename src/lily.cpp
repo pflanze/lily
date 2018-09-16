@@ -386,33 +386,8 @@ void throwDivByZero(int64_t a, const char* op) {
 
 
 
-// Can't use gcd from <numeric> as it doesn't check for number overflow.
-
-// Scheme code from scheme 48
-// (define (gcd . integers)
-//   (reduce (lambda (x y)
-//             (cond ((< x 0) (gcd (- 0 x) y))
-//                   ((< y 0) (gcd x (- 0 y)))
-//                   ((< x y) (euclid y x))
-//                   (else (euclid x y))))
-//           0
-//           integers))
-
-// (define (euclid x y)
-//   (if (= y 0)
-//       (if (and (inexact? y)
-//                (exact? x))
-//           (exact->inexact x)
-//           x)
-//       (euclid y (remainder x y))))
-
-// (define (lcm . integers)
-//   (reduce (lambda (x y)
-//             (let ((g (gcd x y)))
-//               (cond ((= g 0) g)
-//                     (else (* (quotient (abs x) g) (abs y))))))
-//           1
-//           integers))
+// Can't use gcd from <numeric> as it doesn't check for number
+// overflow. Originally translated from Scheme code from s48.
 
 static
 int64_t lily_euclid(int64_t x, int64_t y) {
