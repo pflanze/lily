@@ -6,6 +6,8 @@
 #include "lilyUtil.hpp"
 #include <limits>
 
+using namespace lilyConstruct;
+
 
 std::string lily::show(const LilyObjectPtr& v) {
 	std::ostringstream s;
@@ -24,6 +26,7 @@ std::string lily::show(LilyObject* v) {
 #define show(e) lily::show(e)
 
 
+
 // XX weird wanted that to be fully abstract
 LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {UNIMPLEMENTED};
 LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {UNIMPLEMENTED};
@@ -36,28 +39,28 @@ const char* LilyNumber::typeName() { return "LilyNumber"; }
 // /weird
 
 
-LilyObjectPtr
+LilyBooleanPtr
 LilyBoolean::True() {
-	static LilyObjectPtr v (new LilyBoolean(true));
+	static LilyBooleanPtr v (new LilyBoolean(true));
 	return v;
 }
 
-LilyObjectPtr
+LilyBooleanPtr
 LilyBoolean::False() {
-	static LilyObjectPtr v (new LilyBoolean(false));
+	static LilyBooleanPtr v (new LilyBoolean(false));
 	return v;
 }
 
 
-LilyListPtr
+LilyNullPtr
 LilyNull::singleton() {
-	static LilyListPtr v (new LilyNull());
+	static LilyNullPtr v (new LilyNull());
 	return v;
 }
 
-LilyObjectPtr
+LilyVoidPtr
 LilyVoid::singleton() {
-	static LilyObjectPtr v (new LilyVoid());
+	static LilyVoidPtr v (new LilyVoid());
 	return v;
 }
 
@@ -774,7 +777,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// continuation of even syntactical work
 			// visible to Scheme (via first-class
 			// continuation access)
-			cont= LIST_CONS(FRAME(NULL, NIL, p->rest()), cont);
+			cont= CONS(FRAME(NULL, NIL, p->rest()), cont);
 			code= p->first();
 			// need to look at code again, but don't have
 			// acc to use from this iteration, hence short
@@ -862,7 +865,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			LilyObjectPtr head= accIsHead ? acc : frame->maybeHead();
 			LET_AS(expressions, LilyList, frame->expressions());
 			auto rvalues= accIsHead ? frame->rvalues()
-				: LIST_CONS(acc, frame->rvalues());
+				: CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				DEBUGWARN("ready to call the continuation");
@@ -881,7 +884,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// update continuation (XX optim:
 				// mutate if refcount is 1 (and no
 				// weak refs)?)
-				cont= LIST_CONS(FRAME(head,
+				cont= CONS(FRAME(head,
 						      rvalues,
 						      expressions->rest()),
 						cont);
@@ -900,7 +903,7 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	LilyListPtr res= NIL;
 	while (true) {
 		if (LilyPair*p= is_LilyPair(&*l)) {
-			res= LIST_CONS(p->car(), res);
+			res= CONS(p->car(), res);
 			l= p->cdr();
 		} else if (is_LilyNull(&*l)) {
 			break;

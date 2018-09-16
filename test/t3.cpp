@@ -3,6 +3,9 @@
 #include <lilyParse.hpp>
 #include <lilyDefaultEnvironment.hpp>
 
+using namespace lily;
+using namespace lilyConstruct;
+
 LilyListPtr environment;
 
 void note(const char* s) {

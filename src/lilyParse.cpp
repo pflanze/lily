@@ -6,6 +6,8 @@
 #include "lilyUtil.hpp"
 #include "functional.hpp"
 
+using namespace lilyConstruct;
+
 // man exp10
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE

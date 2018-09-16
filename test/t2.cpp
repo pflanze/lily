@@ -2,6 +2,9 @@
 #include <lilyConstruct.hpp>
 #include <lilyParse.hpp>
 
+using namespace lily;
+using namespace lilyConstruct;
+
 void pr(const char* s, bool requireTotal=true) {
 	auto v= lilyParse(std::string(s), requireTotal);
 	std::cout << v->typeName() << ": ";

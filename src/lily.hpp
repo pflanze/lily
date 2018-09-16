@@ -51,6 +51,16 @@ DECLARE_CLASS_PTR(LilyContinuationFrame);
 DECLARE_CLASS_PTR(LilySymbollike);
 DECLARE_CLASS_PTR(LilySymbol);
 DECLARE_CLASS_PTR(LilyKeyword);
+DECLARE_CLASS_PTR(LilyBoolean);
+DECLARE_CLASS_PTR(LilyNativeProcedure);
+DECLARE_CLASS_PTR(LilyNativeMacroexpander);
+DECLARE_CLASS_PTR(LilyNativeEvaluator);
+DECLARE_CLASS_PTR(LilyParseError);
+DECLARE_CLASS_PTR(LilyNull);
+DECLARE_CLASS_PTR(LilyVoid);
+DECLARE_CLASS_PTR(LilyFractional64);
+DECLARE_CLASS_PTR(LilyString);
+DECLARE_CLASS_PTR(LilyChar);
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
@@ -101,7 +111,7 @@ public:
 	};
 	virtual bool isNull() { return true; }
 	virtual bool isPair() { return false; }
-	static LilyListPtr singleton();
+	static LilyNullPtr singleton();
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
 	// virtual ~LilyNull();
@@ -167,7 +177,7 @@ private:
 	};
 public:
 	virtual bool isNull() { return true; }
-	static LilyObjectPtr singleton();
+	static LilyVoidPtr singleton();
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	// virtual ~LilyVoid();
@@ -181,8 +191,8 @@ private:
 	bool _value;
 public:
 	bool value() { return _value; }
-	static LilyObjectPtr True();
-	static LilyObjectPtr False();
+	static LilyBooleanPtr True();
+	static LilyBooleanPtr False();
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	//virtual ~LilyBoolean();

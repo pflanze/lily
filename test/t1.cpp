@@ -1,6 +1,9 @@
 #include <lily.hpp>
 #include <lilyConstruct.hpp>
 
+using namespace lily;
+using namespace lilyConstruct;
+
 int main () {
 	lily_init();
 	LilyObjectPtr n= LILY_NEW(LilyInt64,(-4113));

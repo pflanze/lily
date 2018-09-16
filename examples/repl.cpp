@@ -3,6 +3,9 @@
 #include <lilyParse.hpp>
 #include <lilyDefaultEnvironment.hpp>
 
+using namespace lily;
+using namespace lilyConstruct;
+
 LilyListPtr environment= NIL;
 
 int main (int argc, const char** argv) {
