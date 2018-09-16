@@ -107,21 +107,11 @@ LilyDouble::~LilyDouble() {};
 
 
 void
-LilyList::write(std::ostream& out) {
-	LilyList* p= this;
-	out << "(";
-	bool isNull= p->isNull();
-	while (!isNull) {
-		p->first()->write(out);
-		p= LIST_UNWRAP(p->rest());
-		isNull= p->isNull();
-		// ^ mutation of isNull is needed for the loop!
-		if (isNull) {
-			out << " ";
-		}
-	}
-	out << ")";
+LilyNull::write(std::ostream& out) {
+	out << "()";
 }
+
+
 
 // XX const? can we bring it into the program segment?
 LilyObjectPtr lilySymbol_quote;
@@ -136,8 +126,6 @@ void lily_init() {
 	lilySymbol_unquote= SYMBOL("unquote", false);
 
 }
-
-
 
 
 void

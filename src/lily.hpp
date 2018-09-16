@@ -79,7 +79,6 @@ public:
 	virtual LilyObjectPtr cdr() = 0;
 	virtual bool isNull() = 0;
 	virtual bool isPair() = 0;
-	virtual void write(std::ostream& out);
 };
 
 class LilyNull : public LilyList {
@@ -103,6 +102,7 @@ public:
 	virtual bool isPair() { return false; }
 	static LilyListPtr singleton();
 	virtual const char* typeName();
+	virtual void write(std::ostream& out);
 	// virtual ~LilyNull();
 };
 static inline LilyNull* is_LilyNull(LilyObject* v) {
