@@ -91,11 +91,6 @@ inline int64_t lily_mul(int64_t a, int64_t b) {
 #include <limits.h>
 
 
-#ifndef INT64_MAX
-#  define INT64_MAX LLONG_MAX
-#  define INT64_MIN LLONG_MIN
-#endif
-
 inline int64_t lily_add(int64_t a, int64_t x) {
 	if (((x > 0) && (a > INT64_MAX - x)) ||
 	    ((x < 0) && (a < INT64_MIN - x)))
