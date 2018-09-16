@@ -726,15 +726,6 @@ apply1ary(const char* procname,
 }
 
 
-// just casting...
-static LilyListPtr
-frameExpressionsList(const LilyContinuationFramePtr& frame) {
-	LET_AS(expressions, LilyList, frame->expressions());
-	if (!expressions)
-		throw std::logic_error("ill-formed special form");
-	return expressions;
-}
-
 LilyObjectPtr eval(LilyObjectPtr code,
 		   LilyListPtr ctx,
 		   LilyListPtr cont) {
@@ -822,7 +813,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				// application.
 				LET_AS(evaluator, LilyNativeEvaluator, acc);
 				if (evaluator) {
-					auto expressions= frameExpressionsList(frame);
+					auto expressions= frame->expressions();
 					acc= evaluator->_eval
 						(&expressions, &ctx, &cont);
 					// ^ ditto XX
@@ -833,7 +824,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 				}
 				LET_AS(expander, LilyMacroexpander, acc);
 				if (expander) {
-					auto expressions= frameExpressionsList(frame);
+					auto expressions= frame->expressions();
 					// XX missing a reference to
 					// the original surrounding
 					// list here!
