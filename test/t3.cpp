@@ -181,7 +181,7 @@ int main () {
 	e("(10 20)"); // not a function error
 
 	note("chars");
-	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\"");
+	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\")");
 	e("(list #\\f #\\esc #\\return)");
 	e("(list->string (list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe))");
 	e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")");
@@ -192,4 +192,6 @@ int main () {
 	e("(char->integer #\\uFFFE)");
 	e("(char->integer #\\UFFFFffff)");
 	e("(char->integer #\\UFFFFFFFF)");
+	e("(char->integer #\\U000fffff)");
+	e("(char->integer #\\u000fffff)");
 }

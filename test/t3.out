@@ -225,11 +225,15 @@ Int64: 239
 Char: #\xef
 > (char->integer #\uffff)
 Int64: 65535
-> (char->integer #\UFFFE)
-PARSE_ERR: parse error: InvalidCharname (position 18)
-> (char->integer #\uFFFE)
+> #<parse-error "InvalidCharname" 18>
+ERR: ill-formed expression: #<parse-error "InvalidCharname" 18>
+> (char->integer #\ufffe)
 Int64: 65534
-> (char->integer #\UFFFFffff)
+> (char->integer #\Uffffffff)
 Int64: 4294967295
-> (char->integer #\UFFFFFFFF)
+> (char->integer #\Uffffffff)
 Int64: 4294967295
+> (char->integer #\U000fffff)
+Int64: 1048575
+> #<parse-error "InvalidCharname" 18>
+ERR: ill-formed expression: #<parse-error "InvalidCharname" 18>
