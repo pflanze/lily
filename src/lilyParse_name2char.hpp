@@ -14,7 +14,7 @@ lily_char_t name2char (S str, int32_t len) {
 	case 1:
 		return str.first();
 	case 3:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "nul")) {
 				return 0;
 			} else if (stringEq(str, "tab")) {
@@ -26,7 +26,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 4:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "vtab")) {
 				return 11;
 			} else if (stringEq(str, "page")) {
@@ -36,7 +36,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 5:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "alarm")) {
 				return 7;
 			} else if (stringEq(str, "space")) {
@@ -45,7 +45,7 @@ lily_char_t name2char (S str, int32_t len) {
 				return otherwise();}
 		}();
 	case 6:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "return")) {
 				return 13;
 			} else if (stringEq(str, "delete")) {
@@ -55,7 +55,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 7:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "newline")) {
 				return 10;
 			} else {
@@ -63,7 +63,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 9:
-		return [&]() {
+		return [&]() -> lily_char_t {
 			if (stringEq(str, "backspace")) {
 				return 8;
 			} else {
