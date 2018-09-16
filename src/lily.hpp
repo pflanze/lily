@@ -57,6 +57,7 @@ DECLARE_CLASS_PTR(LilyKeyword);
 namespace lily {
 	std::string show(const LilyObjectPtr& v);
 	std::string show(LilyObject* v);
+	void write(const std::string& str, std::ostream& out);
 }
 
 

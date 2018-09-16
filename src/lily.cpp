@@ -6,7 +6,23 @@
 #include "lilyUtil.hpp"
 #include <limits>
 
-using namespace lily;
+
+std::string lily::show(const LilyObjectPtr& v) {
+	std::ostringstream s;
+	v->write(s);
+	return s.str();
+}
+
+// XX completely stupid copy-paste; use templates?
+std::string lily::show(LilyObject* v) {
+	std::ostringstream s;
+	v->write(s);
+	return s.str();
+}
+
+//XX how to selectively do namespace imports?
+#define show(e) lily::show(e)
+
 
 // XX weird wanted that to be fully abstract
 LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {UNIMPLEMENTED};
@@ -208,9 +224,14 @@ LilyChar::write(std::ostream& out) {
 	}
 }
 
+
+void lily::write(const std::string& str, std::ostream& out) {
+	stringlike_write(str, out, '"');
+}
+
 void
 LilyString::write(std::ostream& out) {
-	stringlike_write(_value, out, '"');
+	lily::write(_value, out);
 }
 
 void
@@ -300,39 +321,40 @@ void
 LilyContinuationFrame::write(std::ostream& out) {
 	bool deep=1;
 	if (deep) {
-		(out << "#<continuation-frame "
-		 << (_maybeHead ? show(_maybeHead) : "NULL")
-		 << " "
-		 << show(_rvalues) // XX use write directly please..
-		 << " "
-		 << show(_expressions)
-		 << ">");
+		out << "#<continuation-frame ";
+		if (_maybeHead)
+			_maybeHead->write(out);
+		else
+			out << "NULL";
+		out << " ";
+		_rvalues->write(out);
+		out << " ";
+		_expressions->write(out);
+		out << ">";
 	} else {
-		(out << "#<continuation-frame 0x"
-		 << std::hex
-		 << _rvalues << " 0x"
-		 << _expressions
-		 << std::dec
-		 << ">");
+		out << "#<continuation-frame 0x"
+		    << std::hex
+		    << _rvalues << " 0x"
+		    << _expressions
+		    << std::dec
+		    << ">";
 	}
 }
 
 void
 LilyDivisionByZeroError::write(std::ostream& out) {
-	(out
-	 << "#<division-by-zero-error "
-	 << show(STRING(_msg))
-	 << ">");
+	out << "#<division-by-zero-error ";
+	lily::write(_msg, out);
+	out << ">";
 }
 
 void
 LilyParseError::write(std::ostream& out) {
-	(out
-	 << "#<parse-error "
-	 << show(STRING(_msg)) // for string formatting
-	 << " "
-	 << _pos // no need for formatting, ok?
-	 << ">");
+	out << "#<parse-error ";
+	lily::write(_msg, out);
+	out << " "
+	    << _pos // no need for formatting, ok?
+	    << ">";
 }
 
 
@@ -888,20 +910,6 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	}
 	return res;
 }
-
-std::string lily::show(const LilyObjectPtr& v) {
-	std::ostringstream s;
-	v->write(s);
-	return s.str();
-}
-
-// XX completely stupid copy-paste; use templates?
-std::string lily::show(LilyObject* v) {
-	std::ostringstream s;
-	v->write(s);
-	return s.str();
-}
-
 
 void // noreturn;  use builtin excn values!
 throwTypeError(const char* tname, LilyObjectPtr v) {
