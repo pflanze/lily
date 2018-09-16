@@ -194,4 +194,5 @@ int main () {
 	e("(char->integer #\\UFFFFFFFF)");
 	e("(char->integer #\\U000fffff)");
 	e("(char->integer #\\u000fffff)");
+	e("(string->list \"a\\33b\")");
 }

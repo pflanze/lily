@@ -237,3 +237,5 @@ Int64: 4294967295
 Int64: 1048575
 > #<parse-error "InvalidCharname" 18>
 ERR: ill-formed expression: #<parse-error "InvalidCharname" 18>
+> (string->list "a\33b")
+Pair: (#\a #\esc #\b)
