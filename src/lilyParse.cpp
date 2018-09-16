@@ -276,20 +276,15 @@ PR parseStringLike(Sm s,
 				return ERR(ParseResultCode::UnexpectedEof, s);
 			c = s.first();
 			s= s.rest();
-			if (c=='n') {
-				c='\n';
-			} else if (c=='r') {
-				c='\r';
-			} else if (c=='t') {
-				c='\t';
-			} else if (c=='f') {
-				c='\f';
-			} else if (c=='0') {
-				c='\0';
-			}
+			switch (c) {
+			case 'n': c='\n'; break;
+			case 'r': c='\r'; break;
+			case 't': c='\t'; break;
+			case 'f': c='\f'; break;
+			case '0': c='\0'; break;
 			// XX handle lots of other cases?
-
-			// else leave c as is
+			// default: leave c as is
+			}
 		}
 		// XX handle unicode?
 		str.push_back(c);
