@@ -115,6 +115,7 @@ LilyList::write(std::ostream& out) {
 		p->first()->write(out);
 		p= LIST_UNWRAP(p->rest());
 		isNull= p->isNull();
+		// ^ mutation of isNull is needed for the loop!
 		if (isNull) {
 			out << " ";
 		}
