@@ -697,9 +697,10 @@ LilyNativeEvaluator::call(LilyListPtr* expressions,
 
 
 
-// returns NULL on failure
+// careful: returns NULL (not NIL) on failure
+static
 LilyObjectPtr
-alistMaybeGet (LilyListPtr l, LilyObjectPtr key) {
+alistMaybeRef (LilyListPtr l, LilyObjectPtr key) {
 	while (! l->isNull()) {
 		LETU_AS(p, LilyPair, l->first());
 		if (p->car() == key)
@@ -769,7 +770,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			goto eval;
 		}
 		case LilyEvalOpcode::Symbol:
-			acc= alistMaybeGet(ctx, code);
+			acc= alistMaybeRef(ctx, code);
 			if (!acc)
 				throw std::logic_error(STR("variable not bound: " << show(code)));
 			break;
