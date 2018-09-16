@@ -132,16 +132,20 @@ void
 LilyPair::write(std::ostream& out) {
 	LETU_AS(cdr, LilyPair, _cdr);
 	if (cdr && is_LilyNull(&*(cdr->_cdr))) {
-		if (_car == lilySymbol_quote) { out << "'";  goto end_special; }
-		else if (_car == lilySymbol_quasiquote) { out << "`";  goto end_special; }
-		else if (_car == lilySymbol_unquote) { out << ",";  goto end_special; }
-		else {goto otherwise; }
-	end_special:
+		const char* q;
+		if (_car == lilySymbol_quote)
+			q= "'";
+		else if (_car == lilySymbol_quasiquote)
+			q= "`";
+		else if (_car == lilySymbol_unquote)
+			q= ",";
+		else
+			goto notspecialsyntax;
+		out << q;
 		cdr->_car->write(out);
 		return;
 	}
-otherwise:
-	// list or improper list
+notspecialsyntax:
 	LilyPair* p= this;
 	out << "(";
 	while (true) {
