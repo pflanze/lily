@@ -306,11 +306,12 @@ public:
 LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d); // XX move into class
 
 class LilyDouble : public LilyInexact {
+	double _value;
 public:
-	LilyDouble (double x) : value(x) {
+	LilyDouble (double x) : _value(x) {
 		evalId= LilyEvalOpcode::Double;
 	}
-	double value;
+	double value() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual double toDouble();
@@ -398,13 +399,13 @@ int64_t lily_gcd(int64_t a, int64_t b);
 // Number operations via static dispatch; normally use the virtual
 // methods instead (which are using these)
 static inline LilyNumberPtr Multiply(LilyDouble* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() * b->value()));
 }
 // don't need all the combinations: only inexact*inexact and then the
 // combinations of the exact variants; complex numbers pending.
 
 static inline LilyNumberPtr Multiply(LilyDouble* a, LilyExact* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value * b->toDouble()));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() * b->toDouble()));
 }
 static inline LilyNumberPtr Multiply(LilyExact* a, LilyDouble* b) {
 	return Multiply(b, a);
@@ -433,7 +434,7 @@ LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b);
 
 static inline
 LilyNumberPtr Add(LilyExact* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() + b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() + b->value()));
 }
 
 static inline
@@ -443,7 +444,7 @@ LilyNumberPtr Add(LilyDouble* a, LilyExact* b) {
 
 static inline
 LilyNumberPtr Add(LilyDouble* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value + b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() + b->value()));
 }
 
 static inline
@@ -458,32 +459,32 @@ LilyNumberPtr Subtract(LilyFractional64* a, LilyInt64* b);
 
 static inline
 LilyNumberPtr Subtract(LilyExact* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() - b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() - b->value()));
 }
 
 static inline
 LilyNumberPtr Subtract(LilyDouble* a, LilyExact* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value - b->toDouble()));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() - b->toDouble()));
 }
 
 static inline
 LilyNumberPtr Subtract(LilyDouble* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value - b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() - b->value()));
 }
 
 
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b);
 
 static inline LilyNumberPtr Divide(LilyExact* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() / b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->toDouble() / b->value()));
 }
 
 static inline LilyNumberPtr Divide(LilyDouble* a, LilyExact* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value / b->toDouble()));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() / b->toDouble()));
 }
 
 static inline LilyNumberPtr Divide(LilyDouble* a, LilyDouble* b) {
-	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value / b->value));
+	return std::shared_ptr<LilyNumber>(new LilyDouble(a->value() / b->value()));
 }
 
 LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b);

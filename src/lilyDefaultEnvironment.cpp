@@ -126,7 +126,7 @@ DEF_FOLD_DOWN_NATIVE(lilyDoubleDiv, "double./", LilyDouble, LilyDouble,
 		     [](LilyDoublePtr v, LilyDoublePtr res) -> LilyDoublePtr {
 			     // return res->divideBy(v);
 			     // that's giving LilyNumberPtr, just do it directly?
-			     return DOUBLE(res->value / v->value);
+			     return DOUBLE(res->value() / v->value());
 		     }, _one);
 
 DEF_FOLD_DOWN_NATIVE(lilyDiv, "/", LilyNumber, LilyNumber,

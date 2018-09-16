@@ -272,7 +272,7 @@ LilyDouble::write(std::ostream& out) {
 	std::ostringstream o;
 	o.precision(std::numeric_limits<double>::max_digits10 - 2);
 	// ^ XX "- 2": evil, hide the parsing (or precision?) problems under the carpet
-	o << value;
+	o << _value;
 	auto s= o.str();
 	auto len= s.length();
 	if ((len >= 3)
@@ -562,7 +562,7 @@ double LilyFractional64::toDouble() {
 		/ static_cast<double>(_denominator);
 }
 double LilyDouble::toDouble() {
-	return value;
+	return _value;
 }
 
 LilyNumberPtr LilyInt64::multiply(const LilyNumberPtr& b) {
