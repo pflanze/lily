@@ -16,10 +16,15 @@ void stringlike_write(const std::string& str,
 		} else {
 			const char* str= NULL;
 			switch (c) {
+				// keep in sync with parseStringLike
+				// in lilyParse.cpp!
+			case '\a': str = "\\a"; break;
+			case '\b': str = "\\b"; break;
+			case '\f': str = "\\f"; break;
 			case '\n': str = "\\n"; break;
 			case '\r': str = "\\r"; break;
-			case '\f': str = "\\f"; break;
 			case '\t': str = "\\t"; break;
+			case '\0': str = "\\0"; break;
 			case '\\': str = "\\\\"; break;
 			default:
 				out << c;
