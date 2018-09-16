@@ -304,8 +304,6 @@ public:
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
 	virtual ~LilyFractional64();
 };
-LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d);
-// ^ XX move into class
 
 class LilyDouble : public LilyInexact {
 	double _value;

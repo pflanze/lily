@@ -443,6 +443,7 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
 }
 
+static
 LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
 	int64_t f= lily_gcd(n, d);
 	int64_t n1;
