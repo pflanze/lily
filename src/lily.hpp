@@ -201,11 +201,12 @@ public:
 };
 
 class LilyString : public LilyObject {
+	std::string _value;
 public:
-	LilyString(std::string s) : string(s) {
+	LilyString(std::string s) : _value(s) {
 		evalId= LilyEvalOpcode::String;
 	}
-	std::string string;
+	std::string value() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
 	virtual ~LilyString();

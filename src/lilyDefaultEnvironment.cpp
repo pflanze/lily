@@ -248,7 +248,7 @@ static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 	return apply1ary("string->list", [](LilyObjectPtr v) {
 			XLETU_AS(s, LilyString, v);
 			LilyListPtr res= NIL;
-			for (auto i= s->string.rbegin(); i != s->string.rend(); i++)
+			for (auto i= s->value().rbegin(); i != s->value().rend(); i++)
 				res= CONS(CHAR(*i), res);
 			return res;
 		}, arguments);

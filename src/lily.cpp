@@ -225,7 +225,7 @@ LilyChar::write(std::ostream& out) {
 void
 LilyString::write(std::ostream& out) {
 	out << '"';
-	string_onelinePrint(string, out, '"');
+	string_onelinePrint(_value, out, '"');
 	out << '"';
 }
 
