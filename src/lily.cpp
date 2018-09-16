@@ -414,6 +414,7 @@ void throwDivByZero(int64_t a, const char* op) {
 //           1
 //           integers))
 
+static
 int64_t lily_euclid(int64_t x, int64_t y) {
 	if (y == 0)
 		return x;
@@ -421,6 +422,7 @@ int64_t lily_euclid(int64_t x, int64_t y) {
 		return lily_euclid(y, x % y);
 }
 
+static
 int64_t _lily_gcd_positive(int64_t x, int64_t y) {
 	if (x < y)
 		return lily_euclid(y, x);
@@ -432,6 +434,7 @@ int64_t lily_gcd(int64_t x, int64_t y) {
 	return _lily_gcd_positive(lily_abs(x), lily_abs(y));
 }
 
+static
 int64_t lily_lcm(int64_t x, int64_t y) {
 	int64_t g= lily_gcd(x, y);
 	if (g == 0)
