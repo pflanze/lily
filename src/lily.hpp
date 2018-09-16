@@ -38,25 +38,19 @@ enum class LilyEvalOpcode : char {
 	DivisionByZeroError,
 };
 
-class LilyObject;
-class LilyList;
-class LilyNumber;
-class LilyInt64;
-class LilyContinuationFrame;
-class LilySymbollike;
-class LilySymbol;
-class LilyKeyword;
-class LilyDouble;
+#define DECLARE_CLASS_PTR(classname)				\
+	class classname;					\
+	typedef std::shared_ptr<classname> classname##Ptr;
 
-typedef std::shared_ptr<LilyObject> LilyObjectPtr;
-typedef std::shared_ptr<LilyList> LilyListPtr;
-typedef std::shared_ptr<LilyContinuationFrame> LilyContinuationFramePtr;
-typedef std::shared_ptr<LilyNumber> LilyNumberPtr;
-typedef std::shared_ptr<LilyInt64> LilyInt64Ptr;
-typedef std::shared_ptr<LilyDouble> LilyDoublePtr;
-typedef std::shared_ptr<LilySymbollike> LilySymbollikePtr;
-typedef std::shared_ptr<LilySymbol> LilySymbolPtr;
-typedef std::shared_ptr<LilyKeyword> LilyKeywordPtr;
+DECLARE_CLASS_PTR(LilyObject);
+DECLARE_CLASS_PTR(LilyList);
+DECLARE_CLASS_PTR(LilyNumber);
+DECLARE_CLASS_PTR(LilyInt64);
+DECLARE_CLASS_PTR(LilyDouble);
+DECLARE_CLASS_PTR(LilyContinuationFrame);
+DECLARE_CLASS_PTR(LilySymbollike);
+DECLARE_CLASS_PTR(LilySymbol);
+DECLARE_CLASS_PTR(LilyKeyword);
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
