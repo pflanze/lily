@@ -727,7 +727,8 @@ apply1ary(const char* procname,
 
 
 // just casting...
-static LilyListPtr frameExpressionsList(const LilyContinuationFramePtr& frame) {
+static LilyListPtr
+frameExpressionsList(const LilyContinuationFramePtr& frame) {
 	LET_AS(expressions, LilyList, frame->expressions());
 	if (!expressions)
 		throw std::logic_error("ill-formed special form");
