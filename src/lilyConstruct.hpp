@@ -18,16 +18,16 @@ namespace lilyConstruct {
 		return LILY_NEW(LilyPair,(a,b));
 	}
 	// /both
-	static auto NIL = LilyNull::singleton();
+	static LilyNullPtr NIL = LilyNull::singleton();
 	#ifdef TRUE
 	#  undef TRUE
 	#endif
-	static auto TRUE = LilyBoolean::True();
+	static LilyBooleanPtr TRUE = LilyBoolean::True();
 	#ifdef FALSE
 	#  undef FALSE
 	#endif
-	static auto FALSE = LilyBoolean::False();
-	static auto VOID = LilyVoid::singleton();
+	static LilyBooleanPtr FALSE = LilyBoolean::False();
+	static LilyVoidPtr VOID = LilyVoid::singleton();
 	inline LilyInt64Ptr INT(int64_t a) {
 		return LILY_NEW(LilyInt64,(a));
 	}
