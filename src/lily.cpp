@@ -176,7 +176,7 @@ LilyBoolean::write(std::ostream& out) {
 
 static
 char unsafe_hexdigit (int d) {
-	return (d < 10) ? (d + '0') : (d + 'a');
+	return (d < 10) ? (d + '0') : (d - 10 + 'a');
 }
 
 static
