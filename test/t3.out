@@ -55,7 +55,7 @@ Int64: 0
 > (length '(1 89 3))
 Int64: 3
 > (length 1 89 3)
-ERR: length received more than one argument
+ERR: length needs 1 argument
 ---- list ----
 > (list)
 Null: ()
