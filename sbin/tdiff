@@ -31,7 +31,7 @@ colordiff () {
 # With HACK to revert the green and red coloring (couldn't figure out
 # how to use the --palette argument, man man).
 
-colordiff -u "$outputfile_out" "$outputfile.actual.out" | \
+colordiff --text -u "$outputfile_out" "$outputfile.actual.out" | \
     perl -wne '
 BEGIN {
     $red= "\x1b\x5b\x33\x31\x6d";
