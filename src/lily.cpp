@@ -418,6 +418,10 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
 }
 
+// XX check that simplifiedFractional64 isn't just
+// Divide(int64_t,int64_t), or rather also, whether the other places
+// calling simplifiedFractional64 are actually checking the
+// preconditions correctly!
 static
 LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
 	int64_t f= lily_gcd(n, d);
