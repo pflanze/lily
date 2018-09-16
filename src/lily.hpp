@@ -334,6 +334,9 @@ void throwOverflow(const char*op, int64_t a);
 // throws LilyDivisionByZeroError
 void throwDivByZero(int64_t a, const char*op);
 
+
+#if defined( __GNUC__ ) && 0
+
 inline int64_t lily_add(int64_t a, int64_t b) {
 	int64_t res;
 	if (__builtin_saddl_overflow(a, b, &res))
@@ -352,6 +355,13 @@ inline int64_t lily_mul(int64_t a, int64_t b) {
 		throwOverflow(a, "*", b);
 	return res;
 }
+
+#else
+#  include "safemath.hpp"
+#endif
+
+
+
 inline int64_t lily_quotient(int64_t a, int64_t b) {
 	if (b==0)
 		throwDivByZero(a, "/");
