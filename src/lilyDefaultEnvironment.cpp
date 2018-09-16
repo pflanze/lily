@@ -246,10 +246,11 @@ static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 				      LilyListPtr* _ctx,
 				      LilyListPtr* _cont) {
 	return apply1ary("string->list", [](LilyObjectPtr v) {
-			XLETU_AS(s, LilyString, v);
+			auto str= XAS<LilyString>(v)->value();
 			LilyListPtr res= NIL;
-			for (auto i= s->value().rbegin(); i != s->value().rend(); i++)
+			for (auto i= str.rbegin(); i != str.rend(); i++) {
 				res= CONS(CHAR(*i), res);
+			}
 			return res;
 		}, arguments);
 }
