@@ -255,6 +255,21 @@ static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 		}, arguments);
 }
 
+static LilyObjectPtr lilyListToString(LilyListPtr* arguments,
+				      LilyListPtr* _ctx,
+				      LilyListPtr* _cont) {
+	return apply1ary("list->string", [](LilyObjectPtr v) {
+			auto l= XAS<LilyList>(v);
+			std::string str;
+			while (! (l->isNull())) {
+				auto c= XAS<LilyChar>(l->first())->value();
+				str.push_back(c); // XX unicode
+				l= l->rest();
+			}
+			return STRING(str);
+		}, arguments);
+}
+
 static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 				       LilyListPtr* _ctx,
 				       LilyListPtr* _cont) {
@@ -351,6 +366,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("begin", lilyBegin),
 		ENTRY("exact->inexact", lilyExactInexact),
 		ENTRY("string->list", lilyStringToList),
+		ENTRY("list->string", lilyListToString),
 		ENTRY("integer->char", lilyIntegerToChar),
 		ENTRY("char->integer", lilyCharToInteger),
 		);
