@@ -30,6 +30,9 @@ t3: bin/test/t3
 	bin/test/t3 > test/t3.actual.out
 	sbin/tdiff test/t3.out
 
+src/lily.hpp: src/safemath.hpp
+	touch src/lily.hpp
+
 SipHash/siphash.c:
 	git submodule update SipHash
 
