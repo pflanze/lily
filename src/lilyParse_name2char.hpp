@@ -1,11 +1,16 @@
 // This was partially auto-generated. Better don't edit!
 
+
+// Return type is *not* lily_char_t, since it needs to be signed for
+// the -1; don't need to be able to represent the full range of
+// unicode anyway here.
+
 static
-lily_char_t name2char (S str, int32_t len) {
+int32_t name2char (S str, int32_t len) {
 	auto stringEq= [=](S& str, const char* str2) -> bool {
 		return str.subStringEq(str2, len);
 	};
-	auto otherwise= [=]() -> lily_char_t {
+	auto otherwise= [=]() -> int32_t {
 		return -1;
 	};
 	if (len > 100)
@@ -14,7 +19,7 @@ lily_char_t name2char (S str, int32_t len) {
 	case 1:
 		return str.first();
 	case 3:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "nul")) {
 				return 0;
 			} else if (stringEq(str, "tab")) {
@@ -26,7 +31,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 4:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "vtab")) {
 				return 11;
 			} else if (stringEq(str, "page")) {
@@ -36,7 +41,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 5:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "alarm")) {
 				return 7;
 			} else if (stringEq(str, "space")) {
@@ -45,7 +50,7 @@ lily_char_t name2char (S str, int32_t len) {
 				return otherwise();}
 		}();
 	case 6:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "return")) {
 				return 13;
 			} else if (stringEq(str, "delete")) {
@@ -55,7 +60,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 7:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "newline")) {
 				return 10;
 			} else {
@@ -63,7 +68,7 @@ lily_char_t name2char (S str, int32_t len) {
 			}
 		}();
 	case 9:
-		return [&]() -> lily_char_t {
+		return [&]() -> int32_t {
 			if (stringEq(str, "backspace")) {
 				return 8;
 			} else {
