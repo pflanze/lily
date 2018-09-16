@@ -735,6 +735,8 @@ LilyObjectPtr eval(LilyObjectPtr code,
 		DEBUGWARN("eval: "<< show(code) << " in: " << show(cont));
 		switch (code->evalId) {
 		case LilyEvalOpcode::Null:
+			// XX don't mis-use logic_error for this (and
+			// other cases)
 			throw std::logic_error("empty call");
 			break;
 		case LilyEvalOpcode::Pair: {
