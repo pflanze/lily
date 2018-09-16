@@ -100,18 +100,18 @@ DEF_FOLD_DOWN_NATIVE(lilySub, "-", LilyNumber, LilyNumber,
 // XX Gambit allows inexact integers here !
 DEF_FOLD_DOWN_NATIVE(lilyQuotient, "quotient", LilyInt64, LilyInt64,
 		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
-			     return INT(lily_quotient(res->value,
-						      v->value));
+			     return INT(lily_quotient(res->value(),
+						      v->value()));
 		     }, _one);
 DEF_FOLD_DOWN_NATIVE(lilyRemainder, "remainder", LilyInt64, LilyInt64,
 		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
-			     return INT(lily_remainder(res->value,
-						       v->value));
+			     return INT(lily_remainder(res->value(),
+						       v->value()));
 		     }, _one);
 DEF_FOLD_DOWN_NATIVE(lilyModulo, "modulo", LilyInt64, LilyInt64,
 		     [](LilyInt64Ptr v, LilyInt64Ptr res) -> LilyInt64Ptr {
-			     return INT(lily_modulo(res->value,
-						    v->value));
+			     return INT(lily_modulo(res->value(),
+						    v->value()));
 		     }, _one);
 
 // inputs must be integers, but result can be fractionals.
@@ -260,7 +260,7 @@ static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 	return apply1ary("integer->char", [](LilyObjectPtr v) {
 			XLETU_AS(i, LilyInt64, v);
 			// XX check for correct range
-			return CHAR(i->value);
+			return CHAR(i->value());
 		}, arguments);
 }
 

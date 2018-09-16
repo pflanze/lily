@@ -337,7 +337,7 @@ PR parseNegate(PR pr) {
 	LETU_AS(v, LilyInt64, pr.value());
 	assert(v);
 	try {
-		return OK(INT(lily_negate(v->value)), pr.remainder());
+		return OK(INT(lily_negate(v->value())), pr.remainder());
 	} catch (std::overflow_error) {
 		return ERR(ParseResultCode::Int64Overflow, pr.remainder());
 	}
@@ -410,7 +410,7 @@ PR_suffix parseFloat_suffix(S s) {
 		return PR_suffix
 			(suffixValue(c0,
 				     UNWRAP_AS(LilyInt64,
-					       exponent.value())->value),
+					       exponent.value())->value()),
 			 exponent.remainder());
 	}
 	default:
@@ -438,7 +438,7 @@ PR parseFloat(Sm s, bool negate, int64_t predot) {
 		s= s.rest();
 		PR _postdot= parsePositiveInteger(s);
 		if (_postdot.succeeded()) {
-			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value;
+			postdot= XUNWRAP_AS(LilyInt64, _postdot.value())->value();
 			auto p0= s.position();
 			auto p1= _postdot.remainder().position();
 			assert(p1 > p0);
@@ -547,7 +547,7 @@ PR parseNumber(Sm s) {
 	{
 		PR f= parseFloat(result.remainder(),
 				 false,
-				 UNWRAP_AS(LilyInt64, result.value())->value);
+				 UNWRAP_AS(LilyInt64, result.value())->value());
 		if (f.succeeded()) {
 			result= f;
 			goto checkboundary;
