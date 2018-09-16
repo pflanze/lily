@@ -202,32 +202,31 @@ static LilyObjectPtr lilyQuote(LilyListPtr* es,
 static LilyObjectPtr lilyLength(LilyListPtr* arguments,
 				LilyListPtr* _ctx,
 				LilyListPtr* _cont) {
-	// arguments == ((12 13 14))
-	LET_AS(_arguments, LilyList, *arguments);
-	if (is_LilyNull(&*(_arguments->rest()))) {
-		// we have just one argument, cool.
-		auto l= _arguments->first(); // (12 13 14) or "hello" or something
-		int64_t len= 0;
-		while (true) {
-			LET_AS(p, LilyPair, l);
-			if (p) {
-				len++; // check overflow? 64bit int is pretty large though :)
-				l= p->cdr();
-			} else {
-				LET_AS(null, LilyNull, l);
-				if (null) {
-					break;
+	return apply1ary("length", [&](LilyObjectPtr l) {
+			int64_t len= 0;
+			while (true) {
+				LET_AS(p, LilyPair, l);
+				if (p) {
+					len++;
+					// ^ check overflow? 64bit int
+					// is pretty large though :)
+					l= p->cdr();
+					// XX optim: take pointers
+					// instead (avoid
+					// refcounting)? Measure!
 				} else {
-					throw std::logic_error
-						(STR("not a list: "
-						     << show(_arguments->first())));
+					LET_AS(null, LilyNull, l);
+					if (null) {
+						break;
+					} else {
+						throw std::logic_error
+							(STR("not a list: "
+							     << show((*arguments)->first())));
+					}
 				}
 			}
-		}
-		return INT(len);
-	} else {
-		throw std::logic_error("length received more than one argument");
-	}
+			return INT(len);
+		}, arguments);
 }
 
 static LilyObjectPtr lilyList(LilyListPtr* arguments,
