@@ -449,9 +449,11 @@ LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
 	if (bv == 0)
 		// even though the message is not actually going to be
 		// used in the case of the parser
-		throw LilyDivisionByZeroError(STR("Divide(" << a << ", " << b << ")"));
+		throw LilyDivisionByZeroError
+			(STR("Divide(" << a << ", " << b << ")"));
 	if (bv == 1)
-		// stupid since might just refcnt++ a, but then the API wouldn't work.
+		// stupid since might just refcnt++ a, but then the
+		// API wouldn't work.
 		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));
 	return simplifiedFractional64(a->value(), bv);
 }
@@ -461,7 +463,8 @@ LilyNumberPtr Add(LilyInt64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
 	int64_t n= b->enumerator();
 	int64_t d= b->denominator();
-	return simplifiedFractional64(lily_add(n, lily_mul(a->value(), d)), d);
+	return simplifiedFractional64(lily_add(n, lily_mul(a->value(), d)),
+				      d);
 }
 
 LilyNumberPtr Subtract(LilyInt64* a, LilyFractional64* b) {
@@ -476,7 +479,8 @@ LilyNumberPtr Subtract(LilyFractional64* a, LilyInt64* b) {
 	// XX better algo less likely to hit max int?
 	int64_t n= a->enumerator();
 	int64_t d= a->denominator();
-	return simplifiedFractional64(lily_sub(n, lily_mul(b->value(), d)), d);
+	return simplifiedFractional64(lily_sub(n, lily_mul(b->value(), d)),
+				      d);
 }
 
 LilyNumberPtr Subtract(LilyFractional64* a, LilyFractional64* b) {
@@ -497,30 +501,37 @@ LilyNumberPtr Add(LilyFractional64* a, LilyFractional64* b) {
 
 LilyNumberPtr Multiply(LilyInt64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
-	return simplifiedFractional64(lily_mul(b->enumerator(), a->value()),
+	return simplifiedFractional64(lily_mul(b->enumerator(),
+					       a->value()),
 				      b->denominator());
 }
 
 LilyNumberPtr Multiply(LilyFractional64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
-	return simplifiedFractional64(lily_mul(a->enumerator(), b->enumerator()),
-				      lily_mul(a->denominator(), b->denominator()));
+	return simplifiedFractional64(lily_mul(a->enumerator(),
+					       b->enumerator()),
+				      lily_mul(a->denominator(),
+					       b->denominator()));
 }
 
 LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
-	return simplifiedFractional64(lily_mul(b->denominator(), a->value()),
+	return simplifiedFractional64(lily_mul(b->denominator(),
+					       a->value()),
 				      b->enumerator());
 }
 LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b) {
 	// XX better algo less likely to hit max int?
 	return simplifiedFractional64(a->enumerator(),
-				      lily_mul(a->denominator(), b->value()));
+				      lily_mul(a->denominator(),
+					       b->value()));
 }
 LilyNumberPtr Divide(LilyFractional64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?
-	return simplifiedFractional64(lily_mul(a->enumerator(), b->denominator()),
-				      lily_mul(a->denominator(), b->enumerator()));
+	return simplifiedFractional64(lily_mul(a->enumerator(),
+					       b->denominator()),
+				      lily_mul(a->denominator(),
+					       b->enumerator()));
 }
 
 
