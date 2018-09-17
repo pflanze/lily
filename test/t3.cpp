@@ -175,6 +175,12 @@ int main () {
 	e("(/ 3/4 2)"); // 3/8
 	e("(/ 2 3/4)"); // 8/3
 
+	note("more fractionals");
+	e("(/ 5/1)");
+	e("(/ 5/0)");
+	e("(/ 1/5)");
+	e("(/ 1/9223372036854775808 2)");
+
 	note("exact->inexact");
 	e("(exact->inexact 3)");
 	e("(exact->inexact .3)");

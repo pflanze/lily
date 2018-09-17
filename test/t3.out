@@ -194,6 +194,15 @@ Fractional64: 3/8
 Fractional64: 3/8
 > (/ 2 3/4)
 Fractional64: 8/3
+---- more fractionals ----
+> (/ 5)
+1/5
+> (/ 5/0)
+ERR: Unbound variable: 5/0
+> (/ 1/5)
+5
+> (/ 1/9223372036854775807 2)
+ERR: overflow aha heh report underflow? !
 ---- exact->inexact ----
 > (exact->inexact 3)
 Double: 3.
