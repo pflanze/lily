@@ -642,9 +642,9 @@ public:
 // base error class, but will not work that well anymore once guest
 // language structs exist and are to be allowed to inherit from a
 // separate error base
-class LilyErrorBase : public LilyObject {
+class LilyError : public LilyObject {
 };
-class LilyErrorWithWhat : public LilyObject {
+class LilyErrorWithWhat : public LilyError {
 	virtual std::string what()=0;
 };
 
