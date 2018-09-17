@@ -1,3 +1,4 @@
+
 ---- string and symbol pointer comparison ----
 ("Hello" "Hello" #t)
 ("Hello" "Hello" #f)
@@ -6,9 +7,11 @@
 (Hello Hello #t)
 (Hello Hello #t)
 (Hello Hello2 #f)
+
 ---- invalid evaluation rules ----
 > (12 . 45 67)
 ERR: ill-formed expression: #<parse-error "InvalidDottedList" 9>
+
 ---- literals ----
 > 1233
 Int64: 1233
@@ -18,11 +21,13 @@ String: "1233"
 Boolean: #t
 > #!void
 Void: #!void
+
 ---- variable reference ----
 > +
 NativeProcedure: #<native-procedure +>
 > q
 ERR: variable not bound: q
+
 ---- calls ----
 > (+)
 Int64: 0
@@ -56,6 +61,7 @@ Int64: 0
 Int64: 3
 > (length 1 89 3)
 ERR: length needs 1 argument
+
 ---- list ----
 > (list)
 Null: ()
@@ -83,6 +89,7 @@ Int64: 6
 ERR: cdr needs 1 argument
 > (cons 10 (list 11 12 '()))
 Pair: (10 11 12 ())
+
 ---- arithmetic ----
 > (-10)
 ERR: not a function: -10
@@ -112,6 +119,7 @@ Fractional64: 10/3
 ERR: not a LilyDouble: 10
 > (double./ 10. 3.)
 Double: 3.33333333333333
+
 ---- arithmetic r5rs tests ----
 > (modulo 13 4)
 Int64: 1
@@ -129,6 +137,7 @@ Int64: 1
 Int64: -1
 > (remainder -13 -4)
 Int64: -1
+
 ---- number tower ----
 > (+ 5 2/3)
 Fractional64: 17/3
@@ -194,6 +203,7 @@ Fractional64: 3/8
 Fractional64: 3/8
 > (/ 2 3/4)
 Fractional64: 8/3
+
 ---- more fractionals ----
 > (/ 5)
 1/5
@@ -203,6 +213,7 @@ ERR: Unbound variable: 5/0
 5
 > (/ 1/9223372036854775807 2)
 ERR: overflow aha heh report underflow? !
+
 ---- exact->inexact ----
 > (exact->inexact 3)
 Double: 3.
@@ -210,6 +221,7 @@ Double: 3.
 Double: 0.3
 > (exact->inexact 3/2)
 Double: 1.5
+
 ---- invalid ----
 > ()
 ERR: empty call
@@ -219,6 +231,7 @@ ERR: improper list: 20
 ERR: improper list: 10
 > (10 20)
 ERR: not a function: 10
+
 ---- chars ----
 > (string->list "Hello\0 World\b\a\f\t\r\n")
 Pair: (#\H #\e #\l #\l #\o #\nul #\space #\W #\o #\r #\l #\d #\backspace #\alarm #\page #\tab #\return #\newline)

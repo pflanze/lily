@@ -9,7 +9,7 @@ using namespace lilyConstruct;
 LilyListPtr environment;
 
 void note(const char* s) {
-	std::cout << "---- " << s << " ----\n";
+	std::cout << "\n---- " << s << " ----\n";
 }
 
 void run(const char* codestring, bool catchExceptions) {
