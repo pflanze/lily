@@ -345,6 +345,16 @@ LilyContinuationFrame::write(std::ostream& out) {
 }
 
 void
+LilyInt64OverflowError::write(std::ostream& out) {
+	out << "#<int64-overflow-error ";
+	auto rem= CONS(INT(_b), NIL);
+	CONS(SYMBOL(_op),
+	     unary ? rem : CONS(INT(_a), rem))
+		->write(out);
+	out << ">";
+}
+
+void
 LilyDivisionByZeroError::write(std::ostream& out) {
 	out << "#<division-by-zero-error ";
 	lily::write(_msg, out);
@@ -362,6 +372,14 @@ LilyParseError::write(std::ostream& out) {
 
 
 // XX include the exception type or not?
+
+std::string LilyInt64OverflowError::what() {
+	// XX this, unlike the others, formats using Scheme syntax;
+	// bad or good?
+	std::ostringstream o;
+	write(o);
+	return o.str();
+}
 
 std::string LilyDivisionByZeroError::what() {
 	return STR("division by zero: " << _msg );
@@ -388,18 +406,21 @@ const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
 const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
+const char* LilyInt64OverflowError::typeName() {return "LilyInt64OverflowError";}
 const char* LilyDivisionByZeroError::typeName() {return "DivisionByZeroError";}
 const char* LilyParseError::typeName() {return "ParseError";}
 
 
+// these are also std::overflow_error errors XX correct?
 void throwOverflow(int64_t a, const char* op, int64_t b) {
-	throw std::overflow_error
+	throw LilyInt64OverflowError(a, op, b);
 		(STR("int64 overflow: " << a << " " << op << " " << b));
 }
 void throwOverflow(const char* op, int64_t a) {
-	throw std::overflow_error
+	throw LilyInt64OverflowError(op, a);
 		(STR("int64 overflow: " << op << " " << a));
 }
+
 void throwDivByZero(int64_t a, const char* op) {
 	throw LilyDivisionByZeroError
 		(STR("int64 division by zero: " << a << " " << op << " " << 0));

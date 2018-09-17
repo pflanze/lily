@@ -35,6 +35,7 @@ enum class LilyEvalOpcode : char {
 	NativeEvaluator,
 	InvalidIsFrame,
 	ParseError,
+	Int64OverflowError,
 	DivisionByZeroError,
 };
 
@@ -647,6 +648,27 @@ class LilyErrorWithWhat : public LilyObject {
 	virtual std::string what()=0;
 };
 
+class LilyInt64OverflowError : public LilyErrorWithWhat, std::overflow_error {
+	int64_t _a;
+	const char* _op;
+	int64_t _b;
+	bool unary;
+public:
+	//XX Oww, can we override what() from std::overflow_error at all?
+	LilyInt64OverflowError(int64_t a, const char* op, int64_t b)
+		: std::overflow_error::overflow_error(""),
+		  _a(a), _op(op), _b(b), unary(false) {
+		evalId= LilyEvalOpcode::Int64OverflowError;
+	}
+	LilyInt64OverflowError(const char* op, int64_t b)
+		: std::overflow_error::overflow_error(""),
+		  _a(0), _op(op), _b(b), unary(true) {
+		evalId= LilyEvalOpcode::Int64OverflowError;
+	}
+	virtual std::string what();
+	virtual const char* typeName();
+	virtual void write(std::ostream& out);
+};
 
 class LilyDivisionByZeroError : public LilyErrorWithWhat {
 	std::string _msg;
