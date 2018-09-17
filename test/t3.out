@@ -213,6 +213,8 @@ ERR: variable not bound: 5/0
 Int64: 5
 > (/ 1/9223372036854775807 2)
 ERR: overflow aha heh report underflow? !
+> (* 1/9223372036854775807 2)
+Fractional64: 2/9223372036854775807
 
 ---- exact->inexact ----
 > (exact->inexact 3)
