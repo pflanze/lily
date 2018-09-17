@@ -439,12 +439,25 @@ int64_t lily_lcm(int64_t x, int64_t y) {
 		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
 }
 
-// XX check that simplifiedFractional64 isn't just
-// Divide(int64_t,int64_t), or rather also, whether the other places
-// calling simplifiedFractional64 are actually checking the
-// preconditions correctly!
+// really just Divide(int64_t,int64_t)
 static
 LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
+	if (d == 0)
+		// even though the message is not actually going to be
+		// used in the case of the parser.  XX just include
+		// the arguments in the obj, not the string
+		throw LilyDivisionByZeroError
+			(STR("Divide(" << n << ", " << d << ")"));
+
+	if (d == 1)
+		// stupid in some cases since might just refcnt++ a,
+		// but then the API wouldn't work.
+		return std::shared_ptr<LilyNumber>(new LilyInt64(n));
+
+	if (d == -1)
+		return std::shared_ptr<LilyNumber>
+			(new LilyInt64(lily_negate(n)));
+
 	int64_t f= lily_gcd(n, d);
 	int64_t n1;
 	int64_t d1;
@@ -460,23 +473,12 @@ LilyNumberPtr simplifiedFractional64(int64_t n, int64_t d) {
 		n1= n;
 		d1= d;
 	}
-	assert(!(d1 == 1));
 	DEBUGWARN("simplifiedFractional64: from "<<n<<"/"<<d<<" to "<<n1<<"/"<<d1);
 	return std::shared_ptr<LilyNumber>(new LilyFractional64(n1, d1));
 }
 
 LilyNumberPtr Divide(LilyInt64* a, LilyInt64* b) {
-	int64_t bv= b->value();
-	if (bv == 0)
-		// even though the message is not actually going to be
-		// used in the case of the parser
-		throw LilyDivisionByZeroError
-			(STR("Divide(" << a << ", " << b << ")"));
-	if (bv == 1)
-		// stupid since might just refcnt++ a, but then the
-		// API wouldn't work.
-		return std::shared_ptr<LilyNumber>(new LilyInt64(bv));
-	return simplifiedFractional64(a->value(), bv);
+	return simplifiedFractional64(a->value(), b->value());
 }
 
 
