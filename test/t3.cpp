@@ -24,6 +24,8 @@ void run(const char* codestring, bool catchExceptions) {
 			action();
 		} catch (std::logic_error& e) {
 			std::cout << "ERR: " << e.what() << std::endl;
+		} catch (LilyErrorWithWhat& e) {
+			std::cout << "ERR: " << e.what() << std::endl;
 		}
 	} else {
 		action();
