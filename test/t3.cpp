@@ -12,23 +12,26 @@ void note(const char* s) {
 	std::cout << "---- " << s << " ----\n";
 }
 
-void e(const char* codestring) {
+void run(const char* codestring, bool catchExceptions) {
 	auto codeobject= lilyParse(std::string(codestring), true);
 	std::cout << "> " << lily::show(codeobject) << std::endl;
-	try {
+	auto action= [&]() {
 		auto result= eval(codeobject, environment);
 		std::cout << result->typeName() << ": "; WRITELN(result);
-	} catch (std::logic_error& e) {
-		std::cout << "ERR: " << e.what() << std::endl;
+	};
+	if (catchExceptions) {
+		try {
+			action();
+		} catch (std::logic_error& e) {
+			std::cout << "ERR: " << e.what() << std::endl;
+		}
+	} else {
+		action();
 	}
 }
 
-void _e(const char* codestring) {
-	auto codeobject= lilyParse(std::string(codestring));
-	std::cout << "> " << lily::show(codeobject) << std::endl;
-	auto result= eval(codeobject, environment);
-	std::cout << result->typeName() << ": "; WRITELN(result);
-}
+void e(const char* codestring) { run(codestring, true); }
+void _e(const char* codestring) { run(codestring, false); }
 
 int main () {
 	lily_init();
