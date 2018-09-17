@@ -645,10 +645,11 @@ public:
 class LilyError : public LilyObject {
 };
 class LilyErrorWithWhat : public LilyError {
+public:
 	virtual std::string what()=0;
 };
 
-class LilyInt64OverflowError : public LilyErrorWithWhat, std::overflow_error {
+class LilyInt64OverflowError : public LilyErrorWithWhat, public std::overflow_error {
 	int64_t _a;
 	const char* _op;
 	int64_t _b;
