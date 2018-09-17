@@ -27,6 +27,8 @@ int main (int argc, const char** argv) {
 				WRITELN(res);
 			} catch (std::logic_error& e) {
 				std::cout << "ERR: " << e.what() << std::endl;
+			} catch (LilyErrorWithWhat& e) {
+				std::cout << "ERR: " << e.what() << std::endl;
 			}
 		}
 	}
