@@ -344,15 +344,21 @@ LilyContinuationFrame::write(std::ostream& out) {
 	}
 }
 
-void
-LilyInt64OverflowError::write(std::ostream& out) {
-	out << "#<int64-overflow-error ";
-	auto rem= CONS(INT(_b), NIL);
-	CONS(SYMBOL(_op),
-	     unary ? rem : CONS(INT(_a), rem))
-		->write(out);
-	out << ">";
-}
+#define DEFINE_(kind,nam)					\
+	void							\
+	Lily##kind##Error::write(std::ostream& out) {		\
+		out << "#<" nam "-error ";			\
+		auto rem= CONS(INT(_b), NIL);			\
+		CONS(SYMBOL(_op),				\
+		     unary ? rem : CONS(INT(_a), rem))		\
+			->write(out);				\
+		out << ">";					\
+	}
+DEFINE_(Int64Overflow, "int64-overflow");
+DEFINE_(Int64Underflow, "int64-underflow");
+// XX could this one have been done via 
+#undef DEFINE_
+
 
 void
 LilyDivisionByZeroError::write(std::ostream& out) {
@@ -373,13 +379,19 @@ LilyParseError::write(std::ostream& out) {
 
 // XX include the exception type or not?
 
-std::string LilyInt64OverflowError::what() {
-	// XX this, unlike the others, formats using Scheme syntax;
-	// bad or good?
-	std::ostringstream o;
-	write(o);
-	return o.str();
-}
+#define DEFINE_(kind)							\
+	std::string Lily##kind##Error::what() {			\
+		/* XX this, unlike the others, formats using Scheme syntax; */ \
+		/* bad or good? */					\
+		std::ostringstream o;					\
+		write(o);						\
+		return o.str();						\
+	}
+DEFINE_(Int64Overflow);
+DEFINE_(Int64Underflow);
+#undef DEFINE_
+
+
 
 std::string LilyDivisionByZeroError::what() {
 	return STR("division by zero: " << _msg );
@@ -407,19 +419,24 @@ const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
 const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
 const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
 const char* LilyInt64OverflowError::typeName() {return "LilyInt64OverflowError";}
+const char* LilyInt64UnderflowError::typeName() {return "LilyInt64UnderflowError";}
 const char* LilyDivisionByZeroError::typeName() {return "DivisionByZeroError";}
 const char* LilyParseError::typeName() {return "ParseError";}
 
 
-// these are also std::overflow_error errors XX correct?
-void throwOverflow(int64_t a, const char* op, int64_t b) {
-	throw LilyInt64OverflowError(a, op, b);
-		(STR("int64 overflow: " << a << " " << op << " " << b));
-}
-void throwOverflow(const char* op, int64_t a) {
-	throw LilyInt64OverflowError(op, a);
-		(STR("int64 overflow: " << op << " " << a));
-}
+#define DEFINE_(throwOverflow, LilyInt64OverflowError, overflow)	\
+	/* these are also std::overflow_error errors XX correct? */	\
+	void throwOverflow(int64_t a, const char* op, int64_t b) {	\
+		throw LilyInt64OverflowError(a, op, b);			\
+		(STR("int64 " overflow ": " << a << " " << op << " " << b)); \
+	}								\
+	void throwOverflow(const char* op, int64_t a) {			\
+		throw LilyInt64OverflowError(op, a);			\
+		(STR("int64 " overflow ": " << op << " " << a));		\
+	}
+DEFINE_(throwOverflow, LilyInt64OverflowError, "overflow");
+DEFINE_(throwUnderflow, LilyInt64UnderflowError, "underflow")
+#undef DEFINE_
 
 void throwDivByZero(int64_t a, const char* op) {
 	throw LilyDivisionByZeroError

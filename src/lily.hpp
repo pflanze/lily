@@ -36,6 +36,7 @@ enum class LilyEvalOpcode : char {
 	InvalidIsFrame,
 	ParseError,
 	Int64OverflowError,
+	Int64UnderflowError,
 	DivisionByZeroError,
 };
 
@@ -335,9 +336,14 @@ public:
 };
 
 
-// throws std::overflow_error
+// throws LilyInt64OverflowError which is also std::overflow_error
 void throwOverflow(int64_t a, const char*op, int64_t b);
 void throwOverflow(const char*op, int64_t a);
+
+// throws LilyInt64UnderflowError which is also std::underflow_error
+void throwUnderflow(int64_t a, const char*op, int64_t b);
+void throwUnderflow(const char*op, int64_t a);
+
 // throws LilyDivisionByZeroError
 void throwDivByZero(int64_t a, const char*op);
 
@@ -649,27 +655,34 @@ public:
 	virtual std::string what()=0;
 };
 
-class LilyInt64OverflowError : public LilyErrorWithWhat, public std::overflow_error {
-	int64_t _a;
-	const char* _op;
-	int64_t _b;
-	bool unary;
-public:
-	//XX Oww, can we override what() from std::overflow_error at all?
-	LilyInt64OverflowError(int64_t a, const char* op, int64_t b)
-		: std::overflow_error::overflow_error(""),
-		  _a(a), _op(op), _b(b), unary(false) {
-		evalId= LilyEvalOpcode::Int64OverflowError;
+#define DEFINE_(kind, overflow_error)					\
+	class Lily##kind##Error : public LilyErrorWithWhat,		\
+				  public std::overflow_error {		\
+		int64_t _a;						\
+		const char* _op;					\
+		int64_t _b;						\
+		bool unary;						\
+	public:								\
+	/* XX Oww, can we override what() from std::overflow_error at all? */ \
+	Lily##kind##Error(int64_t a, const char* op, int64_t b)	\
+		: std::overflow_error::overflow_error(""),		\
+		  _a(a), _op(op), _b(b), unary(false) {			\
+		evalId= LilyEvalOpcode::kind##Error;		\
+	}								\
+	Lily##kind##Error(const char* op, int64_t b)		\
+		: std::overflow_error::overflow_error(""),		\
+		  _a(0), _op(op), _b(b), unary(true) {			\
+		evalId= LilyEvalOpcode::kind##Error;		\
+	}								\
+	virtual std::string what();					\
+	virtual const char* typeName();					\
+	virtual void write(std::ostream& out);				\
 	}
-	LilyInt64OverflowError(const char* op, int64_t b)
-		: std::overflow_error::overflow_error(""),
-		  _a(0), _op(op), _b(b), unary(true) {
-		evalId= LilyEvalOpcode::Int64OverflowError;
-	}
-	virtual std::string what();
-	virtual const char* typeName();
-	virtual void write(std::ostream& out);
-};
+DEFINE_(Int64Overflow, overflow_error);
+DEFINE_(Int64Underflow, underflow_error);
+#undef DEFINE_
+
+
 
 class LilyDivisionByZeroError : public LilyErrorWithWhat {
 	std::string _msg;
