@@ -699,8 +699,6 @@ PR parseList(Sm s) {
 	} else {
 		if (res.failed())
 			return res;
-
-		LETU_AS(sym, LilySymbol, res.value());
 		auto tail= parseList(skipWhitespaceAndComments(res.remainder()));
 		if (tail.failed())
 			return tail;
