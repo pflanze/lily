@@ -45,7 +45,7 @@ bin/symboltable.o: src/symboltable.cpp src/symboltable.hpp SipHash/siphash.c src
 bin/lilyConstruct.o: src/lilyConstruct.cpp src/lilyConstruct.hpp src/lily.hpp src/lilyUtil.hpp
 	$(CXX) $(CFLAGS) -c -Wall src/lilyConstruct.cpp -o bin/lilyConstruct.o
 
-bin/lily.o: src/lily.cpp src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp src/parse.hpp src/symboltable.hpp 
+bin/lily.o: src/lily.cpp src/lily.hpp src/lilyConstruct.hpp src/lily.cpp src/lilyUtil.hpp src/lilyParse.hpp src/parse.hpp src/symboltable.hpp 
 	$(CXX) $(CFLAGS) -c -Wall src/lily.cpp -o bin/lily.o
 
 bin/parse.o: src/parse.cpp src/parse.hpp 
