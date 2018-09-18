@@ -8,7 +8,7 @@
 
 using namespace lilyConstruct;
 
-static const bool debug_lilyParse= true;
+static bool debug_lilyParse= true;
 
 // man exp10
 #ifndef _GNU_SOURCE
@@ -782,7 +782,12 @@ special:
 }
 
 // convenience function
-LilyObjectPtr lilyParse (std::string s, bool requireTotal) /* noexcept */ {
+LilyObjectPtr lilyParse (std::string s,
+			 bool requireTotal,
+			 bool debug)
+/* noexcept */
+{
+	debug_lilyParse= debug; // XX use TLS
 	PR r= lilyParse(StringCursor(&s));
 	if (r.succeeded()) {
 		if (requireTotal) {
