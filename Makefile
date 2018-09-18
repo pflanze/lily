@@ -4,7 +4,7 @@ ifndef INSIDE_EMACS
 	CFLAGS_COLOR=-fdiagnostics-color=always
 endif
 
-CFLAGS += -O0 -std=c++11 -gdwarf-4 -g3 $(CFLAGS_COLOR)
+CFLAGS += -O0 -std=c++11 -gdwarf-3 -g3 $(CFLAGS_COLOR)
 
 ifdef ONE
 CFLAGS += -fmax-errors=1
