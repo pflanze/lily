@@ -35,23 +35,26 @@ inline size_t query_intel_x86_eflags( const size_t query_bit_mask )
 #define FLAG_OVERFLOW 0x800
 #define FLAG_CARRY 1
 
-inline int64_t lily_add(int64_t a, int64_t b) {
+inline bool saddl_overflow(int64_t a, int64_t b, int64_t* r) {
 	int64_t res= a + b;
 	if (query_intel_x86_eflags(FLAG_OVERFLOW))
-		throwOverflow(a, "+", b);
-	return res;
+		return true;
+	*r= res;
+	return false;
 }
-inline int64_t lily_sub(int64_t a, int64_t b) {
+inline bool ssubl_overflow(int64_t a, int64_t b, int64_t* r) {
 	int64_t res= a - b;
 	if (query_intel_x86_eflags(FLAG_OVERFLOW | FLAG_CARRY))
-		throwOverflow(a, "-", b);
-	return res;
+		return true;
+	*r= res;
+	return false;
 }
-inline int64_t lily_mul(int64_t a, int64_t b) {
+inline bool smull_overflow(int64_t a, int64_t b, int64_t* r) {
 	int64_t res= a * b;
 	if (query_intel_x86_eflags(FLAG_OVERFLOW | FLAG_CARRY))
-		throwOverflow(a, "*", b);
-	return res;
+		return true;
+	*r= res;
+	return false;
 }
 //XX ^ f check all of that  which flags  pls ?
 
@@ -67,23 +70,26 @@ inline int64_t lily_mul(int64_t a, int64_t b) {
 // an integer constant of type `__int128' for targets having `long long'
 // integer with less then 128 bit width.
 
-inline int64_t lily_add(int64_t a, int64_t b) {
+inline bool saddl_overflow(int64_t a, int64_t b, int64_t* r) {
 	__int128 res= a + b;
 	if (res >> 64)
-		throwOverflow(a, "+", b);
-	return res;
+		return true;
+	*r= (int64_t)res; // ?
+	return false;
 }
-inline int64_t lily_sub(int64_t a, int64_t b) {
+inline bool ssubl_overflow(int64_t a, int64_t b, int64_t* r) {
 	__int128 res= a - b;
 	if (res >> 64)
-		throwOverflow(a, "-", b);
-	return res;
+		return true;
+	*r= (int64_t)res; // ?
+	return false;
 }
-inline int64_t lily_mul(int64_t a, int64_t b) {
+inline bool smull_overflow(int64_t a, int64_t b, int64_t* r) {
 	__int128 res= a * b;
 	if (res >> 64)
-		throwOverflow(a, "*", b);
-	return res;
+		return true;
+	*r= (int64_t)res; // ?
+	return false;
 }
 
 #else
@@ -91,25 +97,28 @@ inline int64_t lily_mul(int64_t a, int64_t b) {
 #include <limits.h>
 
 
-inline int64_t lily_add(int64_t a, int64_t x) {
+inline bool saddl_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((x > 0) && (a > INT64_MAX - x)) ||
 	    ((x < 0) && (a < INT64_MIN - x)))
-		throwOverflow(a, "+", x);
-	return a + x;
+		return true;
+	*r= a + x;
+	return false;
 }
-inline int64_t lily_sub(int64_t a, int64_t x) {
+inline bool ssubl_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((x < 0) && (a > INT64_MAX + x)) ||
 	    ((x > 0) && (a < INT64_MIN + x)))
-		throwOverflow(a, "-", x);
-	return a - x;
+		return true;
+	*r= a - x;
+	return false;
 }
-inline int64_t lily_mul(int64_t a, int64_t x) {
+inline bool smull_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((a == -1) && (x == INT64_MIN)) ||
 	    ((x == -1) && (a == INT64_MIN)) ||
 	    (a > INT64_MAX / x) ||
 	    (a < INT64_MIN / x))
-		throwOverflow(a, "*", x);
-	return a * x;
+		return true;
+	*r= a * x;
+	return false;
 }
 
 

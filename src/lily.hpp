@@ -356,29 +356,35 @@ void throwDivByZero(int64_t a, const char*op);
 
 #if defined( __GNUC__ ) && 0 // XX properly enable when possible
 
+#define saddl_overflow __builtin_saddl_overflow 
+#define ssubl_overflow __builtin_ssubl_overflow
+#define smull_overflow __builtin_smull_overflow
+
+#else
+
+#include "safemath.hpp"
+
+#endif
+
+
 inline int64_t lily_add(int64_t a, int64_t b) {
 	int64_t res;
-	if (__builtin_saddl_overflow(a, b, &res))
+	if (saddl_overflow(a, b, &res))
 		throwOverflow(a, "+", b);
 	return res;
 }
 inline int64_t lily_sub(int64_t a, int64_t b) {
 	int64_t res;
-	if (__builtin_ssubl_overflow(a, b, &res))
+	if (ssubl_overflow(a, b, &res))
 		throwOverflow(a, "-", b);
 	return res;
 }
 inline int64_t lily_mul(int64_t a, int64_t b) {
 	int64_t res;
-	if (__builtin_smull_overflow(a, b, &res))
+	if (smull_overflow(a, b, &res))
 		throwOverflow(a, "*", b);
 	return res;
 }
-
-#else
-#  include "safemath.hpp"
-#endif
-
 
 
 inline int64_t lily_quotient(int64_t a, int64_t b) {
