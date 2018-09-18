@@ -8,6 +8,8 @@
 
 using namespace lilyConstruct;
 
+static const bool debug_lilyParse= true;
+
 // man exp10
 #ifndef _GNU_SOURCE
 #  define _GNU_SOURCE
@@ -317,11 +319,13 @@ PR parseNegativeInteger(Sm s) {
 		s=s.rest();
 		if (!isoverflow) {
 			auto d = c - '0';
-			try {
-				res= lily_sub(lily_mul(res, 10), d);
-			} catch (std::overflow_error) {
-				isoverflow= true;
-			}
+			TRY(debug_lilyParse,
+				{
+					res= lily_sub(lily_mul(res, 10), d);
+				},
+				catch (std::overflow_error) {
+					isoverflow= true;
+				});
 		}
 		isnumber=true;
 	}
@@ -342,11 +346,13 @@ PR parseNegate(PR pr) {
 		return pr;
 	LETU_AS(v, LilyInt64, pr.value());
 	assert(v);
-	try {
-		return OK(INT(lily_negate(v->value())), pr.remainder());
-	} catch (std::overflow_error) {
-		return ERR(ParseResultCode::Int64Overflow, pr.remainder());
-	}
+	TRY(debug_lilyParse,
+		{
+			return OK(INT(lily_negate(v->value())), pr.remainder());
+		},
+		catch (std::overflow_error) {
+			return ERR(ParseResultCode::Int64Overflow, pr.remainder());
+		});
 }
 
 // CAREFUL: this is only in fact able to parse positive integers; for
@@ -591,14 +597,16 @@ PR parseNumber(Sm s) {
 					goto notanumber;
 				XLETU_AS(n, LilyInt64, result.value());
 				XLETU_AS(d, LilyInt64, num2.value());
-				try {
-					// todo location keeping
-					result= OK(Divide(n, d), s);
-					goto checkboundary;
-				} catch (LilyDivisionByZeroError) {
-					// XX ever report start, not end?
-					goto notanumber;
-				}
+				TRY(debug_lilyParse,
+					{
+						// todo location keeping
+						result= OK(Divide(n, d), s);
+						goto checkboundary;
+					},
+					catch (LilyDivisionByZeroError) {
+						// XX ever report start, not end?
+						goto notanumber;
+					});
 			} else {
 				// returning num would be wrong now
 				// that we know it would be valid as a
