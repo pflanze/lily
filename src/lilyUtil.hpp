@@ -37,4 +37,8 @@ std::string show(std::string str);
 void throwWithStrerror(const std::string &msg);
 
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+
 #endif /* _LILYUTIL_HPP */

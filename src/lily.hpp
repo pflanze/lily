@@ -16,29 +16,35 @@
 
 typedef char32_t lily_char_t;
 
+// meta macro that calls DEFINE_ for all opcodes (aka (low-level)
+// classes of values in the guest language)
+#define LILY_DEFINE_FOR_ALL_OPCODES		\
+	DEFINE_(Null)				\
+	DEFINE_(Void)				\
+	DEFINE_(Pair)				\
+	DEFINE_(Boolean)			\
+	DEFINE_(Char)				\
+	DEFINE_(String)				\
+	DEFINE_(Symbol)				\
+	DEFINE_(Keyword)			\
+	DEFINE_(Int64)				\
+	DEFINE_(Fractional64)			\
+	DEFINE_(Double)				\
+	DEFINE_(NativeProcedure)		\
+	DEFINE_(NativeMacroexpander)		\
+	DEFINE_(NativeEvaluator)		\
+	DEFINE_(ContinuationFrame)		\
+	DEFINE_(ParseError)			\
+	DEFINE_(Int64OverflowError)		\
+	DEFINE_(Int64UnderflowError)		\
+	DEFINE_(DivisionByZeroError)
 
 
+#define DEFINE_(Nam) Nam,
 enum class LilyEvalOpcode : char {
-	Null,
-	Void,
-	Pair,
-	Boolean,
-	Char,
-	String,
-	Symbol,
-	Keyword,
-	Int64,
-	Fractional64,
-	Double,
-	NativeProcedure,
-	NativeMacroexpander,
-	NativeEvaluator,
-	InvalidIsFrame,
-	ParseError,
-	Int64OverflowError,
-	Int64UnderflowError,
-	DivisionByZeroError,
+	LILY_DEFINE_FOR_ALL_OPCODES
 };
+#undef DEFINE_
 
 #define DECLARE_CLASS_PTR(classname)				\
 	class classname;					\
@@ -637,7 +643,7 @@ public:
 		  _expressions(expressions) {
 		assert(rvalues);
 		assert(expressions);
-		evalId= LilyEvalOpcode::InvalidIsFrame;
+		evalId= LilyEvalOpcode::ContinuationFrame;
 	}
 	LilyObjectPtr maybeHead() { return _maybeHead; }
 	LilyListPtr rvalues() { return _rvalues; }

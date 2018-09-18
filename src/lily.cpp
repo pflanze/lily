@@ -9,6 +9,14 @@
 using namespace lilyConstruct;
 
 
+#define DEFINE_(Nam)							\
+	const char* Lily##Nam::typeName() {return STRINGIFY(Nam);}
+
+LILY_DEFINE_FOR_ALL_OPCODES;
+#undef DEFINE_
+
+
+
 std::string lily::show(const LilyObjectPtr& v) {
 	std::ostringstream s;
 	v->write(s);
@@ -403,25 +411,6 @@ std::string LilyParseError::what() {
 
 
 
-const char* LilyNull::typeName() {return "Null";}
-const char* LilyVoid::typeName() {return "Void";}
-const char* LilyPair::typeName() {return "Pair";}
-const char* LilyBoolean::typeName() {return "Boolean";}
-const char* LilyChar::typeName() {return "Char";}
-const char* LilyString::typeName() {return "String";}
-const char* LilySymbol::typeName() {return "Symbol";}
-const char* LilyKeyword::typeName() {return "Keyword";}
-const char* LilyInt64::typeName() {return "Int64";}
-const char* LilyFractional64::typeName() {return "Fractional64";}
-const char* LilyDouble::typeName() {return "Double";}
-const char* LilyNativeProcedure::typeName() {return "NativeProcedure";}
-const char* LilyNativeMacroexpander::typeName() {return "NativeMacroexpander";}
-const char* LilyNativeEvaluator::typeName() {return "NativeEvaluator";}
-const char* LilyContinuationFrame::typeName() {return "ContinuationFrame";}
-const char* LilyInt64OverflowError::typeName() {return "LilyInt64OverflowError";}
-const char* LilyInt64UnderflowError::typeName() {return "LilyInt64UnderflowError";}
-const char* LilyDivisionByZeroError::typeName() {return "DivisionByZeroError";}
-const char* LilyParseError::typeName() {return "ParseError";}
 
 
 #define DEFINE_(throwOverflow, LilyInt64OverflowError, overflow)	\
@@ -847,7 +836,10 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			// invalid to evaluate (arbitrary vs. above?)
 		case LilyEvalOpcode::NativeProcedure:
 		case LilyEvalOpcode::ParseError:
+		case LilyEvalOpcode::Int64OverflowError:
+		case LilyEvalOpcode::Int64UnderflowError:
 		case LilyEvalOpcode::DivisionByZeroError:
+		case LilyEvalOpcode::ContinuationFrame:
 			throw std::logic_error(STR("ill-formed expression: "
 						   << show(code)));
 		default:
