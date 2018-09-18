@@ -13,7 +13,9 @@ void note(const char* s) {
 }
 
 void run(const char* codestring, bool catchExceptions) {
-	auto codeobject= lilyParse(std::string(codestring), true);
+	auto codeobject= lilyParse(std::string(codestring),
+				   true,
+				   !catchExceptions);
 	std::cout << "> " << lily::show(codeobject) << std::endl;
 	auto action= [&]() {
 		auto result= eval(codeobject, environment);
