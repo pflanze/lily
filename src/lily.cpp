@@ -573,7 +573,8 @@ LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b) {
 	// XX better algo less likely to hit max int?
 	return simplifiedFractional64
 		(a->enumerator(),
-		 OVERFLOW2UNDERFLOW(lily_mul(a->denominator(),
+		 OVERFLOW2UNDERFLOW(int64_t,
+				    lily_mul(a->denominator(),
 					     b->value())));
 }
 LilyNumberPtr Divide(LilyFractional64* a, LilyFractional64* b) {

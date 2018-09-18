@@ -701,8 +701,8 @@ DEFINE_(LilyInt64OverflowError, Int64Overflow, overflow_error);
 
 // macro to wrap an expression which may throw LilyInt64OverflowError,
 // and turn such errors into LilyInt64UnderflowError
-#define OVERFLOW2UNDERFLOW(expr)					\
-	([&]() -> typeof(expr) {					\
+#define OVERFLOW2UNDERFLOW(T, expr)					\
+	([&]() -> T {							\
 		try {							\
 			return expr;					\
 		} catch (LilyInt64OverflowError& e) {			\
