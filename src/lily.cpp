@@ -456,14 +456,14 @@ int64_t lily_gcd(int64_t x, int64_t y) {
 	return _lily_gcd_positive(lily_abs(x), lily_abs(y));
 }
 
-static
-int64_t lily_lcm(int64_t x, int64_t y) {
-	int64_t g= lily_gcd(x, y);
-	if (g == 0)
-		return g;
-	else
-		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
-}
+// static
+// int64_t lily_lcm(int64_t x, int64_t y) {
+// 	int64_t g= lily_gcd(x, y);
+// 	if (g == 0)
+// 		return g;
+// 	else
+// 		return lily_mul(lily_quotient(lily_abs(x), g), lily_abs(y));
+// }
 
 // really just Divide(int64_t,int64_t)
 static
