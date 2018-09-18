@@ -41,4 +41,22 @@ void throwWithStrerror(const std::string &msg);
 #define TOSTRING(x) STRINGIFY(x)
 
 
+#define TRY(dodebug, calc, catchclauses)	\
+	{					\
+		auto ___TRY_calc= [&]() {	\
+			calc;			\
+		};				\
+		if (dodebug) {			\
+			___TRY_calc();		\
+		} else {			\
+			try {			\
+				___TRY_calc();	\
+			} catchclauses;		\
+		}				\
+	}
+
+
+
+
+
 #endif /* _LILYUTIL_HPP */
