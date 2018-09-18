@@ -43,14 +43,11 @@ void throwWithStrerror(const std::string &msg);
 
 #define TRY(dodebug, calc, catchclauses)	\
 	{					\
-		auto ___TRY_calc= [&]() {	\
-			calc;			\
-		};				\
 		if (dodebug) {			\
-			___TRY_calc();		\
+			calc;			\
 		} else {			\
 			try {			\
-				___TRY_calc();	\
+				calc;		\
 			} catchclauses;		\
 		}				\
 	}
