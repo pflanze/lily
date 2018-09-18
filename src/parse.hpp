@@ -164,28 +164,28 @@ typedef StringCursor Sm;
 // ----------------------------------------------------------------
 
 
-static bool
+inline bool
 betweenIncl (char c, char from, char to) {
 	return ((from <= c) && (c <= to));
 }
 
-static bool
+inline bool
 isDigit(char c) {
 	return betweenIncl(c, '0', '9');
 }
 
-static bool
+inline bool
 isAlpha(char c) {
 	return betweenIncl(c, 'a', 'z')
 		|| betweenIncl(c, 'A', 'Z');
 }
 
-static bool
+inline bool
 isAlphanumeric(char c) {
 	return isAlpha(c) || isDigit(c);
 }
 
-static bool __attribute__((unused))
+inline bool
 isWordChar(char c)  {
 	return isAlphanumeric(c)
 		|| (c == '_');
@@ -205,7 +205,7 @@ S skipUntilAfterEol(S s);
 // (naive algorithm)
 S skipUntil (S s, const char* str, bool after=false);
 
-static inline
+inline
 S skipUntilAfter (S s, const char* str) {
 	return skipUntil(s, str, true);
 }
