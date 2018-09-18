@@ -58,7 +58,7 @@ inline bool smull_overflow(int64_t a, int64_t b, int64_t* r) {
 }
 //XX ^ f check all of that  which flags  pls ?
 
-#elsif 0
+#elif 0
 
 // Alternative: __int128 type support by gcc, supported already in
 // that older version
