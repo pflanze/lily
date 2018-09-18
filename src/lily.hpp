@@ -701,7 +701,7 @@ DEFINE_(LilyInt64OverflowError, Int64Overflow, overflow_error);
 
 // macro to wrap an expression which may throw LilyInt64OverflowError,
 // and turn such errors into LilyInt64UnderflowError
-#define OVERFLOW2UNDERFLOW(T, expr)					\
+#define _OVERFLOW2UNDERFLOW(T, expr)					\
 	([&]() -> T {							\
 		try {							\
 			return expr;					\
@@ -709,7 +709,7 @@ DEFINE_(LilyInt64OverflowError, Int64Overflow, overflow_error);
 			throw e.toUnderflowError();			\
 		}							\
 	})()
-
+#define OVERFLOW2UNDERFLOW64(expr) _OVERFLOW2UNDERFLOW(int64_t, expr)
 
 
 class LilyDivisionByZeroError : public LilyErrorWithWhat {
