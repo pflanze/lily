@@ -354,7 +354,7 @@ void throwUnderflow(const char*op, int64_t a);
 void throwDivByZero(int64_t a, const char*op);
 
 
-#if defined( __GNUC__ ) && 0
+#if defined( __GNUC__ ) && 0 // XX properly enable when possible
 
 inline int64_t lily_add(int64_t a, int64_t b) {
 	int64_t res;
