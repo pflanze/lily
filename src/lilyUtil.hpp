@@ -53,7 +53,7 @@ void throwWithStrerror(const std::string &msg);
 	}
 
 
-
+#define noreturn __attribute__ ((noreturn))
 
 
 #endif /* _LILYUTIL_HPP */

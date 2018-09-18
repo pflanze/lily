@@ -418,9 +418,9 @@ std::string LilyParseError::what() {
 		throw LilyInt64OverflowError(a, op, b);			\
 		(STR("int64 " overflow ": " << a << " " << op << " " << b)); \
 	}								\
-	void throwOverflow(const char* op, int64_t a) {			\
+	void throwOverflow(const char* op, int64_t a) {		\
 		throw LilyInt64OverflowError(op, a);			\
-		(STR("int64 " overflow ": " << op << " " << a));		\
+		(STR("int64 " overflow ": " << op << " " << a));	\
 	}
 DEFINE_(throwOverflow, LilyInt64OverflowError, "overflow");
 DEFINE_(throwUnderflow, LilyInt64UnderflowError, "underflow")
@@ -949,8 +949,7 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	return res;
 }
 
-void // noreturn;  use builtin excn values!
-throwTypeError(const char* tname, LilyObjectPtr v) {
+void throwTypeError(const char* tname, LilyObjectPtr v) {
 	// gcc is giving things like "10LilyDouble", sigh?
 	while (isDigit(*tname))
 		tname++;

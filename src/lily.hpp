@@ -343,15 +343,15 @@ public:
 
 
 // throws LilyInt64OverflowError which is also std::overflow_error
-void throwOverflow(int64_t a, const char*op, int64_t b);
-void throwOverflow(const char*op, int64_t a);
+void throwOverflow(int64_t a, const char*op, int64_t b) noreturn;
+void throwOverflow(const char*op, int64_t a) noreturn;
 
 // throws LilyInt64UnderflowError which is also std::underflow_error
-void throwUnderflow(int64_t a, const char*op, int64_t b);
-void throwUnderflow(const char*op, int64_t a);
+void throwUnderflow(int64_t a, const char*op, int64_t b) noreturn;
+void throwUnderflow(const char*op, int64_t a) noreturn;
 
 // throws LilyDivisionByZeroError
-void throwDivByZero(int64_t a, const char*op);
+void throwDivByZero(int64_t a, const char*op) noreturn;
 
 
 #if defined( __GNUC__ ) && 0 // XX properly enable when possible
@@ -775,8 +775,7 @@ apply1ary(const char* procname,
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 //#define LETU(var, e) LETU_AS(var, LilyObject, e)
 
-void // noreturn;  use builtin excn values!
-throwTypeError(const char* tname, LilyObjectPtr v);
+void throwTypeError(const char* tname, LilyObjectPtr v) noreturn;
 
 // casting without unwrapping
 #define LET_AS(var, t, e) auto var= std::dynamic_pointer_cast<t>(e)
