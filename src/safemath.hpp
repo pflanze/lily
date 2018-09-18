@@ -97,21 +97,21 @@ inline bool smull_overflow(int64_t a, int64_t b, int64_t* r) {
 #include <limits.h>
 
 
-static bool saddl_overflow(int64_t a, int64_t x, int64_t* r) {
+inline bool saddl_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((x > 0) && (a > INT64_MAX - x)) ||
 	    ((x < 0) && (a < INT64_MIN - x)))
 		return true;
 	*r= a + x;
 	return false;
 }
-static bool ssubl_overflow(int64_t a, int64_t x, int64_t* r) {
+inline bool ssubl_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((x < 0) && (a > INT64_MAX + x)) ||
 	    ((x > 0) && (a < INT64_MIN + x)))
 		return true;
 	*r= a - x;
 	return false;
 }
-static bool smull_overflow(int64_t a, int64_t x, int64_t* r) {
+inline bool smull_overflow(int64_t a, int64_t x, int64_t* r) {
 	if (((a == -1) && (x == INT64_MIN)) ||
 	    ((x == -1) && (a == INT64_MIN)) ||
 	    (a > INT64_MAX / x) ||
