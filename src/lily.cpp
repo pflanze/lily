@@ -8,7 +8,6 @@
 
 using namespace lilyConstruct;
 
-
 #define DEFINE_(Nam)							\
 	const char* Lily##Nam::typeName() {return STRINGIFY(Nam);}
 
@@ -358,7 +357,7 @@ LilyContinuationFrame::write(std::ostream& out) {
 		out << "#<" nam "-error ";			\
 		auto rem= CONS(INT(_b), NIL);			\
 		CONS(SYMBOL(_op),				\
-		     unary ? rem : CONS(INT(_a), rem))		\
+		     _unary ? rem : CONS(INT(_a), rem))		\
 			->write(out);				\
 		out << ">";					\
 	}
@@ -572,9 +571,10 @@ LilyNumberPtr Divide(LilyInt64* a, LilyFractional64* b) {
 }
 LilyNumberPtr Divide(LilyFractional64* a, LilyInt64* b) {
 	// XX better algo less likely to hit max int?
-	return simplifiedFractional64(a->enumerator(),
-				      lily_mul(a->denominator(),
-					       b->value()));
+	return simplifiedFractional64
+		(a->enumerator(),
+		 OVERFLOW2UNDERFLOW(lily_mul(a->denominator(),
+					     b->value())));
 }
 LilyNumberPtr Divide(LilyFractional64* a, LilyFractional64* b) {
 	// XX better algo less likely to hit max int?

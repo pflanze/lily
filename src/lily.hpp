@@ -661,32 +661,54 @@ public:
 	virtual std::string what()=0;
 };
 
-#define DEFINE_(kind, overflow_error)					\
-	class Lily##kind##Error : public LilyErrorWithWhat,		\
-				  public std::overflow_error {		\
+#define DEFINE_(LilyInt64OverflowError, kind, overflow_error)		\
+	class LilyInt64OverflowError : public LilyErrorWithWhat,	\
+				       public std::overflow_error {	\
 		int64_t _a;						\
 		const char* _op;					\
 		int64_t _b;						\
-		bool unary;						\
+		bool _unary;						\
 	public:								\
-	/* XX Oww, can we override what() from std::overflow_error at all? */ \
-	Lily##kind##Error(int64_t a, const char* op, int64_t b)	\
-		: std::overflow_error::overflow_error(""),		\
-		  _a(a), _op(op), _b(b), unary(false) {			\
-		evalId= LilyEvalOpcode::kind##Error;		\
-	}								\
-	Lily##kind##Error(const char* op, int64_t b)		\
-		: std::overflow_error::overflow_error(""),		\
-		  _a(0), _op(op), _b(b), unary(true) {			\
-		evalId= LilyEvalOpcode::kind##Error;		\
-	}								\
-	virtual std::string what();					\
-	virtual const char* typeName();					\
-	virtual void write(std::ostream& out);				\
+		/* don't use this one, only for internal purposes */	\
+		LilyInt64OverflowError(int64_t a, const char* op,	\
+				       int64_t b, bool unary)		\
+			: std::overflow_error::overflow_error(""),	\
+			_a(a), _op(op), _b(b), _unary(unary) {		\
+			evalId= LilyEvalOpcode::kind##Error;		\
+		}							\
+		/* XX Oww, can we override what() from std::overflow_error at all? */ \
+		LilyInt64OverflowError(int64_t a, const char* op, int64_t b) \
+			: std::overflow_error::overflow_error(""),	\
+			_a(a), _op(op), _b(b), _unary(false) {		\
+			evalId= LilyEvalOpcode::kind##Error;		\
+		}							\
+		LilyInt64OverflowError(const char* op, int64_t b)	\
+			: std::overflow_error::overflow_error(""),	\
+			_a(0), _op(op), _b(b), _unary(true) {		\
+			evalId= LilyEvalOpcode::kind##Error;		\
+		}							\
+		/* silly just for the type change..? */			\
+		LilyInt64UnderflowError toUnderflowError() {		\
+			return LilyInt64UnderflowError(_a, _op, _b, _unary); \
+		}							\
+		virtual std::string what();				\
+		virtual const char* typeName();				\
+		virtual void write(std::ostream& out);			\
 	}
-DEFINE_(Int64Overflow, overflow_error);
-DEFINE_(Int64Underflow, underflow_error);
+DEFINE_(LilyInt64UnderflowError, Int64Underflow, underflow_error);
+DEFINE_(LilyInt64OverflowError, Int64Overflow, overflow_error);
 #undef DEFINE_
+
+// macro to wrap an expression which may throw LilyInt64OverflowError,
+// and turn such errors into LilyInt64UnderflowError
+#define OVERFLOW2UNDERFLOW(expr)					\
+	([&]() -> typeof(expr) {					\
+		try {							\
+			return expr;					\
+		} catch (LilyInt64OverflowError& e) {			\
+			throw e.toUnderflowError();			\
+		}							\
+	})()
 
 
 
