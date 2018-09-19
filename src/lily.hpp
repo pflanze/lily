@@ -46,29 +46,19 @@ enum class LilyEvalOpcode : char {
 };
 #undef DEFINE_
 
-#define DECLARE_CLASS_PTR(classname)				\
-	class classname;					\
-	typedef std::shared_ptr<classname> classname##Ptr;
 
-DECLARE_CLASS_PTR(LilyObject);
-DECLARE_CLASS_PTR(LilyList);
-DECLARE_CLASS_PTR(LilyNumber);
-DECLARE_CLASS_PTR(LilyInt64);
-DECLARE_CLASS_PTR(LilyDouble);
-DECLARE_CLASS_PTR(LilyContinuationFrame);
-DECLARE_CLASS_PTR(LilySymbollike);
-DECLARE_CLASS_PTR(LilySymbol);
-DECLARE_CLASS_PTR(LilyKeyword);
-DECLARE_CLASS_PTR(LilyBoolean);
-DECLARE_CLASS_PTR(LilyNativeProcedure);
-DECLARE_CLASS_PTR(LilyNativeMacroexpander);
-DECLARE_CLASS_PTR(LilyNativeEvaluator);
-DECLARE_CLASS_PTR(LilyParseError);
-DECLARE_CLASS_PTR(LilyNull);
-DECLARE_CLASS_PTR(LilyVoid);
-DECLARE_CLASS_PTR(LilyFractional64);
-DECLARE_CLASS_PTR(LilyString);
-DECLARE_CLASS_PTR(LilyChar);
+#define DECLARE_CLASS_PTR(classSubname)					\
+	class Lily##classSubname;					\
+	typedef std::shared_ptr<Lily##classSubname> Lily##classSubname##Ptr;
+
+DECLARE_CLASS_PTR(Object);
+DECLARE_CLASS_PTR(List);
+DECLARE_CLASS_PTR(Number);
+DECLARE_CLASS_PTR(Symbollike);
+
+#define DEFINE_(x) DECLARE_CLASS_PTR(x)
+LILY_DEFINE_FOR_ALL_OPCODES;
+#undef DEFINE_
 
 
 // move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
