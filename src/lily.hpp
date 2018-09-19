@@ -765,6 +765,7 @@ apply1ary(const char* procname,
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
 //#define LETU(var, e) LETU_AS(var, LilyObject, e)
 
+
 void throwTypeError(const char* tname, LilyObjectPtr v) noreturn;
 
 // casting without unwrapping
@@ -792,6 +793,27 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 // let unwrapped
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
+
+
+
+template <typename A>
+LilyObjectPtr
+apply1(const char* procname,
+       std::function<LilyObjectPtr(std::shared_ptr<A>)> proc,
+       LilyListPtr* vs) {
+	LETU_AS(vs0, LilyPair, *vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyNull, vs0->cdr());
+		if (vs1) {
+			return proc(XAS<A>(vs0->car()));
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 1 argument"));
+}
+
+
+
+
 
 
 

@@ -140,9 +140,10 @@ static LilyObjectPtr
 lilyExactInexact(LilyListPtr* vs,
 		 LilyListPtr* _ctx,
 		 LilyListPtr* _cont) {
-	return apply1ary("exact->inexact", [](LilyObjectPtr v) {
+	return apply1<LilyNumber>("exact->inexact",
+				  [](LilyNumberPtr v) -> LilyObjectPtr {
 			// XX optim?: return v if already a double
-			return DOUBLE(XAS<LilyNumber>(v)->toDouble());
+			return DOUBLE(v->toDouble());
 		}, vs);
 }
 
@@ -167,26 +168,16 @@ LilyObjectPtr lilyCons(LilyListPtr* vs,
 static LilyObjectPtr lilyCar(LilyListPtr* vs,
 			     LilyListPtr* _ctx,
 			     LilyListPtr* _cont) {
-	return apply1ary("car", [](LilyObjectPtr v) {
-			LETU_AS(p, LilyPair, v);
-			if (p)
-				return p->car();
-			else
-				throw std::logic_error(STR("not a pair: "
-							   << show(v)));
+	return apply1<LilyPair>("car", [](LilyPairPtr p) {
+			return p->car();
 		}, vs);
 }
 
 static LilyObjectPtr lilyCdr(LilyListPtr* vs,
 			     LilyListPtr* _ctx,
 			     LilyListPtr* _cont) {
-	return apply1ary("cdr", [](LilyObjectPtr v) {
-			LETU_AS(p, LilyPair, v);
-			if (p)
-				return p->cdr();
-			else
-				throw std::logic_error(STR("not a pair: "
-							   << show(v)));
+	return apply1<LilyPair>("cdr", [](LilyPairPtr p) {
+			return p->cdr();
 		}, vs);
 }
 
@@ -246,8 +237,8 @@ static LilyObjectPtr lilyReverse(LilyListPtr* arguments,
 static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 				      LilyListPtr* _ctx,
 				      LilyListPtr* _cont) {
-	return apply1ary("string->list", [](LilyObjectPtr v) {
-			auto str= XAS<LilyString>(v)->value();
+	return apply1<LilyString>("string->list", [](LilyStringPtr s) {
+			auto str= s->value();
 			LilyListPtr res= NIL;
 			for (auto i= str.rbegin(); i != str.rend(); i++) {
 				res= CONS(CHAR(*i), res);
@@ -259,8 +250,7 @@ static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 static LilyObjectPtr lilyListToString(LilyListPtr* arguments,
 				      LilyListPtr* _ctx,
 				      LilyListPtr* _cont) {
-	return apply1ary("list->string", [](LilyObjectPtr v) {
-			auto l= XAS<LilyList>(v);
+	return apply1<LilyList>("list->string", [](LilyListPtr l) {
 			std::string str;
 			while (! (l->isNull())) {
 				auto c= XAS<LilyChar>(l->first())->value();
@@ -274,8 +264,7 @@ static LilyObjectPtr lilyListToString(LilyListPtr* arguments,
 static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 				       LilyListPtr* _ctx,
 				       LilyListPtr* _cont) {
-	return apply1ary("integer->char", [](LilyObjectPtr v) {
-			XLETU_AS(i, LilyInt64, v);
+	return apply1<LilyInt64>("integer->char", [](LilyInt64Ptr i) {
 			// XX check for correct range
 			return CHAR(i->value());
 		}, arguments);
@@ -284,9 +273,8 @@ static LilyObjectPtr lilyIntegerToChar(LilyListPtr* arguments,
 static LilyObjectPtr lilyCharToInteger(LilyListPtr* arguments,
 				       LilyListPtr* _ctx,
 				       LilyListPtr* _cont) {
-	return apply1ary("char->integer", [](LilyObjectPtr v) {
-			XLETU_AS(i, LilyChar, v);
-			return INT(i->value());
+	return apply1<LilyChar>("char->integer", [](LilyCharPtr c) {
+			return INT(c->value());
 		}, arguments);
 }
 
