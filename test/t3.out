@@ -277,3 +277,11 @@ Int64: 1048575
 ERR: ill-formed expression: #<parse-error "InvalidCharname" 18>
 > (string->list "a\33b")
 Pair: (#\a #\esc #\b)
+
+---- strings ----
+> (string-append "a" "b c" "d")
+String: "ab cd"
+> (string-append "a")
+String: "a"
+> (string-append)
+String: ""

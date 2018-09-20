@@ -136,6 +136,14 @@ DEF_FOLD_DOWN_NATIVE(lilyDiv, "/", LilyNumber, LilyNumber,
 		     }, _one);
 
 
+LilyStringPtr _emptyString= STRING("");
+
+DEF_FOLD_UP_NATIVE(lilyStringAppend, "string-append", LilyString, LilyString,
+		   [](LilyStringPtr v, LilyStringPtr res) -> LilyStringPtr {
+			   return STRING(res->value() + v->value());
+		   }, _emptyString);
+
+
 static LilyObjectPtr
 lilyExactInexact(LilyListPtr* vs,
 		 LilyListPtr* _ctx,
@@ -358,6 +366,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("list->string", lilyListToString),
 		ENTRY("integer->char", lilyIntegerToChar),
 		ENTRY("char->integer", lilyCharToInteger),
+		ENTRY("string-append", lilyStringAppend),
 		);
 	return env;
 }

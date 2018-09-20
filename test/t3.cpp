@@ -228,4 +228,9 @@ int main () {
 	e("(char->integer #\\U000fffff)");
 	e("(char->integer #\\u000fffff)");
 	e("(string->list \"a\\33b\")");
+
+	note("strings");
+	e("(string-append \"a\" \"b c\" \"d\")");
+	e("(string-append \"a\")");
+	e("(string-append)");
 }
