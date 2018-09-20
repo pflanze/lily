@@ -92,6 +92,7 @@ bool needsSymbolQuoting (lily_char_t c) {
 		 || (c == '<')
 		 || (c == '>')
 		 || (c == '#')
+		 || (c == '~')
 		);
 }
 
