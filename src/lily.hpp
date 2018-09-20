@@ -800,15 +800,35 @@ template <typename A>
 LilyObjectPtr
 apply1(const char* procname,
        std::function<LilyObjectPtr(std::shared_ptr<A>)> proc,
-       LilyListPtr* vs) {
+       LilyListPtr* vs)
+{
 	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
-		LETU_AS(vs1, LilyNull, vs0->cdr());
-		if (vs1) {
+		if (UNWRAP_AS(LilyNull, vs0->cdr())) {
 			return proc(XAS<A>(vs0->car()));
 		}
 	}
 	throw std::logic_error(STR(procname << " needs 1 argument"));
+}
+
+template <typename A, typename B>
+LilyObjectPtr
+apply2(const char* procname,
+       std::function<LilyObjectPtr(std::shared_ptr<A>,
+				   std::shared_ptr<B>)> proc,
+       LilyListPtr* vs)
+{
+	LETU_AS(vs0, LilyPair, *vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyPair, vs0->cdr());
+		if (vs1) {
+			if (UNWRAP_AS(LilyNull, vs1->cdr())) {
+				return proc(XAS<A>(vs0->car()),
+					    XAS<B>(vs1->car()));
+			}
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 2 arguments"));
 }
 
 
