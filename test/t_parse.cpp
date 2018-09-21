@@ -3,6 +3,9 @@
 #include <parse.hpp>
 #include <lilyUtil.hpp>
 
+using lilyUtil::show;
+
+
 S SC(const char* str) {
 	// will leak memory, but no care for tests
 	return S(new std::string(str));

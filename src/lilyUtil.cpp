@@ -38,7 +38,7 @@ void stringlike_write(const std::string& str,
 }
 
 
-std::string show(std::string str) {
+std::string lilyUtil::show(std::string str) {
 	std::ostringstream out;
 	stringlike_write(str, out, '"');
 	return out.str();
