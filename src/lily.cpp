@@ -29,6 +29,13 @@ std::string lily::show(LilyObject* v) {
 	return s.str();
 }
 
+std::string lily::show(std::string str) {
+	std::ostringstream out;
+	stringlike_write(str, out, '"');
+	return out.str();
+}
+
+
 //XX how to selectively do namespace imports?
 #define show(e) lily::show(e)
 
