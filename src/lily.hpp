@@ -65,6 +65,7 @@ LILY_DEFINE_FOR_ALL_OPCODES;
 namespace lily {
 	std::string show(const LilyObjectPtr& v);
 	std::string show(LilyObject* v);
+	// also see show(std::string) in lilyUtil
 	void write(const std::string& str, std::ostream& out);
 }
 
