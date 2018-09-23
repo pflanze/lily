@@ -7,6 +7,11 @@
 #include <string>
 
 
+// careful, might have to change the result type (to e.g. std::string)
+// as part of making this function portable!
+const char* typeidToTypename(const char* typeidstr);
+
+
 void stringlike_write(const std::string& str,
 			 std::ostream& out,
 			 char quoteChar);

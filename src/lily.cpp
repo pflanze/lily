@@ -964,11 +964,10 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	return res;
 }
 
-void throwTypeError(const char* tname, LilyObjectPtr v) {
-	// gcc is giving things like "10LilyDouble", sigh?
-	while (isDigit(*tname))
-		tname++;
-	throw std::logic_error(STR("not a " << tname << ": "
+void throwTypeError(const char* typeid_str, LilyObjectPtr v) {
+	throw std::logic_error(STR("not a "
+				   << typeidToTypename(typeid_str)
+				   << ": "
 				   << show(v)));
 }
 

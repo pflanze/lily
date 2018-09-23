@@ -35,7 +35,7 @@ src/lily.hpp: src/safemath.hpp
 SipHash/siphash.c:
 	git submodule update --init SipHash
 
-bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp
+bin/lilyUtil.o: src/lilyUtil.cpp src/lilyUtil.hpp src/parse.hpp
 	$(CXX) $(CFLAGS) -c -Wall src/lilyUtil.cpp -o bin/lilyUtil.o
 
 bin/symboltable.o: src/symboltable.cpp src/symboltable.hpp SipHash/siphash.c src/lilyUtil.hpp

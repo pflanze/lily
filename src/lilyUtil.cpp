@@ -4,6 +4,15 @@
 #include <stdexcept>
 
 #include "lilyUtil.hpp"
+#include "parse.hpp" /* isDigit */
+
+
+const char* typeidToTypename(const char* typeidstr) {
+	// gcc is giving things like "10LilyDouble", sigh?
+	while (isDigit(*typeidstr))
+		typeidstr++;
+	return typeidstr;
+}
 
 
 void stringlike_write(const std::string& str,
