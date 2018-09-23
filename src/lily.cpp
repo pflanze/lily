@@ -18,6 +18,9 @@ LILY_DEFINE_FOR_ALL_OPCODES;
 #if LILY_MEMORY_STATISTICS
 int64_t lily_allocation_count;
 int64_t lily_deallocation_count;
+
+#else
+
 #endif
 
 
@@ -125,12 +128,6 @@ LilyKeyword::intern(std::string s, bool nq) {
 }
 
 
-
-LilyObject::~LilyObject() noexcept {
-#if LILY_MEMORY_STATISTICS
-	lily_deallocation_count++;
-#endif
-}
 LilyPair::~LilyPair() noexcept {};
 //LilyVoid::~LilyVoid() {};
 //LilyBoolean::~LilyBoolean() {};
