@@ -3,11 +3,7 @@ ifndef INSIDE_EMACS
 	CFLAGS_COLOR=-fdiagnostics-color=always
 endif
 
-ifdef LILY_MEMORY_STATISTICS
-	DLILY_MEMORY_STATISTICS=-DLILY_MEMORY_STATISTICS=$(LILY_MEMORY_STATISTICS)
-endif
-
-CFLAGS += -std=c++11 -gdwarf-3 -g3 $(CFLAGS_COLOR) $(DLILY_MEMORY_STATISTICS)
+CFLAGS += -std=c++11 -gdwarf-3 -g3 $(CFLAGS_COLOR)
 
 ifdef ONE
 CFLAGS += -fmax-errors=1
