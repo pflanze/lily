@@ -14,6 +14,11 @@
 #include "xxx.hpp"
 
 
+#ifndef LILY_MEMORY_STATISTICS
+#define LILY_MEMORY_STATISTICS 1
+#endif
+
+
 typedef char32_t lily_char_t;
 
 // meta macro that calls DEFINE_ for all opcodes (aka (low-level)
