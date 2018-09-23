@@ -95,11 +95,7 @@ public:
 		lily_allocation_count++;
 #endif
 	}
-	virtual ~LilyObject() noexcept {
-#if LILY_MEMORY_STATISTICS
-		lily_deallocation_count++;
-#endif
-	}
+	virtual ~LilyObject() noexcept;
 	virtual const char* typeName()=0;
 	virtual void write(std::ostream& out)=0;
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
