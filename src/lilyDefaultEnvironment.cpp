@@ -286,6 +286,27 @@ static LilyObjectPtr lilyCharToInteger(LilyListPtr* arguments,
 		}, arguments);
 }
 
+static LilyObjectPtr lilySysAllocationCounts(LilyListPtr* arguments,
+					     LilyListPtr* _ctx,
+					     LilyListPtr* _cont) {
+	return apply0("sys:allocation-counts", []() {
+			auto a= lilyAllocationCount();
+			auto d= lilyDeallocationCount();
+			return CONS(INT(a), INT(d));
+		}, arguments);
+}
+
+static LilyObjectPtr lilySysObjectCount(LilyListPtr* arguments,
+					LilyListPtr* _ctx,
+					LilyListPtr* _cont) {
+	return apply0("sys:object-count", []() {
+			auto a= lilyAllocationCount();
+			auto d= lilyDeallocationCount();
+			// XX check for overflowed variables I guess?
+			return INT(a-d);
+		}, arguments);
+}
+
 
 
 
@@ -367,6 +388,8 @@ LilyListPtr lilyDefaultEnvironment() {
 		ENTRY("integer->char", lilyIntegerToChar),
 		ENTRY("char->integer", lilyCharToInteger),
 		ENTRY("string-append", lilyStringAppend),
+		ENTRY("sys:allocation-counts", lilySysAllocationCounts),
+		ENTRY("sys:object-count", lilySysObjectCount),
 		);
 	return env;
 }

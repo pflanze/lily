@@ -15,6 +15,14 @@ LILY_DEFINE_FOR_ALL_OPCODES;
 #undef DEFINE_
 
 
+#if LILY_MEMORY_STATISTICS
+int64_t lily_allocation_count;
+int64_t lily_deallocation_count;
+
+#else
+
+#endif
+
 
 std::string lily::show(const LilyObjectPtr& v) {
 	std::ostringstream s;
@@ -120,16 +128,23 @@ LilyKeyword::intern(std::string s, bool nq) {
 }
 
 
-LilyPair::~LilyPair() {};
+LilyPair::~LilyPair() noexcept {};
 //LilyVoid::~LilyVoid() {};
 //LilyBoolean::~LilyBoolean() {};
-LilyChar::~LilyChar() {};
-LilyString::~LilyString() {};
-LilySymbol::~LilySymbol() {};
-LilyKeyword::~LilyKeyword() {};
-LilyInt64::~LilyInt64() {};
-LilyFractional64::~LilyFractional64() {};
-LilyDouble::~LilyDouble() {};
+LilyChar::~LilyChar() noexcept {};
+LilyString::~LilyString() noexcept {};
+LilySymbol::~LilySymbol() noexcept {};
+LilyKeyword::~LilyKeyword() noexcept {};
+LilyInt64::~LilyInt64() noexcept {};
+LilyFractional64::~LilyFractional64() noexcept {};
+LilyDouble::~LilyDouble() noexcept {};
+
+LilyCallable::~LilyCallable() noexcept {};
+LilyNativeEvaluator::~LilyNativeEvaluator() noexcept {};
+LilyContinuationFrame::~LilyContinuationFrame() noexcept {};
+LilyNativeProcedure::~LilyNativeProcedure() noexcept {};
+// ::~() noexcept {};
+// ::~() noexcept {};
 
 
 void

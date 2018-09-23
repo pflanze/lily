@@ -72,8 +72,34 @@ namespace lily {
 }
 
 
+#if LILY_MEMORY_STATISTICS
+// XX move this as well as all the constructors into lily.cpp?
+extern int64_t lily_allocation_count;
+extern int64_t lily_deallocation_count;
+// /move
+inline int64_t lilyAllocationCount() { return lily_allocation_count; }
+inline int64_t lilyDeallocationCount() { return lily_deallocation_count; }
+#else
+inline int64_t lilyAllocationCount() { return -1; }
+inline int64_t lilyDeallocationCount() { return -1; }
+#endif
+
+
+
 class LilyObject {
 public:
+	LilyObject() {
+#if LILY_MEMORY_STATISTICS
+		// XX should be in a per-interpreter ctx (well, the
+		// eval environment??, well make that a struct?)
+		lily_allocation_count++;
+#endif
+	}
+	virtual ~LilyObject() noexcept {
+#if LILY_MEMORY_STATISTICS
+		lily_deallocation_count++;
+#endif
+	}
 	virtual const char* typeName()=0;
 	virtual void write(std::ostream& out)=0;
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
@@ -159,7 +185,7 @@ public:
 	virtual bool isPair() { return true; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
-	virtual ~LilyPair();
+	virtual ~LilyPair() noexcept;
 private:
 	LilyObjectPtr _car;
 	LilyObjectPtr _cdr;
@@ -208,7 +234,7 @@ public:
 	lily_char_t value() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
-	virtual ~LilyChar();
+	virtual ~LilyChar() noexcept;
 };
 
 class LilyString : public LilyObject {
@@ -220,7 +246,7 @@ public:
 	std::string value() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
-	virtual ~LilyString();
+	virtual ~LilyString() noexcept;
 };
 
 class LilySymbollike : public LilyObject {
@@ -245,7 +271,7 @@ public:
 	}
 	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual const char* typeName();
-	virtual ~LilySymbol();
+	virtual ~LilySymbol() noexcept;
 };
 
 class LilyKeyword : public LilySymbollike {
@@ -257,7 +283,7 @@ public:
 	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual void write(std::ostream& out);
 	virtual const char* typeName();
-	virtual ~LilyKeyword();
+	virtual ~LilyKeyword() noexcept;
 };
 
 class LilyNumber : public LilyObject {
@@ -294,7 +320,7 @@ public:
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
 	virtual LilyNumberPtr add(const LilyNumberPtr& b);
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
-	virtual ~LilyInt64();
+	virtual ~LilyInt64() noexcept;
 };
 
 class LilyFractional64 : public LilyExact {
@@ -314,7 +340,7 @@ public:
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
 	virtual LilyNumberPtr add(const LilyNumberPtr& b);
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
-	virtual ~LilyFractional64();
+	virtual ~LilyFractional64() noexcept;
 };
 
 class LilyDouble : public LilyInexact {
@@ -331,7 +357,7 @@ public:
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
 	virtual LilyNumberPtr add(const LilyNumberPtr& b);
 	virtual LilyNumberPtr subtract(const LilyNumberPtr& b);
-	virtual ~LilyDouble();
+	virtual ~LilyDouble() noexcept;
 };
 
 
@@ -545,6 +571,7 @@ public:
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont) = 0;
+	virtual ~LilyCallable() noexcept;
 };
 
 class LilyNativeProcedure : public LilyCallable {
@@ -554,6 +581,7 @@ public:
 		: _proc(proc), _name(name) {
 		evalId= LilyEvalOpcode::NativeProcedure;
 	}
+	virtual ~LilyNativeProcedure() noexcept;
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* args,
@@ -587,6 +615,7 @@ public:
 		// hidden behind a symbol first, too; and then in the
 		// future in another context)
 	}
+	virtual ~LilyNativeMacroexpander() noexcept;
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* expressions,
@@ -611,6 +640,7 @@ public:
 		: _eval(eval), _name(name) {
 		evalId= LilyEvalOpcode::NativeEvaluator;
 	}
+	virtual ~LilyNativeEvaluator() noexcept;
 	virtual const char* typeName();
 	virtual void write(std::ostream& out);
 	// LilyNativeEvaluator::call is actually never called
@@ -644,6 +674,7 @@ public:
 		assert(expressions);
 		evalId= LilyEvalOpcode::ContinuationFrame;
 	}
+	virtual ~LilyContinuationFrame() noexcept;
 	LilyObjectPtr maybeHead() { return _maybeHead; }
 	LilyListPtr rvalues() { return _rvalues; }
 	LilyListPtr expressions() { return _expressions; }
@@ -668,6 +699,7 @@ public:
 		int64_t _b;						\
 		bool _unary;						\
 	public:								\
+		/*virtual ~LilyInt64OverflowError() noexcept;*/		\
 		/* don't use this one, only for internal purposes */	\
 		LilyInt64OverflowError(int64_t a, const char* op,	\
 				       int64_t b, bool unary)		\
@@ -798,6 +830,17 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
 
 
+inline
+LilyObjectPtr
+apply0(const char* procname,
+       std::function<LilyObjectPtr()> proc,
+       LilyListPtr* vs)
+{
+	if (UNWRAP_AS(LilyNull, *vs)) {
+		return proc();
+	}
+	throw std::logic_error(STR(procname << " needs 0 arguments"));
+}
 
 template <typename A>
 LilyObjectPtr
