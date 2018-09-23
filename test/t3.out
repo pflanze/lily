@@ -9,7 +9,7 @@
 (Hello Hello2 #f)
 
 ---- invalid evaluation rules ----
-> (12 . 45 67)
+> #<parse-error "InvalidDottedList" 9>
 ERR: ill-formed expression: #<parse-error "InvalidDottedList" 9>
 
 ---- literals ----
