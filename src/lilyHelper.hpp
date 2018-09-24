@@ -13,6 +13,9 @@
 // 2. use the DEFPRIM* macros to define your primitives.
 
 
+#define PRIMBINDING(str, proc) PAIR(SYMBOL(str), NATIVE_PROCEDURE(proc, str))
+
+
 inline
 LilyObjectPtr
 apply0(const char* procname,
