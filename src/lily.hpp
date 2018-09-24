@@ -784,6 +784,14 @@ public:
 		evalId= LilyEvalOpcode::ForeignValueBase;
 	}
 	virtual std::string typeName();
+	virtual std::string what() {
+		// XX is this OK? Don't want to generate more code to
+		// produce messages, probably unused anyway? (These
+		// are *not* exceptions!)
+		std::ostringstream out;
+		write(out);
+		return out.str();
+	}
 };
 
 // then let users derive their own without needing new evalId etc.:
@@ -793,13 +801,21 @@ class LilyForeignValue : public LilyForeignValueBase {
 public:
 	LilyForeignValue(T value) : _value(value) {}
 	T value() { return _value; };
-	virtual std::string what();
 	virtual std::string typeName() {
 		return STR("ForeignValue<" <<
 			   typeidToTypename(typeid(T).name())
 			   << ">");
 	}
-	virtual void write(std::ostream& out);
+	virtual void write(std::ostream& out) {
+		out << "#<foreign-value " << typeName();
+		// XX better way to detect pointers?
+		if (sizeof(T) == sizeof(void*)) {
+			out << " 0x" << std::hex <<
+				// XX right type to cast to?
+				(unsigned long long)_value;
+		}
+		out << ">";
+	}
 };
 
 
