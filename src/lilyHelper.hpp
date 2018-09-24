@@ -1,19 +1,22 @@
 #ifndef _LILYHELPER_HPP
 #define _LILYHELPER_HPP
 
-#include "lily.hpp"
-
 // Helpers for defining primitives ("FFI" but defined from within C++)
 
 // Usage:
 
-// 1. Define a macro BINDPRIM(scm_var, c_var) that adds the value in c_var
-//    to the Scheme environment as the symbol with name scm_var.
+// 1. '#define DEFPRIM_ENVIRONMENT environment' where environment is
+//    your variable holding the environment to add the primitives to.
 
 // 2. use the DEFPRIM* macros to define your primitives.
 
 
+#include "lily.hpp"
+
 #define PRIMBINDING(str, proc) PAIR(SYMBOL(str), NATIVE_PROCEDURE(proc, str))
+
+#define BINDPRIM(k,v) DEFPRIM_ENVIRONMENT= CONS(PRIMBINDING(k,v),	\
+						DEFPRIM_ENVIRONMENT);
 
 
 inline
