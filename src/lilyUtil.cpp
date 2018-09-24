@@ -8,10 +8,19 @@
 
 
 std::string typeidToTypename(const char* typeidstr) {
-	// gcc is giving things like "10LilyDouble", sigh?
+	// gcc is giving things like "10LilyDouble", or
+	// "P11QMessageBox"
+	bool isPointer= false;
+	if (typeidstr[0] == 'P') {
+		isPointer= true;
+		typeidstr++;
+	}
 	while (isDigit(*typeidstr))
 		typeidstr++;
-	return std::string(typeidstr);
+	std::string s(typeidstr);
+	if (isPointer)
+		s.push_back('*');
+	return s;
 }
 
 
