@@ -3,14 +3,14 @@
 
 #include "lily.hpp"
 
-// Helpers [for doing FFI from Scheme to C++ from C++ (?)]
+// Helpers for defining primitives ("FFI" but defined from within C++)
 
 // Usage:
 
-// 1. Define a macro BIND(scm_var, c_var) that adds the value in c_var
+// 1. Define a macro BINDPRIM(scm_var, c_var) that adds the value in c_var
 //    to the Scheme environment as the symbol with name scm_var.
 
-// 2. use the DEF* macros to define your FFI functions / primitives.
+// 2. use the DEFPRIM* macros to define your primitives.
 
 
 inline
@@ -126,18 +126,18 @@ apply3(const char* procname,
 	}
 
 
-#define DEF0(var, scmvar, body)			\
-	auto var = LAMBDA0(scmvar, body);	\
-	BIND(scmvar, var);
-#define DEF1(var, scmvar, t1, arg1, body)		\
+#define DEFPRIM0(var, scmvar, body)			\
+	auto var = LAMBDA0(scmvar, body);		\
+	BINDPRIM(scmvar, var);
+#define DEFPRIM1(var, scmvar, t1, arg1, body)		\
 	auto var = LAMBDA1(scmvar, t1, arg1, body);	\
-	BIND(scmvar, var);
-#define DEF2(var, scmvar, t1, arg1, t2, arg2, body)		\
+	BINDPRIM(scmvar, var);
+#define DEFPRIM2(var, scmvar, t1, arg1, t2, arg2, body)		\
 	auto var = LAMBDA2(scmvar, t1, arg1, t2, arg2, body);	\
-	BIND(scmvar, var);
-#define DEF3(var, scmvar, t1, arg1, t2, arg2, t3, arg3, body)		\
+	BINDPRIM(scmvar, var);
+#define DEFPRIM3(var, scmvar, t1, arg1, t2, arg2, t3, arg3, body)	\
 	auto var = LAMBDA3(scmvar, t1, arg1, t2, arg2, t3, arg3, body);	\
-	BIND(scmvar, var);
+	BINDPRIM(scmvar, var);
 	
 
 #endif
