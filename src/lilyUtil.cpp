@@ -7,11 +7,11 @@
 #include "parse.hpp" /* isDigit */
 
 
-const char* typeidToTypename(const char* typeidstr) {
+std::string typeidToTypename(const char* typeidstr) {
 	// gcc is giving things like "10LilyDouble", sigh?
 	while (isDigit(*typeidstr))
 		typeidstr++;
-	return typeidstr;
+	return std::string(typeidstr);
 }
 
 
