@@ -42,7 +42,8 @@ typedef char32_t lily_char_t;
 	DEFINE_(ParseError)			\
 	DEFINE_(Int64OverflowError)		\
 	DEFINE_(Int64UnderflowError)		\
-	DEFINE_(DivisionByZeroError)
+	DEFINE_(DivisionByZeroError)		\
+	DEFINE_(ForeignValueBase)
 
 
 #define DEFINE_(Nam) Nam,
@@ -105,7 +106,7 @@ public:
 		lily_deallocation_count++;
 #endif
 	}
-	virtual const char* typeName()=0;
+	virtual std::string typeName()=0;
 	virtual void write(std::ostream& out)=0;
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
 };
@@ -144,7 +145,7 @@ public:
 	virtual bool isNull() { return true; }
 	virtual bool isPair() { return false; }
 	static LilyNullPtr singleton();
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 	// virtual ~LilyNull();
 };
@@ -189,7 +190,7 @@ public:
 	virtual bool isNull() { return false; }
 	virtual bool isPair() { return true; }
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual ~LilyPair() noexcept;
 private:
 	LilyObjectPtr _car;
@@ -211,7 +212,7 @@ public:
 	virtual bool isNull() { return true; }
 	static LilyVoidPtr singleton();
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	// virtual ~LilyVoid();
 };
 
@@ -226,7 +227,7 @@ public:
 	static LilyBooleanPtr True();
 	static LilyBooleanPtr False();
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	//virtual ~LilyBoolean();
 };
 
@@ -238,7 +239,7 @@ public:
 	};
 	lily_char_t value() { return _value; }
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual ~LilyChar() noexcept;
 };
 
@@ -250,7 +251,7 @@ public:
 	}
 	std::string value() { return _value; }
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual ~LilyString() noexcept;
 };
 
@@ -275,7 +276,7 @@ public:
 		evalId= LilyEvalOpcode::Symbol;
 	}
 	static LilySymbollikePtr intern(std::string s, bool nq);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual ~LilySymbol() noexcept;
 };
 
@@ -287,7 +288,7 @@ public:
 	}
 	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual ~LilyKeyword() noexcept;
 };
 
@@ -300,7 +301,7 @@ public:
 	virtual double toDouble();
 
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 };
 
 class LilyExact : public LilyNumber {
@@ -319,7 +320,7 @@ public:
 	};
 	int64_t value() { return _value; }
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
@@ -339,7 +340,7 @@ public:
 	int64_t enumerator() { return _enumerator;}
 	int64_t denominator() { return _denominator;}
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
@@ -356,7 +357,7 @@ public:
 	}
 	double value() { return _value; }
 	virtual void write(std::ostream& out);
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
 	virtual LilyNumberPtr divideBy(const LilyNumberPtr& b);
@@ -587,7 +588,7 @@ public:
 		evalId= LilyEvalOpcode::NativeProcedure;
 	}
 	virtual ~LilyNativeProcedure() noexcept;
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
@@ -621,7 +622,7 @@ public:
 		// future in another context)
 	}
 	virtual ~LilyNativeMacroexpander() noexcept;
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr call(LilyListPtr* expressions,
 				   LilyListPtr* ctx,
@@ -646,7 +647,7 @@ public:
 		evalId= LilyEvalOpcode::NativeEvaluator;
 	}
 	virtual ~LilyNativeEvaluator() noexcept;
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 	// LilyNativeEvaluator::call is actually never called
 	// currently, right? But can't omit it since we have to
@@ -662,7 +663,7 @@ public:
 // not a callabe (directly), at least not obviously the right thing to
 // do for now
 class LilyContinuationFrame : public LilyObject {
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 	LilyObjectPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
@@ -728,7 +729,7 @@ public:
 			return LilyInt64UnderflowError(_a, _op, _b, _unary); \
 		}							\
 		virtual std::string what();				\
-		virtual const char* typeName();				\
+		virtual std::string typeName();				\
 		virtual void write(std::ostream& out);			\
 	}
 DEFINE_(LilyInt64UnderflowError, Int64Underflow, underflow_error);
@@ -756,7 +757,7 @@ public:
 		evalId= LilyEvalOpcode::DivisionByZeroError;
 	}
 	virtual std::string what();
-	virtual const char* typeName();
+	virtual std::string typeName();
 	virtual void write(std::ostream& out);
 };
 
@@ -772,7 +773,32 @@ public:
 	virtual std::string msg() { return _msg; };
 	virtual parse_position_t pos() { return _pos; };
 	virtual std::string what();
-	virtual const char* typeName();
+	virtual std::string typeName();
+	virtual void write(std::ostream& out);
+};
+
+
+class LilyForeignValueBase : public LilyObject {
+public:
+	LilyForeignValueBase() {
+		evalId= LilyEvalOpcode::ForeignValueBase;
+	}
+	virtual std::string typeName();
+};
+
+// then let users derive their own without needing new evalId etc.:
+template <typename T>
+class LilyForeignValue : public LilyForeignValueBase {
+	T _value;
+public:
+	LilyForeignValue(T value) : _value(value) {}
+	T value() { return _value; };
+	virtual std::string what();
+	virtual std::string typeName() {
+		return STR("ForeignValue<" <<
+			   typeidToTypename(typeid(T).name())
+			   << ">");
+	}
 	virtual void write(std::ostream& out);
 };
 

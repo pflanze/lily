@@ -9,7 +9,7 @@
 using namespace lilyConstruct;
 
 #define DEFINE_(Nam)							\
-	const char* Lily##Nam::typeName() {return STRINGIFY(Nam);}
+	std::string Lily##Nam::typeName() {return STR(STRINGIFY(Nam));}
 
 LILY_DEFINE_FOR_ALL_OPCODES;
 #undef DEFINE_
@@ -50,7 +50,7 @@ LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {UNIMPLEMENTED};
 double LilyNumber::toDouble() {UNIMPLEMENTED};
 
 void LilyNumber::write(std::ostream& out) {UNIMPLEMENTED};
-const char* LilyNumber::typeName() { return "LilyNumber"; }
+std::string LilyNumber::typeName() { return STR("LilyNumber"); }
 // /weird
 
 
