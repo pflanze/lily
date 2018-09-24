@@ -107,7 +107,8 @@ apply3(const char* procname,
 	    LilyListPtr*,						\
 	    LilyListPtr*) -> LilyObjectPtr {				\
 		return apply1<T1>(scmnamstr,				\
-				  [&](T1##Ptr v1) -> LilyObjectPtr body, \
+				  [&](std::shared_ptr<T1> v1)		\
+				  -> LilyObjectPtr body,		\
 				  ___lambdaN_vs);			\
 	}
 
@@ -116,7 +117,9 @@ apply3(const char* procname,
 	    LilyListPtr*,						\
 	    LilyListPtr*) -> LilyObjectPtr {				\
 		return apply2<T1,T2>(scmnamstr,				\
-				     [&](T1##Ptr v1, T2##Ptr v2) -> LilyObjectPtr body, \
+				     [&](std::shared_ptr<T1> v1,	\
+					 std::shared_ptr<T2> v2)	\
+				     -> LilyObjectPtr body,		\
 				     ___lambdaN_vs);			\
 	}
 
@@ -125,9 +128,10 @@ apply3(const char* procname,
 	    LilyListPtr*,						\
 	    LilyListPtr*) -> LilyObjectPtr {				\
 		return apply3<T1,T2,T3>(scmnamstr,			\
-					[&](T1##Ptr v1,			\
-					    T2##Ptr v2,			\
-					    T3##Ptr v3) -> LilyObjectPtr body, \
+					[&](std::shared_ptr<T1> v1,	\
+					    std::shared_ptr<T2> v2,	\
+					    std::shared_ptr<T3> v3)	\
+					-> LilyObjectPtr body,		\
 					___lambdaN_vs);			\
 	}
 

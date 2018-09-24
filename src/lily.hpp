@@ -802,12 +802,14 @@ public:
 	LilyForeignValue(T value) : _value(value) {}
 	T value() { return _value; };
 	virtual std::string typeName() {
+		// this is the full type name, not just T
 		return STR("ForeignValue<" <<
 			   typeidToTypename(typeid(T).name())
 			   << ">");
 	}
 	virtual void write(std::ostream& out) {
-		out << "#<foreign-value " << typeName();
+		out << "#<foreign-value "
+		    << typeidToTypename(typeid(T).name());
 		// XX better way to detect pointers?
 		if (sizeof(T) == sizeof(void*)) {
 			out << " 0x" << std::hex <<
