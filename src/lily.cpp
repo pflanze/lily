@@ -498,6 +498,35 @@ std::string LilyParseError::what() {
 	return STR("parse error: " <<_msg << " (position " << _pos << ")");
 }
 
+std::string LilyForeignBase::what() {
+	// XX is this OK? Don't want to generate more code to produce
+	// messages, probably unused anyway (these are *not* exception
+	// objects)?
+	std::ostringstream out;
+	write(out);
+	return out.str();
+}
+
+
+
+LilyObjectPtr LilyForeignPointerBase::toCode(LilyObjectPtr self) {
+	return LIST(SYMBOL(STR(tName()<<'*')),
+		    INT(valuep_as_uint()));
+}
+std::string LilyForeignPointerBase::typeName() {
+	// this is the full type name, not just T
+	return STR("ForeignValuePointer<" <<
+		   tName()
+		   << ">");
+}
+void LilyForeignPointerBase::write(std::ostream& out) {
+	out << "#<foreign-pointer "
+	    << tName();
+	out << " 0x" << std::hex << valuep_as_uint();
+	out << ">";
+}
+
+
 
 
 #define DEFINE_(throwOverflow, LilyInt64OverflowError, overflow)	\

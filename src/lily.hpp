@@ -41,13 +41,16 @@ typedef char32_t lily_char_t;
 	DEFINE_(ParseError)			\
 	DEFINE_(Int64OverflowError)		\
 	DEFINE_(Int64UnderflowError)		\
-	DEFINE_(DivisionByZeroError)		\
-	DEFINE_(ForeignValueBase)
+	DEFINE_(DivisionByZeroError)
+
+// can't add DEFINE_(ForeignPointerBase) above as it would create a
+// conflicting LilyForeignPointerBase::typeName()
 
 
 #define DEFINE_(Nam) Nam,
 enum class LilyEvalOpcode : char {
 	LILY_DEFINE_FOR_ALL_OPCODES
+	ForeignPointerBase
 };
 #undef DEFINE_
 
@@ -802,48 +805,46 @@ public:
 };
 
 
-class LilyForeignValueBase : public LilyObject {
+class LilyForeignBase : public LilyObject {
 public:
-	LilyForeignValueBase() {
-		evalId= LilyEvalOpcode::ForeignValueBase;
-	}
-	virtual std::string typeName();
-	virtual std::string what() {
-		// XX is this OK? Don't want to generate more code to
-		// produce messages, probably unused anyway? (These
-		// are *not* exceptions!)
-		std::ostringstream out;
-		write(out);
-		return out.str();
-	}
+	virtual std::string what();
 };
 
-// then let users derive their own without needing new evalId etc.:
-template <typename T>
-class LilyForeignValue : public LilyForeignValueBase {
-	T _value;
+
+// Perhaps also provide a
+// class LilyForeignValueBase : public LilyForeignBase {
+// }
+// and associated templated subclass for value embedding.
+
+
+// XX fix to use the right type
+typedef uint64_t pointer_as_uint_t;
+
+class LilyForeignPointerBase : public LilyForeignBase {
 public:
-	LilyForeignValue(T value) : _value(value) {}
-	T value() { return _value; };
-	virtual std::string typeName() {
-		// this is the full type name, not just T
-		return STR("ForeignValue<" <<
-			   typeidToTypename(typeid(T).name())
-			   << ">");
+	LilyForeignPointerBase() {
+		evalId= LilyEvalOpcode::ForeignPointerBase;
 	}
-	virtual void write(std::ostream& out) {
-		out << "#<foreign-value "
-		    << typeidToTypename(typeid(T).name());
-		// XX better way to detect pointers?
-		if (sizeof(T) == sizeof(void*)) {
-			out << " 0x" << std::hex <<
-				// XX right type to cast to?
-				(unsigned long long)_value;
-		}
-		out << ">";
-	}
-	virtual LilyObjectPtr toCode(LilyObjectPtr self) {
-		XXX
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
+	virtual std::string tName()=0;
+	virtual std::string typeName();
+	virtual pointer_as_uint_t valuep_as_uint()=0;
+	virtual void write(std::ostream& out);
+};
+
+// then let users derive their own without needing new evalId etc.: T
+// is without the pointer.
+template <typename T>
+class LilyForeignPointer : public LilyForeignPointerBase {
+	T* _valuep;
+public:
+	LilyForeignPointer(T* valuep) : _valuep(valuep) {}
+	T* valuep() { return _valuep; };
+	virtual pointer_as_uint_t valuep_as_uint() {
+		return (pointer_as_uint_t)_valuep;
+	};
+	virtual std::string tName() {
+		return typeidToTypename(typeid(T).name());
 	}
 };
 
