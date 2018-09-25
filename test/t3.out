@@ -295,3 +295,23 @@ Boolean: #t
 Boolean: #f
 > (list? "foo")
 Boolean: #f
+> (inc 10)
+Int64: 11
+> (dec 0)
+Int64: -1
+> dec
+NativeProcedure: #<native-procedure dec>
+> inc
+NativeProcedure: #<native-procedure inc>
+> (fold-right inc (list 10 11 13))
+ERR: fold-right needs 3 arguments
+> (fold-right inc #f (list 10 11 13))
+ERR: inc needs 1 argument
+> (fold-right cons #f (list 10 11 13))
+Pair: (10 11 13 . #f)
+> (map inc (list 10 11 13))
+Pair: (11 12 14)
+> (improper->proper-map inc (cons 10 (cons 20 30)))
+Pair: (11 21 31)
+> (improper->proper-map inc 10)
+Pair: (11)

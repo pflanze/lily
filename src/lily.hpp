@@ -61,6 +61,8 @@ DECLARE_CLASS_PTR(Object);
 DECLARE_CLASS_PTR(List);
 DECLARE_CLASS_PTR(Number);
 DECLARE_CLASS_PTR(Symbollike);
+DECLARE_CLASS_PTR(Callable);
+
 
 #define DEFINE_(x) DECLARE_CLASS_PTR(x)
 LILY_DEFINE_FOR_ALL_OPCODES;
@@ -931,6 +933,25 @@ namespace lily {
 	// NOTE: also see apply.. in lilyHelper.hpp!
 
 	bool isList(LilyObjectPtr v);
+
+
+	LilyObjectPtr fold_right(
+		std::function<LilyObjectPtr(LilyObjectPtr, LilyObjectPtr)> fn,
+		LilyObjectPtr start,
+		LilyListPtr l);
+	
+	LilyObjectPtr improper_fold_right(
+		std::function<LilyObjectPtr(LilyObjectPtr, LilyObjectPtr)> fn,
+		LilyObjectPtr start,
+		LilyObjectPtr v);
+
+	LilyObjectPtr map(
+		std::function<LilyObjectPtr(LilyObjectPtr)> fn,
+		LilyListPtr l);
+
+	LilyObjectPtr improper_to_proper_map(
+		std::function<LilyObjectPtr(LilyObjectPtr)> fn,
+		LilyObjectPtr v);
 }
 
 #endif

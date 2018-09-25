@@ -1046,6 +1046,73 @@ bool lily::isList(LilyObjectPtr v) {
 }
 
 
+// XX change to not use the C++ stack!
+LilyObjectPtr lily::fold_right(
+	std::function<LilyObjectPtr(LilyObjectPtr, LilyObjectPtr)> fn,
+	LilyObjectPtr start,
+	LilyListPtr l) {
+	std::function<LilyObjectPtr(LilyObjectPtr)> rec=
+		[&](LilyObjectPtr v) -> LilyObjectPtr {
+
+		LETU_AS(vp, LilyPair, v);
+		if (vp) {
+			return fn(vp->car(),
+				  rec(vp->cdr()));
+		} else if (UNWRAP_AS(LilyNull, v)) {
+			return start;
+		} else {
+			throwTypeError("proper list", v);
+		}
+	};
+	return rec(l);
+}
+
+// XX change to not use the C++ stack!
+LilyObjectPtr lily::improper_fold_right(
+	std::function<LilyObjectPtr(LilyObjectPtr, LilyObjectPtr)> fn,
+	LilyObjectPtr start,
+	LilyObjectPtr v) {
+	std::function<LilyObjectPtr(LilyObjectPtr)> rec=
+		[&](LilyObjectPtr v) -> LilyObjectPtr {
+
+		LETU_AS(vp, LilyPair, v);
+		if (vp) {
+			return fn(vp->car(),
+				  rec(vp->cdr()));
+		} else if (UNWRAP_AS(LilyNull, v)) {
+			return start;
+		} else {
+			return fn(v, start);
+		}
+	};
+	return rec(v);
+}
+
+
+// XX even these (even when fixing the above) are guilty of using the
+// C++ stack, even if just one frame (call/cc!).
+LilyObjectPtr lily::map(
+	std::function<LilyObjectPtr(LilyObjectPtr)> fn,
+	LilyListPtr l) {
+	return lily::fold_right([&](LilyObjectPtr v,
+				    LilyObjectPtr tail) {
+					return CONS(fn(v), tail);
+				}, NIL, l);
+}
+
+// XX ditto
+LilyObjectPtr lily::improper_to_proper_map(
+	std::function<LilyObjectPtr(LilyObjectPtr)> fn,
+	LilyObjectPtr v) {
+	return lily::improper_fold_right
+		([&](LilyObjectPtr v,
+		     LilyObjectPtr tail) {
+			return CONS(fn(v), tail);
+		}, NIL, v);
+}
+
+
+
 void throwTypeError(const char* typeid_str, LilyObjectPtr v) {
 	throw std::logic_error(STR("not a "
 				   << typeidToTypename(typeid_str)

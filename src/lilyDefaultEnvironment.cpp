@@ -324,6 +324,108 @@ static LilyObjectPtr lilyIsList(LilyListPtr* arguments,
 }
 
 
+static LilyObjectPtr lilyInc(LilyListPtr* arguments,
+			     LilyListPtr* _ctx,
+			     LilyListPtr* _cont) {
+	return apply1<LilyInt64>("inc", [](LilyInt64Ptr v) {
+			return INT(lily_add(v->value(), 1));
+		}, arguments);
+}
+static LilyObjectPtr lilyDec(LilyListPtr* arguments,
+			     LilyListPtr* _ctx,
+			     LilyListPtr* _cont) {
+	return apply1<LilyInt64>("dec", [](LilyInt64Ptr v) {
+			return INT(lily_sub(v->value(), 1));
+		}, arguments);
+}
+
+
+static LilyObjectPtr lilyFoldRight(LilyListPtr* arguments,
+				   LilyListPtr* ctx,
+				   LilyListPtr* cont) {
+	return apply3<LilyCallable, LilyObject, LilyList>
+		("fold-right", [&](LilyCallablePtr fn,
+				   LilyObjectPtr start,
+				   LilyListPtr l) {
+			return lily::fold_right(
+				[&](LilyObjectPtr v,
+				    LilyObjectPtr res) {
+					auto args= LIST(v, res);
+					return fn->call(&args, // well
+							ctx,
+							cont);
+				},
+				start,
+				l);
+							
+		}, arguments);
+}
+
+// almost-copy-paste of above
+static LilyObjectPtr lilyImproperFoldRight(LilyListPtr* arguments,
+					   LilyListPtr* ctx,
+					   LilyListPtr* cont) {
+	return apply3<LilyCallable, LilyObject, LilyObject>
+		("improper-fold-right",
+		 [&](LilyCallablePtr fn,
+		     LilyObjectPtr start,
+		     LilyObjectPtr v) {
+			return lily::improper_fold_right(
+				[&](LilyObjectPtr v,
+				    LilyObjectPtr res) {
+					auto args= LIST(v, res);
+					return fn->call(&args, // well
+							ctx,
+							cont);
+				},
+				start,
+				v);
+							
+		}, arguments);
+}
+
+
+static LilyObjectPtr lilyMap(LilyListPtr* arguments,
+			     LilyListPtr* ctx,
+			     LilyListPtr* cont) {
+	return apply2<LilyCallable, LilyList>
+		("map",
+		 [&](LilyCallablePtr fn,
+		     LilyListPtr l) {
+			return lily::map(
+				[&](LilyObjectPtr v) {
+					auto args= LIST(v);
+					return fn->call(&args, // well
+							ctx,
+							cont);
+				},
+				l);
+							
+		}, arguments);
+}
+
+// almost-copy
+static LilyObjectPtr lilyImproperToProperMap(LilyListPtr* arguments,
+					     LilyListPtr* ctx,
+					     LilyListPtr* cont) {
+	return apply2<LilyCallable, LilyObject>
+		("improper->proper-map",
+		 [&](LilyCallablePtr fn,
+		     LilyObjectPtr v) {
+			return lily::improper_to_proper_map(
+				[&](LilyObjectPtr v) {
+					auto args= LIST(v);
+					return fn->call(&args, // well
+							ctx,
+							cont);
+				},
+				v);
+							
+		}, arguments);
+}
+
+
+
 static LilyObjectPtr lilyDefine(LilyListPtr* es,
 				LilyListPtr* ctx,
 				LilyListPtr* cont) {
@@ -375,6 +477,8 @@ static LilyObjectPtr lilyBegin(LilyListPtr* es,
 
 LilyListPtr lilyDefaultEnvironment() {
 	static LilyListPtr env= LIST(
+		PRIMBINDING("inc", lilyInc),
+		PRIMBINDING("dec", lilyDec),
 		PRIMBINDING("+", lilyAdd),
 		PRIMBINDING("*", lilyMult),
 		PRIMBINDING("-", lilySub),
@@ -403,6 +507,10 @@ LilyListPtr lilyDefaultEnvironment() {
 		PRIMBINDING("sys:object-count", lilySysObjectCount),
 		PRIMBINDING(".code", lilyToCode),
 		PRIMBINDING("list?", lilyIsList),
+		PRIMBINDING("fold-right", lilyFoldRight),
+		PRIMBINDING("improper-fold-right", lilyImproperFoldRight),
+		PRIMBINDING("map", lilyMap),
+		PRIMBINDING("improper->proper-map", lilyImproperToProperMap),
 		);
 	return env;
 }

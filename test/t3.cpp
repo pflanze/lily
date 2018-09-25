@@ -239,4 +239,14 @@ int main () {
 	e("(list? (list))");
 	e("(list? (cons 1 2))");
 	e("(list? \"foo\")");
+	e("(inc 10)");
+	e("(dec 0)");
+	e("dec");
+	e("inc");
+	e("(fold-right inc (list 10 11 13))");
+	e("(fold-right inc #f (list 10 11 13))");
+	e("(fold-right cons #f (list 10 11 13))");
+	e("(map inc (list 10 11 13))");
+	e("(improper->proper-map inc (cons 10 (cons 20 30)))");
+	e("(improper->proper-map inc 10)");
 }
