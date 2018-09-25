@@ -1,0 +1,143 @@
+#ifndef _LILYHELPER_HPP
+#define _LILYHELPER_HPP
+
+#include "lily.hpp"
+
+// Helpers [for doing FFI from Scheme to C++ from C++ (?)]
+
+// Usage:
+
+// 1. Define a macro BIND(scm_var, c_var) that adds the value in c_var
+//    to the Scheme environment as the symbol with name scm_var.
+
+// 2. use the DEF* macros to define your FFI functions / primitives.
+
+
+inline
+LilyObjectPtr
+apply0(const char* procname,
+       std::function<LilyObjectPtr()> proc,
+       LilyListPtr* vs)
+{
+	if (UNWRAP_AS(LilyNull, *vs)) {
+		return proc();
+	}
+	throw std::logic_error(STR(procname << " needs 0 arguments"));
+}
+
+template <typename A>
+LilyObjectPtr
+apply1(const char* procname,
+       std::function<LilyObjectPtr(std::shared_ptr<A>)> proc,
+       LilyListPtr* vs)
+{
+	LETU_AS(vs0, LilyPair, *vs);
+	if (vs0) {
+		if (UNWRAP_AS(LilyNull, vs0->cdr())) {
+			return proc(XAS<A>(vs0->car()));
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 1 argument"));
+}
+
+template <typename A, typename B>
+LilyObjectPtr
+apply2(const char* procname,
+       std::function<LilyObjectPtr(std::shared_ptr<A>,
+				   std::shared_ptr<B>)> proc,
+       LilyListPtr* vs)
+{
+	LETU_AS(vs0, LilyPair, *vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyPair, vs0->cdr());
+		if (vs1) {
+			if (UNWRAP_AS(LilyNull, vs1->cdr())) {
+				return proc(XAS<A>(vs0->car()),
+					    XAS<B>(vs1->car()));
+			}
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 2 arguments"));
+}
+
+template <typename A, typename B, typename C>
+LilyObjectPtr
+apply3(const char* procname,
+       std::function<LilyObjectPtr(std::shared_ptr<A>,
+				   std::shared_ptr<B>,
+				   std::shared_ptr<C>)> proc,
+       LilyListPtr* vs)
+{
+	LETU_AS(vs0, LilyPair, *vs);
+	if (vs0) {
+		LETU_AS(vs1, LilyPair, vs0->cdr());
+		if (vs1) {
+			LETU_AS(vs2, LilyPair, vs1->cdr());
+			if (vs2) {
+				if (UNWRAP_AS(LilyNull, vs2->cdr())) {
+					return proc(XAS<A>(vs0->car()),
+						    XAS<B>(vs1->car()),
+						    XAS<C>(vs2->car()));
+				}
+			}
+		}
+	}
+	throw std::logic_error(STR(procname << " needs 3 arguments"));
+}
+
+
+
+#define LAMBDA0(scmnamstr, body)					\
+	[&](LilyListPtr* ___lambdaN_vs,					\
+	    LilyListPtr*,						\
+	    LilyListPtr*) -> LilyObjectPtr {				\
+		return apply0(scmnamstr,				\
+			      [&]() -> LilyObjectPtr body,		\
+			      ___lambdaN_vs);				\
+	}
+
+#define LAMBDA1(scmnamstr, T1, v1, body)				\
+	[&](LilyListPtr* ___lambdaN_vs,					\
+	    LilyListPtr*,						\
+	    LilyListPtr*) -> LilyObjectPtr {				\
+		return apply1<T1>(scmnamstr,				\
+				  [&](T1##Ptr v1) -> LilyObjectPtr body, \
+				  ___lambdaN_vs);			\
+	}
+
+#define LAMBDA2(scmnamstr, T1, v1, T2, v2, body)			\
+	[&](LilyListPtr* ___lambdaN_vs,					\
+	    LilyListPtr*,						\
+	    LilyListPtr*) -> LilyObjectPtr {				\
+		return apply2<T1,T2>(scmnamstr,				\
+				     [&](T1##Ptr v1, T2##Ptr v2) -> LilyObjectPtr body, \
+				     ___lambdaN_vs);			\
+	}
+
+#define LAMBDA3(scmnamstr, T1, v1, T2, v2, T3, v3, body)		\
+	[&](LilyListPtr* ___lambdaN_vs,					\
+	    LilyListPtr*,						\
+	    LilyListPtr*) -> LilyObjectPtr {				\
+		return apply3<T1,T2,T3>(scmnamstr,			\
+					[&](T1##Ptr v1,			\
+					    T2##Ptr v2,			\
+					    T3##Ptr v3) -> LilyObjectPtr body, \
+					___lambdaN_vs);			\
+	}
+
+
+#define DEF0(var, scmvar, body)			\
+	auto var = LAMBDA0(scmvar, body);	\
+	BIND(scmvar, var);
+#define DEF1(var, scmvar, t1, arg1, body)		\
+	auto var = LAMBDA1(scmvar, t1, arg1, body);	\
+	BIND(scmvar, var);
+#define DEF2(var, scmvar, t1, arg1, t2, arg2, body)		\
+	auto var = LAMBDA2(scmvar, t1, arg1, t2, arg2, body);	\
+	BIND(scmvar, var);
+#define DEF3(var, scmvar, t1, arg1, t2, arg2, t3, arg3, body)		\
+	auto var = LAMBDA3(scmvar, t1, arg1, t2, arg2, t3, arg3, body);	\
+	BIND(scmvar, var);
+	
+
+#endif

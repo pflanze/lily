@@ -1,5 +1,7 @@
 #include "lily.hpp"
 #include "lilyConstruct.hpp"
+#include "lilyHelper.hpp"
+
 #include "lilyDefaultEnvironment.hpp"
 
 using namespace lily;
