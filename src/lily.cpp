@@ -7,6 +7,8 @@
 #include <limits>
 
 using namespace lilyConstruct;
+using lily::show;
+
 
 #define DEFINE_(Nam)							\
 	std::string Lily##Nam::typeName() {return STR(STRINGIFY(Nam));}
@@ -36,9 +38,6 @@ std::string lily::show(LilyObject* v) {
 	v->write(s);
 	return s.str();
 }
-
-//XX how to selectively do namespace imports?
-#define show(e) lily::show(e)
 
 
 
