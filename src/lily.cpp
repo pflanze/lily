@@ -42,13 +42,13 @@ std::string lily::show(LilyObject* v) {
 
 
 // XX weird wanted that to be fully abstract
-LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {UNIMPLEMENTED};
-LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {UNIMPLEMENTED};
-LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {UNIMPLEMENTED};
-LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {UNIMPLEMENTED};
-double LilyNumber::toDouble() {UNIMPLEMENTED};
+LilyNumberPtr LilyNumber::multiply(const LilyNumberPtr& b) {NOIMPLEMENTATION};
+LilyNumberPtr LilyNumber::divideBy(const LilyNumberPtr& b) {NOIMPLEMENTATION};
+LilyNumberPtr LilyNumber::add(const LilyNumberPtr& b) {NOIMPLEMENTATION};
+LilyNumberPtr LilyNumber::subtract(const LilyNumberPtr& b) {NOIMPLEMENTATION};
+double LilyNumber::toDouble() {NOIMPLEMENTATION};
 
-void LilyNumber::write(std::ostream& out) {UNIMPLEMENTED};
+void LilyNumber::write(std::ostream& out) {NOIMPLEMENTATION};
 std::string LilyNumber::typeName() { return STR("LilyNumber"); }
 // /weird
 
@@ -454,17 +454,17 @@ LilyObjectPtr LilyNativeProcedure::toCode(LilyObjectPtr self) {
 	return SYMBOL(_name);
 }
 LilyObjectPtr LilyNativeMacroexpander::toCode(LilyObjectPtr self) {
-	UNIMPLEMENTED;
+	NOIMPLEMENTATION;
 }
 LilyObjectPtr LilyNativeEvaluator::toCode(LilyObjectPtr self) {
-	UNIMPLEMENTED;
+	NOIMPLEMENTATION;
 }
 LilyObjectPtr LilyContinuationFrame::toCode(LilyObjectPtr self) {
-	UNIMPLEMENTED;
+	NOIMPLEMENTATION;
 }
 // right level?
 LilyObjectPtr LilyErrorWithWhat::toCode(LilyObjectPtr self) {
-	UNIMPLEMENTED; // make mixin for _a _op _b _unary class? needs friend method accesses
+	NOIMPLEMENTATION; // make mixin for _a _op _b _unary class? needs friend method accesses
 }
 LilyObjectPtr LilyDivisionByZeroError::toCode(LilyObjectPtr self) {
 	return LIST(SYMBOL("division-by-zero-error"), STRING(_msg));
