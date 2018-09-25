@@ -154,18 +154,18 @@ LilyNull::write(std::ostream& out) {
 
 
 
-// XX const? can we bring it into the program segment?
-LilyObjectPtr lilySymbol_quote;
-LilyObjectPtr lilySymbol_quasiquote;
-LilyObjectPtr lilySymbol_unquote;
+// XX const? can we bring them into the program segment?
+#define _DEFINE_(nam) LilyObjectPtr lilySymbol_##nam;
+LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS
+#undef _DEFINE_
 
 void lily_init() {
 	lilySymbolTable= new lilySymbollikeTable();
 	lilyKeywordTable= new lilySymbollikeTable();
-	lilySymbol_quote= SYMBOL("quote", false);
-	lilySymbol_quasiquote= SYMBOL("quasiquote", false);
-	lilySymbol_unquote= SYMBOL("unquote", false);
 
+#define _DEFINE_(nam) lilySymbol_##nam= SYMBOL(STRINGIFY(nam), false);
+	LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS
+#undef _DEFINE_
 }
 
 
@@ -399,6 +399,66 @@ LilyParseError::write(std::ostream& out) {
 }
 
 
+LilyObjectPtr LilyNull::toCode(LilyObjectPtr self) {
+	return LIST(lilySymbol_quote, self);
+}
+LilyObjectPtr LilyPair::toCode(LilyObjectPtr self) {
+	return LIST(lilySymbol_cons, lily::toCode(_car), lily::toCode(_cdr));
+}
+LilyObjectPtr LilyVoid::toCode(LilyObjectPtr self) {
+	return LIST(lilySymbol_void);
+}
+LilyObjectPtr LilyBoolean::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyChar::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyString::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilySymbollike::toCode(LilyObjectPtr self) {
+	return LIST(lilySymbol_quote, self);
+}
+LilyObjectPtr LilyKeyword::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyNumber::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyInt64::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyFractional64::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyDouble::toCode(LilyObjectPtr self) {
+	return self;
+}
+LilyObjectPtr LilyNativeProcedure::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED;
+}
+LilyObjectPtr LilyNativeMacroexpander::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED;
+}
+LilyObjectPtr LilyNativeEvaluator::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED;
+}
+LilyObjectPtr LilyContinuationFrame::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED;
+}
+// right level?
+LilyObjectPtr LilyErrorWithWhat::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED; // make mixin for _a _op _b _unary class? needs friend method accesses
+}
+LilyObjectPtr LilyDivisionByZeroError::toCode(LilyObjectPtr self) {
+	return LIST(SYMBOL("division-by-zero-error"), STRING(_msg));
+}
+LilyObjectPtr LilyParseError::toCode(LilyObjectPtr self) {
+	return LIST(SYMBOL("parse-error"), STRING(_msg), INT(_pos));
+}
+
+
 // XX include the exception type or not?
 
 #define DEFINE_(kind)							\
@@ -422,8 +482,6 @@ std::string LilyDivisionByZeroError::what() {
 std::string LilyParseError::what() {
 	return STR("parse error: " <<_msg << " (position " << _pos << ")");
 }
-
-
 
 
 

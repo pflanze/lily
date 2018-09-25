@@ -67,15 +67,15 @@ LILY_DEFINE_FOR_ALL_OPCODES;
 #undef DEFINE_
 
 
-// move to lilyConstruct (see WRITELN)?, or both to lilyUtil?
 namespace lily {
+
 	std::string show(const LilyObjectPtr& v);
 	std::string show(LilyObject* v);
 	inline std::string show(std::string str) {
 		return lilyUtil::show(str);
 	}
-	void write(const std::string& str, std::ostream& out);
 }
+
 
 
 #if LILY_MEMORY_STATISTICS
@@ -108,6 +108,10 @@ public:
 	}
 	virtual std::string typeName()=0;
 	virtual void write(std::ostream& out)=0;
+	virtual LilyObjectPtr toCode(LilyObjectPtr self)=0;
+	// ^ will change in the future to include a context argument
+	// for handling circles and perhaps another for handling
+	// (quasi)quote mode(s)
 	LilyEvalOpcode evalId; // XX no way to make that const? come on..?
 };
 
@@ -147,6 +151,7 @@ public:
 	static LilyNullPtr singleton();
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	// virtual ~LilyNull();
 };
 inline LilyNull* is_LilyNull(LilyObject* v) {
@@ -190,6 +195,7 @@ public:
 	virtual bool isNull() { return false; }
 	virtual bool isPair() { return true; }
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual ~LilyPair() noexcept;
 private:
@@ -212,6 +218,7 @@ public:
 	virtual bool isNull() { return true; }
 	static LilyVoidPtr singleton();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	// virtual ~LilyVoid();
 };
@@ -227,6 +234,7 @@ public:
 	static LilyBooleanPtr True();
 	static LilyBooleanPtr False();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	//virtual ~LilyBoolean();
 };
@@ -239,6 +247,7 @@ public:
 	};
 	lily_char_t value() { return _value; }
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual ~LilyChar() noexcept;
 };
@@ -251,6 +260,7 @@ public:
 	}
 	std::string value() { return _value; }
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual ~LilyString() noexcept;
 };
@@ -260,6 +270,7 @@ protected:
 	LilySymbollike(std::string s, symboltablehash_t h, bool nq)
 		: _string(s), _hash(h), _needsQuoting(nq) {}
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self); // XX can we move this to LilySymbol?
 	const std::string _string;
 	const symboltablehash_t _hash;
 	bool _needsQuoting;
@@ -288,6 +299,7 @@ public:
 	}
 	static LilySymbollikePtr intern(std::string s, bool nq);
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual ~LilyKeyword() noexcept;
 };
@@ -301,6 +313,7 @@ public:
 	virtual double toDouble();
 
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 };
 
@@ -320,6 +333,7 @@ public:
 	};
 	int64_t value() { return _value; }
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -340,6 +354,7 @@ public:
 	int64_t enumerator() { return _enumerator;}
 	int64_t denominator() { return _denominator;}
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -357,6 +372,7 @@ public:
 	}
 	double value() { return _value; }
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
 	virtual double toDouble();
 	virtual LilyNumberPtr multiply(const LilyNumberPtr& b);
@@ -590,6 +606,7 @@ public:
 	virtual ~LilyNativeProcedure() noexcept;
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual LilyObjectPtr call(LilyListPtr* args,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
@@ -624,6 +641,7 @@ public:
 	virtual ~LilyNativeMacroexpander() noexcept;
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual LilyObjectPtr call(LilyListPtr* expressions,
 				   LilyListPtr* ctx,
 				   LilyListPtr* cont);
@@ -649,6 +667,7 @@ public:
 	virtual ~LilyNativeEvaluator() noexcept;
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	// LilyNativeEvaluator::call is actually never called
 	// currently, right? But can't omit it since we have to
 	// implement the abstract interface?
@@ -665,6 +684,7 @@ public:
 class LilyContinuationFrame : public LilyObject {
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	LilyObjectPtr _maybeHead;
 	LilyListPtr _rvalues; // i.e. evaluated
 	LilyListPtr _expressions; // i.e. unevaluated
@@ -694,6 +714,7 @@ class LilyError : public LilyObject {
 };
 class LilyErrorWithWhat : public LilyError {
 public:
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string what()=0;
 };
 
@@ -759,6 +780,7 @@ public:
 	virtual std::string what();
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 };
 
 
@@ -775,6 +797,7 @@ public:
 	virtual std::string what();
 	virtual std::string typeName();
 	virtual void write(std::ostream& out);
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 };
 
 
@@ -817,6 +840,9 @@ public:
 				(unsigned long long)_value;
 		}
 		out << ">";
+	}
+	virtual LilyObjectPtr toCode(LilyObjectPtr self) {
+		XXX
 	}
 };
 
@@ -881,13 +907,31 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 
 
 // Some special symbols
-extern LilyObjectPtr lilySymbol_quote;
-extern LilyObjectPtr lilySymbol_quasiquote;
-extern LilyObjectPtr lilySymbol_unquote;
+#define LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS	\
+	_DEFINE_(quote)				\
+	_DEFINE_(quasiquote)			\
+	_DEFINE_(unquote)			\
+	_DEFINE_(cons)				\
+	_DEFINE_(void)
+
+#define _DEFINE_(nam) extern LilyObjectPtr lilySymbol_##nam;
+LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS
+#undef _DEFINE_
 
 
 void lily_init();
 
+
+namespace lily {
+	
+	void write(const std::string& str, std::ostream& out);
+
+	// To avoid having to worry about the toCode method API:
+	inline LilyObjectPtr toCode(LilyObjectPtr v) {
+		return v->toCode(v);
+	}
+
+}
 
 #endif
 

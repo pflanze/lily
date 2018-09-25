@@ -309,8 +309,11 @@ static LilyObjectPtr lilySysObjectCount(LilyListPtr* arguments,
 		}, arguments);
 }
 
-
-
+static LilyObjectPtr lilyToCode(LilyListPtr* arguments,
+				LilyListPtr* _ctx,
+				LilyListPtr* _cont) {
+	return apply1<LilyObject>(".code", toCode, arguments);
+}
 
 
 static LilyObjectPtr lilyDefine(LilyListPtr* es,
@@ -390,6 +393,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PRIMBINDING("string-append", lilyStringAppend),
 		PRIMBINDING("sys:allocation-counts", lilySysAllocationCounts),
 		PRIMBINDING("sys:object-count", lilySysObjectCount),
+		PRIMBINDING(".code", lilyToCode),
 		);
 	return env;
 }
