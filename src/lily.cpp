@@ -402,18 +402,20 @@ LilyObjectPtr LilyNull::toCode(LilyObjectPtr self) {
 	return LIST(lilySymbol_quote, self);
 }
 LilyObjectPtr LilyPair::toCode(LilyObjectPtr self) {
-	// if (lily::isList(self)) {
-	// 	return CONS(SYMBOL("list"),
-	// 		    lily::map(LilyPair::toCode,
-	// 			      self));
-	// } else if (is_LilyPair(_cdr)) {
-	// 	return LIST(lilySymbol_cons, lily::toCode(_car), lily::toCode(_cdr));
-	// } else {
-	// 	return CONS(SYMBOL("improper-list"),
-	// 		    lily::improper_fold_right(LilyPair::toCode,
-	// 					      NIL,
-	// 					      self));
-	// }
+	if (lily::isList(self)) {
+		return CONS(SYMBOL("list"),
+			    lily::map(lily::toCode,
+				      XAS<LilyList>(self)));
+	} else if (UNWRAP_AS(LilyPair, _cdr)) {
+		return CONS(SYMBOL("improper-list"),
+			    lily::improper_to_proper_map(
+				    lily::toCode,
+				    self));
+	} else {
+		return LIST(lilySymbol_cons,
+			    lily::toCode(_car),
+			    lily::toCode(_cdr));
+	}
 	return NIL;
 }
 LilyObjectPtr LilyVoid::toCode(LilyObjectPtr self) {

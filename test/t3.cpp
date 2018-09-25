@@ -249,4 +249,10 @@ int main () {
 	e("(map inc (list 10 11 13))");
 	e("(improper->proper-map inc (cons 10 (cons 20 30)))");
 	e("(improper->proper-map inc 10)");
+
+	note(".code");
+	e("(.code (cons 10 (cons 20 30)))");
+	e("(.code (cons 20 30))");
+	e("(.code (cons 20 (list)))");
+	e("(.code (list (list 10) 20))");
 }

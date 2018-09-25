@@ -315,3 +315,13 @@ Pair: (11 12 14)
 Pair: (11 21 31)
 > (improper->proper-map inc 10)
 Pair: (11)
+
+---- .code ----
+> (.code (cons 10 (cons 20 30)))
+Pair: (improper-list 10 20 30)
+> (.code (cons 20 30))
+Pair: (cons 20 30)
+> (.code (cons 20 (list)))
+Pair: (list 20)
+> (.code (list (list 10) 20))
+Pair: (list (list 10) 20)
