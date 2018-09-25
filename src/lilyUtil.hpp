@@ -24,6 +24,10 @@ namespace lilyUtil {
 			return _STR_o.str();		\
 		})()
 
+#define XXX throw std::logic_error("XXX unfinished");
+
+#define UNIMPLEMENTED throw std::logic_error("unimplemented");
+
 
 // template <typename T>
 // inline T identity(T v) { return v; }

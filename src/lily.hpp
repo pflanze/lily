@@ -11,7 +11,6 @@
 #include "lilyUtil.hpp"
 #include "parse.hpp"
 #include "symboltable.hpp"
-#include "xxx.hpp"
 
 
 #ifndef LILY_MEMORY_STATISTICS
