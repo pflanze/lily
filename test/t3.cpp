@@ -38,7 +38,7 @@ void e(const char* codestring) { run(codestring, true); }
 void _e(const char* codestring) { run(codestring, false); }
 
 int main () {
-	lily_init();
+	lily::init();
 	environment= lilyDefaultEnvironment();
 
 	note("string and symbol pointer comparison");

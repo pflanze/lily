@@ -9,7 +9,7 @@ using namespace lilyConstruct;
 LilyListPtr environment= NIL;
 
 int main (int argc, const char** argv) {
-	lily_init();
+	lily::init();
 	environment= lilyDefaultEnvironment();
 	std::string line;
 	while (true) {

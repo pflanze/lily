@@ -919,10 +919,10 @@ LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS
 #undef _DEFINE_
 
 
-void lily_init();
-
 
 namespace lily {
+	
+	void init();
 	
 	void write(const std::string& str, std::ostream& out);
 

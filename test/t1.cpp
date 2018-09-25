@@ -5,7 +5,7 @@ using namespace lily;
 using namespace lilyConstruct;
 
 int main () {
-	lily_init();
+	lily::init();
 	LilyObjectPtr n= LILY_NEW(LilyInt64,(-4113));
 	WRITELN(n);
 	WRITELN(CONS(INT(10), CONS(INT(20), NIL)));

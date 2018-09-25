@@ -159,7 +159,7 @@ LilyNull::write(std::ostream& out) {
 LILY_DEFINE_FOR_ALL_SPECIAL_SYMBOLS
 #undef _DEFINE_
 
-void lily_init() {
+void lily::init() {
 	lilySymbolTable= new lilySymbollikeTable();
 	lilyKeywordTable= new lilySymbollikeTable();
 
