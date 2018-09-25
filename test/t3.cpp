@@ -233,4 +233,10 @@ int main () {
 	e("(string-append \"a\" \"b c\" \"d\")");
 	e("(string-append \"a\")");
 	e("(string-append)");
+
+	note("stdlib");
+	e("(list? (list \"foo\"))");
+	e("(list? (list))");
+	e("(list? (cons 1 2))");
+	e("(list? \"foo\")");
 }

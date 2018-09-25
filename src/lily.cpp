@@ -1032,16 +1032,16 @@ LilyListPtr lily::reverse(LilyObjectPtr l) {
 	return res;
 }
 
-bool isList(LilyObjectPtr v) {
-	// while (true) {
-	// 	if (is_LilyPair(v)) {
-	// 		v= v->cdr();
-	// 	} else if (is_LilyNull(v)) {
-	// 		return true;
-	// 	} else {
-	// 		return false;
-	// 	}
-	// }
+bool lily::isList(LilyObjectPtr v) {
+	while (true) {
+		LETU_AS(vp, LilyPair, v);
+		if (vp)
+			v= vp->cdr();
+		else if (UNWRAP_AS(LilyNull, v))
+			return true;
+		else
+			return false;
+	}
 	return false;
 }
 

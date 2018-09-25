@@ -285,3 +285,13 @@ String: "ab cd"
 String: "a"
 > (string-append)
 String: ""
+
+---- stdlib ----
+> (list? (list "foo"))
+Boolean: #t
+> (list? (list))
+Boolean: #t
+> (list? (cons 1 2))
+Boolean: #f
+> (list? "foo")
+Boolean: #f

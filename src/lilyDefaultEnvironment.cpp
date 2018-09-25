@@ -315,6 +315,14 @@ static LilyObjectPtr lilyToCode(LilyListPtr* arguments,
 	return apply1<LilyObject>(".code", toCode, arguments);
 }
 
+static LilyObjectPtr lilyIsList(LilyListPtr* arguments,
+				LilyListPtr* _ctx,
+				LilyListPtr* _cont) {
+	return apply1<LilyObject>("list?", [](LilyObjectPtr v) {
+			return lily::isList(v) ? TRUE : FALSE;
+		}, arguments);
+}
+
 
 static LilyObjectPtr lilyDefine(LilyListPtr* es,
 				LilyListPtr* ctx,
@@ -394,6 +402,7 @@ LilyListPtr lilyDefaultEnvironment() {
 		PRIMBINDING("sys:allocation-counts", lilySysAllocationCounts),
 		PRIMBINDING("sys:object-count", lilySysObjectCount),
 		PRIMBINDING(".code", lilyToCode),
+		PRIMBINDING("list?", lilyIsList),
 		);
 	return env;
 }
