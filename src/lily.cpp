@@ -454,17 +454,17 @@ LilyObjectPtr LilyNativeProcedure::toCode(LilyObjectPtr self) {
 	return SYMBOL(_name);
 }
 LilyObjectPtr LilyNativeMacroexpander::toCode(LilyObjectPtr self) {
-	NOIMPLEMENTATION;
+	UNIMPLEMENTED("LilyNativeMacroexpander::toCode");
 }
 LilyObjectPtr LilyNativeEvaluator::toCode(LilyObjectPtr self) {
-	NOIMPLEMENTATION;
+	UNIMPLEMENTED("LilyNativeEvaluator::toCode");
 }
 LilyObjectPtr LilyContinuationFrame::toCode(LilyObjectPtr self) {
-	NOIMPLEMENTATION;
+	UNIMPLEMENTED("LilyContinuationFrame::toCode");
 }
 // right level?
 LilyObjectPtr LilyErrorWithWhat::toCode(LilyObjectPtr self) {
-	NOIMPLEMENTATION; // make mixin for _a _op _b _unary class? needs friend method accesses
+	UNIMPLEMENTED("LilyErrorWithWhat::toCode"); // make mixin for _a _op _b _unary class? needs friend method accesses
 }
 LilyObjectPtr LilyDivisionByZeroError::toCode(LilyObjectPtr self) {
 	return LIST(SYMBOL("division-by-zero-error"), STRING(_msg));

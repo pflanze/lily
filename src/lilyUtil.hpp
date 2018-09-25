@@ -28,7 +28,7 @@ namespace lilyUtil {
 
 #define NOIMPLEMENTATION throw std::logic_error("no implementation");
 
-#define UNIMPLEMENTED(e) throw std::logic_error(STR("unimplemented");
+#define UNIMPLEMENTED(e) throw std::logic_error(STR("unimplemented:" << e));
 
 
 // template <typename T>
