@@ -449,7 +449,9 @@ LilyObjectPtr LilyDouble::toCode(LilyObjectPtr self) {
 	return self;
 }
 LilyObjectPtr LilyNativeProcedure::toCode(LilyObjectPtr self) {
-	UNIMPLEMENTED;
+	// XX assumes it's defined in the 'toplevel', etc., but that's
+	// a problem not checked for in all the other cases, too.
+	return SYMBOL(_name);
 }
 LilyObjectPtr LilyNativeMacroexpander::toCode(LilyObjectPtr self) {
 	UNIMPLEMENTED;

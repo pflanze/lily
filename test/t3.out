@@ -325,3 +325,5 @@ Pair: (cons 20 30)
 Pair: (list 20)
 > (.code (list (list 10) 20))
 Pair: (list (list 10) 20)
+> (.code cons)
+Symbol: cons

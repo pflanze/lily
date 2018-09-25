@@ -255,4 +255,5 @@ int main () {
 	e("(.code (cons 20 30))");
 	e("(.code (cons 20 (list)))");
 	e("(.code (list (list 10) 20))");
+	e("(.code cons)");
 }
