@@ -847,25 +847,6 @@ public:
 };
 
 
-
-// direct s-expr evaluator; ctx is the lexical context, cont the
-// dynamic context
-LilyObjectPtr eval(LilyObjectPtr code,
-		   LilyListPtr ctx,
-		   LilyListPtr cont= LilyNull::singleton());
-
-
-LilyListPtr reverse(LilyObjectPtr l);
-
-// utils
-
-// usable for both syntax and function application (not sure how this
-// will remain when moving to guest language exceptions?)
-LilyObjectPtr
-apply1ary(const char* procname,
-	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
-	  LilyListPtr* vs);
-
 // casting that also unwraps it from the shared_ptr; NOTE: returns
 // NULL if invalid
 #define UNWRAP_AS(t, e) dynamic_cast<t*>(&*(e))
@@ -930,6 +911,24 @@ namespace lily {
 	inline LilyObjectPtr toCode(LilyObjectPtr v) {
 		return v->toCode(v);
 	}
+
+
+	// direct s-expr evaluator; ctx is the lexical context, cont the
+	// dynamic context
+	LilyObjectPtr eval(LilyObjectPtr code,
+			   LilyListPtr ctx,
+			   LilyListPtr cont= LilyNull::singleton());
+
+
+	LilyListPtr reverse(LilyObjectPtr l);
+
+	// usable for both syntax and function application (not sure how this
+	// will remain when moving to guest language exceptions?)
+	LilyObjectPtr
+	apply1ary(const char* procname,
+		  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
+		  LilyListPtr* vs);
+	// NOTE: also see apply.. in lilyHelper.hpp!
 
 	bool isList(LilyObjectPtr v);
 }

@@ -24,6 +24,6 @@ LilyListPtr lilyConstruct::_LIST(std::initializer_list<LilyObjectPtr> vs) {
 	for (auto v : vs) {
 		res= CONS(v, res);
 	}
-	return reverse(res);
+	return lily::reverse(res);
 }
 

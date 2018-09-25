@@ -849,9 +849,9 @@ alistMaybeRef (LilyListPtr l, LilyObjectPtr key) {
 
 
 LilyObjectPtr
-apply1ary(const char* procname,
-	  std::function<LilyObjectPtr(LilyObjectPtr)> proc,
-	  LilyListPtr* vs) {
+lily::apply1ary(const char* procname,
+		std::function<LilyObjectPtr(LilyObjectPtr)> proc,
+		LilyListPtr* vs) {
 	LETU_AS(vs0, LilyPair, *vs);
 	if (vs0) {
 		LETU_AS(vs1, LilyNull, vs0->cdr());
@@ -863,9 +863,10 @@ apply1ary(const char* procname,
 }
 
 
-LilyObjectPtr eval(LilyObjectPtr code,
-		   LilyListPtr ctx,
-		   LilyListPtr cont) {
+LilyObjectPtr
+lily::eval(LilyObjectPtr code,
+	   LilyListPtr ctx,
+	   LilyListPtr cont) {
 	LilyObjectPtr acc;
 	while (true) {
 	eval:
@@ -988,7 +989,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 			if (expressions->isNull()) {
 				// ready to call the continuation
 				DEBUGWARN("ready to call the continuation");
-				LilyListPtr arguments= reverse(rvalues);
+				LilyListPtr arguments= lily::reverse(rvalues);
 				LETU_AS(f, LilyCallable, head);
 				if (!f)
 					throw std::logic_error
@@ -1016,9 +1017,7 @@ LilyObjectPtr eval(LilyObjectPtr code,
 }
 
 
-
-// utils
-LilyListPtr reverse(LilyObjectPtr l) {
+LilyListPtr lily::reverse(LilyObjectPtr l) {
 	LilyListPtr res= NIL;
 	while (true) {
 		if (LilyPair*p= is_LilyPair(&*l)) {
