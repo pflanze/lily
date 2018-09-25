@@ -931,6 +931,7 @@ namespace lily {
 		return v->toCode(v);
 	}
 
+	bool isList(LilyObjectPtr v);
 }
 
 #endif

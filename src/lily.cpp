@@ -403,7 +403,19 @@ LilyObjectPtr LilyNull::toCode(LilyObjectPtr self) {
 	return LIST(lilySymbol_quote, self);
 }
 LilyObjectPtr LilyPair::toCode(LilyObjectPtr self) {
-	return LIST(lilySymbol_cons, lily::toCode(_car), lily::toCode(_cdr));
+	// if (lily::isList(self)) {
+	// 	return CONS(SYMBOL("list"),
+	// 		    lily::map(LilyPair::toCode,
+	// 			      self));
+	// } else if (is_LilyPair(_cdr)) {
+	// 	return LIST(lilySymbol_cons, lily::toCode(_car), lily::toCode(_cdr));
+	// } else {
+	// 	return CONS(SYMBOL("improper-list"),
+	// 		    lily::improper_fold_right(LilyPair::toCode,
+	// 					      NIL,
+	// 					      self));
+	// }
+	return NIL;
 }
 LilyObjectPtr LilyVoid::toCode(LilyObjectPtr self) {
 	return LIST(lilySymbol_void);
@@ -1021,6 +1033,20 @@ LilyListPtr reverse(LilyObjectPtr l) {
 	}
 	return res;
 }
+
+bool isList(LilyObjectPtr v) {
+	// while (true) {
+	// 	if (is_LilyPair(v)) {
+	// 		v= v->cdr();
+	// 	} else if (is_LilyNull(v)) {
+	// 		return true;
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
+	return false;
+}
+
 
 void throwTypeError(const char* typeid_str, LilyObjectPtr v) {
 	throw std::logic_error(STR("not a "
