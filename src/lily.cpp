@@ -278,7 +278,7 @@ LilyKeyword::write(std::ostream& out) {
 
 void
 LilyInt64::write(std::ostream& out) {
-	out << _value;
+	out << std::dec << _value;
 }
 
 void
@@ -522,7 +522,7 @@ std::string LilyForeignPointerBase::typeName() {
 void LilyForeignPointerBase::write(std::ostream& out) {
 	out << "#<foreign-pointer "
 	    << tName();
-	out << " 0x" << std::hex << valuep_as_uint();
+	out << " 0x" << std::hex << valuep_as_uint() << std::dec;
 	out << ">";
 }
 
