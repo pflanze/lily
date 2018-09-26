@@ -50,7 +50,8 @@ typedef char32_t lily_char_t;
 #define DEFINE_(Nam) Nam,
 enum class LilyEvalOpcode : char {
 	LILY_DEFINE_FOR_ALL_OPCODES
-	ForeignPointerBase
+	ForeignPointerBase,
+	ForeignValueBase
 };
 #undef DEFINE_
 
@@ -814,12 +815,6 @@ public:
 };
 
 
-// Perhaps also provide a
-// class LilyForeignValueBase : public LilyForeignBase {
-// }
-// and associated templated subclass for value embedding.
-
-
 // XX fix to use the right type
 typedef uint64_t pointer_as_uint_t;
 
@@ -855,6 +850,38 @@ public:
 	virtual pointer_as_uint_t valuep_as_uint() {
 		return (pointer_as_uint_t)_valuep;
 	};
+
+	virtual std::string tName() {
+		return typeidToTypename(typeid(T).name());
+	}
+};
+
+
+// And for values instead of pointers:
+
+class LilyForeignValueBase : public LilyForeignBase {
+public:
+	LilyForeignValueBase() {
+		evalId= LilyEvalOpcode::ForeignValueBase;
+	}
+	virtual LilyObjectPtr toCode(LilyObjectPtr self);
+	virtual std::string tName()=0;
+	virtual std::string typeName();
+	virtual void write(std::ostream& out);
+};
+
+template <typename T>
+class LilyForeignValue : public LilyForeignValueBase {
+	T _value;
+public:
+	LilyForeignValue(T value) : _value(value) {}
+	virtual ~LilyForeignValue () noexcept {}
+
+	T value() { return _value; }
+
+	// To enable to write something like:
+	//   (**dialog).close();
+	T operator*() { return _value; }
 
 	virtual std::string tName() {
 		return typeidToTypename(typeid(T).name());

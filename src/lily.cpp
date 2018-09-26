@@ -515,7 +515,7 @@ LilyObjectPtr LilyForeignPointerBase::toCode(LilyObjectPtr self) {
 }
 std::string LilyForeignPointerBase::typeName() {
 	// this is the full type name, not just T
-	return STR("ForeignValuePointer<" <<
+	return STR("ForeignPointer<" <<
 		   tName()
 		   << ">");
 }
@@ -523,6 +523,24 @@ void LilyForeignPointerBase::write(std::ostream& out) {
 	out << "#<foreign-pointer "
 	    << tName();
 	out << " 0x" << std::hex << valuep_as_uint() << std::dec;
+	out << ">";
+}
+
+
+
+LilyObjectPtr LilyForeignValueBase::toCode(LilyObjectPtr self) {
+	UNIMPLEMENTED("LilyForeignValueBase::toCode");
+}
+std::string LilyForeignValueBase::typeName() {
+	// this is the full type name, not just T
+	return STR("ForeignValue<" <<
+		   tName()
+		   << ">");
+}
+void LilyForeignValueBase::write(std::ostream& out) {
+	out << "#<foreign-value "
+	    << tName();
+	out << " (hidden)"; // ?
 	out << ">";
 }
 
