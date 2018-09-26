@@ -535,7 +535,7 @@ void LilyForeignPointerBase::write(std::ostream& out) {
 		throw LilyInt64OverflowError(a, op, b);			\
 		(STR("int64 " overflow ": " << a << " " << op << " " << b)); \
 	}								\
-	void throwOverflow(const char* op, int64_t a) {		\
+	void throwOverflow(const char* op, int64_t a) {			\
 		throw LilyInt64OverflowError(op, a);			\
 		(STR("int64 " overflow ": " << op << " " << a));	\
 	}
