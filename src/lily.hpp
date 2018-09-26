@@ -263,6 +263,7 @@ public:
 		evalId= LilyEvalOpcode::String;
 	}
 	std::string value() { return _value; }
+	std::string operator*() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
@@ -336,6 +337,8 @@ public:
 		evalId= LilyEvalOpcode::Int64;
 	};
 	int64_t value() { return _value; }
+	// To write (**s) instead of s->value() (fair?):
+	int64_t operator*() { return _value; }
 	virtual void write(std::ostream& out);
 	virtual LilyObjectPtr toCode(LilyObjectPtr self);
 	virtual std::string typeName();
