@@ -8,6 +8,10 @@
 #define LILY_NEW(class, arguments)			\
 	std::shared_ptr<class>(new class arguments)
 
+#define LILY_NEW_FOREIGN_POINTER(T, ptr)		\
+	std::shared_ptr< LilyForeignPointer<T> >	\
+	(new LilyForeignPointer<T>(ptr))
+
 namespace lilyConstruct {
 
 	// provide both ?
