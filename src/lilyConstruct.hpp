@@ -12,6 +12,10 @@
 	std::shared_ptr< LilyForeignPointer<T> >	\
 	(new LilyForeignPointer<T>(ptr))
 
+#define LILY_NEW_FOREIGN_VALUE(T, val)		\
+	std::shared_ptr< LilyForeignValue<T> >	\
+	(new LilyForeignValue<T>(val))
+
 namespace lilyConstruct {
 
 	// provide both ?
