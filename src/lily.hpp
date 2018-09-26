@@ -839,10 +839,20 @@ class LilyForeignPointer : public LilyForeignPointerBase {
 	T* _valuep;
 public:
 	LilyForeignPointer(T* valuep) : _valuep(valuep) {}
-	T* valuep() { return _valuep; };
+
+	T* valuep() { return _valuep; }
+
+	// To enable to write something like:
+	//   (**dialog)->close();
+	// (Can't make it work with one fewer dereference operations
+	// by returning T here, since that requires copying which some
+	// objects don't support)
+	T* operator*() { return _valuep; }
+
 	virtual pointer_as_uint_t valuep_as_uint() {
 		return (pointer_as_uint_t)_valuep;
 	};
+
 	virtual std::string tName() {
 		return typeidToTypename(typeid(T).name());
 	}
