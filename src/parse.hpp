@@ -50,15 +50,25 @@ enum class ParseResultCode : char; // to be defined by user
 
 typedef uint32_t parse_position_t;
 
+const parse_position_t no_parse_position= 4294967295;
 
 class StringCursor {
 public:
 	StringCursor(const std::string* backingString,
 		     parse_position_t position = 0,
-		     ParseResultCode error = ParseResultCode_Success)
+		     ParseResultCode error = ParseResultCode_Success,
+		     parse_position_t endposition= no_parse_position
+		)
 		: _backingString(backingString),
 		  _error(error),
-		  _position(position) {}
+		  _position(position)
+		{
+			if (endposition == no_parse_position)
+				_endposition= backingString->length();
+			else
+				_endposition= endposition;
+					
+		}
 	StringCursor() {}
 	char first () const {
 		return (*_backingString)[_position];
@@ -66,14 +76,14 @@ public:
 	const StringCursor rest () const {
 		parse_position_t pos1= _position+1;
 		assert(pos1 > 0); // XX not strictly portable
-		if (pos1 <= _backingString->length()) {
+		if (pos1 <= _endposition) {
 			return StringCursor(_backingString, pos1, _error);
 		} else {
 			throw std::logic_error("read past end of input");
 		}
 	}
 	bool isNull () const {
-		return !(_position < _backingString->length());
+		return !(_position < _endposition);
 	}
 	ParseResultCode error () const {
 		return _error;
@@ -105,8 +115,7 @@ public:
 	}
 	const std::string string() const {
 		return _backingString
-			->substr(_position,
-				 _backingString->length() - _position);
+			->substr(_position, _endposition - _position);
 	}
 	parse_position_t positionDifferenceTo(StringCursor& s2) {
 		assert(s2._position >= _position);
@@ -117,6 +126,7 @@ private:
 	const std::string* _backingString;
 	ParseResultCode _error;
 	parse_position_t _position;
+	parse_position_t _endposition;
 };
 
 
