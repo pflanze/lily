@@ -63,10 +63,13 @@ public:
 		  _error(error),
 		  _position(position)
 		{
-			if (endposition == no_parse_position)
-				_endposition= backingString->length();
-			else
+			auto len= backingString->length();
+			if (endposition == no_parse_position) {
+				_endposition= len;
+			} else {
+				assert(endposition <= len);
 				_endposition= endposition;
+			}
 					
 		}
 	StringCursor() {}
