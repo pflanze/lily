@@ -85,6 +85,18 @@ public:
 			throw std::logic_error("read past end of input");
 		}
 	}
+	const StringCursor withEofIn_OrLess(parse_position_t len) const {
+		auto curlen= length();
+		if (len < curlen) {
+			return StringCursor(_backingString,
+					    _position,
+					    _error,
+					    _position + len);
+		} else {
+			return *this;
+		}
+				    
+	}
 	bool isNull () const {
 		return !(_position < _endposition);
 	}
@@ -102,6 +114,9 @@ public:
 	}
 	parse_position_t position() const {
 		return _position;
+	}
+	parse_position_t length() const {
+		return _endposition - _position;
 	}
 	const std::string* backingString() const {
 		return _backingString;
