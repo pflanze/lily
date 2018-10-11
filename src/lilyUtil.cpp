@@ -44,10 +44,18 @@ void stringlike_write(const std::string& str,
 			case '\t': str = "\\t"; break;
 			case '\0': str = "\\0"; break;
 			case '\\': str = "\\\\"; break;
-			default:
-				out << c;
-				// XX utf8
+			default: {
+				// XX which ones are OK to print
+				// verbatim? Unicode? Output mode?
+				if ((c <= 31) || ((c >= 127) && (c <= 255))) {
+					out << '\\';
+					out << std::oct << (uint32_t)c << std::dec;
+				} else {
+					out << c;
+					// XX utf8
+				}
 				continue;
+			}
 			}
 			out << str;
 		}
