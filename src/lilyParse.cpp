@@ -279,22 +279,48 @@ PR parseStringLike(Sm s,
 				return ERR(ParseResultCode::UnexpectedEof, s);
 			c = s.first();
 			s= s.rest();
-			switch (c) {
+			if (isDigit(c)) {
+				char32_t c32= c - '0';
+				while (true) {
+					if (s.isNull()) {
+						break;
+					} else {
+						c= s.first();
+						if (isDigit(c)) {
+							auto c32B = c32 * 8
+								+ (c - '0');
+							if (c32B > 255)
+								break;
+							c32= c32B;
+							s= s.rest();
+						} else {
+							break;
+						}
+					}
+				}
+				WARN("seen char "<<c32);
+				str.push_back(c32); // XXX unicode
+				
+			} else {
 				// keep in sync with stringlike_write
 				// in lilyUtil.cpp!
-			case 'a': c='\a'; break;
-			case 'b': c='\b'; break;
-			case 'f': c='\f'; break;
-			case 'n': c='\n'; break;
-			case 'r': c='\r'; break;
-			case 't': c='\t'; break;
-			case '0': c='\0'; break;
-			// XX handle lots of other cases?
-			// default: leave c as is
+				switch (c) {
+				case 'a': c='\a'; break;
+				case 'b': c='\b'; break;
+				case 'f': c='\f'; break;
+				case 'n': c='\n'; break;
+				case 'r': c='\r'; break;
+				case 't': c='\t'; break;
+				// XX handle lots of other cases?
+				// default: leave c as is
+				}
+				// XX handle unicode?
+				str.push_back(c);
 			}
+		} else {
+			// XX handle unicode?
+			str.push_back(c);
 		}
-		// XX handle unicode?
-		str.push_back(c);
 	}
 }
 
