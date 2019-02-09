@@ -1162,12 +1162,34 @@ LilyObjectPtr lily::improper_to_proper_map(
 		}, NIL, v);
 }
 
+// Cut off learing "Lily" from type names; does not handle unicode
+// since there's no unicode used in those. XX will become obsolete
+// once using namespaces.
+static
+std::string typenameForUser(const std::string s) {
+	auto len= s.length();
+	if (len > 4) {
+		auto start= s.substr(0,4);
+		if (start == "Lily") {
+			auto t= s.substr(4, len-4);
+			// not safe for unicode, but unicode is not
+			// used in C++ type names.
+			t[0]= tolower(t[0]);
+			return t;
+		} else {
+			return s;
+		}
+	} else {
+		return s;
+	}
+}
 
 
 void throwTypeError(const char* typeid_str, LilyObjectPtr v) {
-	throw std::logic_error(STR("not a "
-				   << typeidToTypename(typeid_str)
-				   << ": "
-				   << show(v)));
+	throw std::logic_error
+		(STR("not a "
+		     << typenameForUser(typeidToTypename(typeid_str))
+		     << ": "
+		     << show(v)));
 }
 
