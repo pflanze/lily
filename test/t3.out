@@ -120,7 +120,7 @@ Fractional64: 10/3
 > (integer./ 10 3)
 Fractional64: 10/3
 > (double./ 10 3)
-ERR: not a LilyDouble: 10
+ERR: not a double: 10
 > (double./ 10. 3.)
 Double: 3.33333333333333
 
