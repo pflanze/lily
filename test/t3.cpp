@@ -216,6 +216,9 @@ int main () {
 	e("(10 20)"); // not a function error
 
 	note("chars");
+	e("#\\x40");
+	e("(char->integer (string-ref \"\\100\" 0))");
+	// e("#o100"); -> 64
 	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\")");
 	e("(list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe)");
 	e("(list->string (list #\\f #\\esc #\\return #\\x70))");
