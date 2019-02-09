@@ -13,9 +13,10 @@
 
 #include "lily.hpp"
 
-#define PRIMBINDING(str, proc) PAIR(SYMBOL(str), NATIVE_PROCEDURE(proc, str))
+#define NATIVE_PROCEDURE_BINDING(str, proc) \
+	PAIR(SYMBOL(str), NATIVE_PROCEDURE(proc, str))
 
-#define BINDPRIM(k,v) DEFPRIM_ENVIRONMENT= CONS(PRIMBINDING(k,v),	\
+#define BINDPRIM(k,v) DEFPRIM_ENVIRONMENT= CONS(NATIVE_PROCEDURE_BINDING(k,v),	\
 						DEFPRIM_ENVIRONMENT);
 
 
