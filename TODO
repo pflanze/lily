@@ -9,3 +9,4 @@
 - use LETU_AS instead of LET_AS in places where it's safe, check performance difference
 - provide an interface hierarchy separate from implementation?
 - replace assert with ASSERT that throws (what about null pointer exceptions?)
+- don't use C++ exceptions for Scheme errors, rather continuations and dynamic variables (and catch (and throw?) C++ exceptions at native boundaries)
