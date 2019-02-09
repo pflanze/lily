@@ -516,8 +516,14 @@ LilyListPtr lilyDefaultEnvironment() {
 #define DEFPRIM_ENVIRONMENT env
 	DEFPRIM2(lilyStringRef, "string-ref",
 		 LilyString, s, LilyInt64, i, {
-			 // XX unicode
-			 return CHAR(s->value()[i->value()]);
+			 // XX handle unicode
+			 auto len= s->value().length();
+			 auto ii= i->value();
+			 if ((ii < 0) || (ii >= len)) {
+				 throw std::logic_error("argument 2 out of range");
+			 } else {
+				 return CHAR(s->value()[i->value()]);
+			 }
 		 });
 	return env;
 }
