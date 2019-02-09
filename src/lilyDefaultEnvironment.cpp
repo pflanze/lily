@@ -512,6 +512,13 @@ LilyListPtr lilyDefaultEnvironment() {
 		NATIVE_PROCEDURE_BINDING("map", lilyMap),
 		NATIVE_PROCEDURE_BINDING("improper->proper-map", lilyImproperToProperMap),
 		);
+
+#define DEFPRIM_ENVIRONMENT env
+	DEFPRIM2(lilyStringRef, "string-ref",
+		 LilyString, s, LilyInt64, i, {
+			 // XX unicode
+			 return CHAR(s->value()[i->value()]);
+		 });
 	return env;
 }
 
