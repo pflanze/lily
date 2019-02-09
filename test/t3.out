@@ -91,6 +91,10 @@ ERR: cdr needs 1 argument
 Pair: (10 11 12 ())
 
 ---- arithmetic ----
+> (+ 10 'a)
+ERR: not a number: a
+> (+ 10 "a")
+ERR: not a number: "a"
 > (-10)
 ERR: not a function: -10
 > (- 10)
