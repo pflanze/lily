@@ -45,7 +45,7 @@ Int64: 17
 Int64: 17
 > (+ (* 10 3) 4)
 Int64: 34
-> 'y
+> 'x
 Symbol: x
 > 'y
 Symbol: y
