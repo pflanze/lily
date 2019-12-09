@@ -93,12 +93,14 @@ Scheme procedure.)
 
 ## Author
 
-This is being developed by [Christian
+Lily is being developed by [Christian
 Jaeger](http://christianjaeger.ch), originally for [Arcola
-Energy](https://www.arcolaenergy.com/).
+Energy](https://www.arcolaenergy.com/). Thanks to Arcola Energy for
+the support of the initial development and for releasing it as Open
+Source!
 
 
 ## License
 
-Lily is released as Open Source softare under the MIT License. See
+Lily is Open Source software released under the MIT License. See
 [COPYING](COPYING.md).
