@@ -299,6 +299,8 @@ Pair: (39 55)
 Char: #\xff
 > (string-ref "\377\177" 1)
 Char: #\delete
+> "\377"
+String: "\377"
 
 ---- strings ----
 > (string-append "a" "b c" "d")

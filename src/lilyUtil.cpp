@@ -48,8 +48,9 @@ void stringlike_write(const std::string& str,
 				// XX which ones are OK to print
 				// verbatim? Unicode? Output mode?
 				if ((c <= 31) || ((c >= 127) && (c <= 255))) {
+					unsigned char uc= c; // XX unicode
 					out << '\\';
-					out << std::oct << (uint32_t)c << std::dec;
+					out << std::oct << (uint32_t)uc << std::dec;
 				} else {
 					out << c;
 					// XX utf8
