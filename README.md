@@ -85,10 +85,10 @@ to stdout):
     (LOG "Hi")
     #!void
 
-Check `examples/qt/main.cpp` for the "DEFPRIM.." forms to see what
-functionality is supported. (Most tabs in the GUI don't have a
-function, the Log one is the one that shows the output from the `LOG`
-Scheme procedure.)
+Check [examples/qt/main.cpp](examples/qt/main.cpp) for the "DEFPRIM.." 
+forms to see what functionality is supported. (Most tabs in the GUI
+don't currently have a function, the Log one is the one that shows the
+output from the `LOG` Scheme procedure.)
 
 
 ## Author
