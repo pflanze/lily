@@ -87,4 +87,3 @@ dirs:
 
 clean:
 	rm -rf bin
-	mkdir -p bin bin/examples bin/test
