@@ -11,6 +11,15 @@ endif
 
 all: dirs bin/examples/repl bin/lily.a
 
+qt: dirs examples/qt/lilyExample
+
+
+examples/qt/Makefile: examples/qt/untitled.pro
+	cd examples/qt && qmake
+
+examples/qt/lilyExample: bin/lily.a examples/qt/Makefile
+	make -C examples/qt
+
 test: dirs t1 t_parse t2 t3
 
 t1: bin/test/t1
