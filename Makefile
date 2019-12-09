@@ -9,9 +9,9 @@ ifdef ONE
 CFLAGS += -fmax-errors=1
 endif
 
-all: dirs bin/examples/repl tests
+all: dirs bin/examples/repl
 
-tests: t1 t_parse t2 t3
+test: dirs t1 t_parse t2 t3
 
 t1: bin/test/t1
 	bin/test/t1 > test/t1.actual.out
