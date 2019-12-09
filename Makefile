@@ -9,7 +9,7 @@ ifdef ONE
 CFLAGS += -fmax-errors=1
 endif
 
-all: dirs bin/examples/repl
+all: dirs bin/examples/repl bin/lily.a
 
 test: dirs t1 t_parse t2 t3
 
