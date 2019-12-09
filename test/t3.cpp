@@ -238,6 +238,8 @@ int main () {
 	e("(map char->integer (string->list \"\\377\"))");
 	e("(map char->integer (string->list \"\\378\"))");
 	e("(map char->integer (string->list \"\\477\"))");
+	e("(string-ref \"\\377\\177\" 0)");
+	e("(string-ref \"\\377\\177\" 1)");
 
 	note("strings");
 	e("(string-append \"a\" \"b c\" \"d\")");

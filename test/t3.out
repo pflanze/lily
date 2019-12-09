@@ -295,6 +295,10 @@ Pair: (255)
 Pair: (31 56)
 > (map char->integer (string->list "'7"))
 Pair: (39 55)
+> (string-ref "\377\177" 0)
+Char: #\xff
+> (string-ref "\377\177" 1)
+Char: #\delete
 
 ---- strings ----
 > (string-append "a" "b c" "d")

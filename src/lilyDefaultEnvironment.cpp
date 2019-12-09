@@ -523,7 +523,9 @@ LilyListPtr lilyDefaultEnvironment() {
 			 if ((ii < 0) || (uii >= len)) {
 				 throw std::logic_error("argument 2 out of range");
 			 } else {
-				 return CHAR(s->value()[i->value()]);
+				 auto c= s->value()[i->value()];
+				 unsigned char uc= c; // XX unicode
+				 return CHAR(uc);
 			 }
 		 });
 	return env;
