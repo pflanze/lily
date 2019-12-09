@@ -1,4 +1,5 @@
-- handle unicode
+- use Qt strings directly: how?
+- handle unicode; with and without using Qt strings?
 - check `\0` handling
 - proper `\r\n` handling
 - protect against stack overflows during parsing and pretty-printing?
