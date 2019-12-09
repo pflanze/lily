@@ -57,7 +57,8 @@ traditional JavaScript).
 
 A compiler that supports C++ 11 is required.
 
-`make qt` requires Qt 4 (or greater?) to be installed.
+`make qt` requires Qt 4 or greater (4 and 5 have been tested) to be
+installed.
 
 
 ## Examples
