@@ -55,9 +55,9 @@ traditional JavaScript).
 
 ## Requirements
 
-This requires a compiler that supports C++ 11.
+A compiler that supports C++ 11 is required.
 
-The `qt` target needs Qt 4 (or greater?) to be installed.
+`make qt` requires Qt 4 (or greater?) to be installed.
 
 
 ## Examples
@@ -67,10 +67,11 @@ The `qt` target needs Qt 4 (or greater?) to be installed.
     (* 2 3) 
     6
 
-The repl binary will not exit until you hit ctl-d or ctl-c, and read
-lines of Scheme code (the part that it supports) on stdin and write
-the result of its evaluation to stdout.  You may want to install the
-`rlwrap` tool and call it as `rlwrap bin/examples/repl`.
+The repl binary will not exit until you hit ctl-d or ctl-c; it reads
+lines of Scheme code (of the part of Scheme that it currently
+supports) on stdin and writes the result of its evaluation to stdout.
+You may want to install the `rlwrap` tool and call it as `rlwrap
+bin/examples/repl`.
 
 Here's an example that embeds Lily in a Qt application (like the repl
 above, it reads Scheme 'command lines' on stdin and writes the result
