@@ -251,7 +251,8 @@ static LilyObjectPtr lilyStringToList(LilyListPtr* arguments,
 			auto str= s->value();
 			LilyListPtr res= NIL;
 			for (auto i= str.rbegin(); i != str.rend(); i++) {
-				res= CONS(CHAR(*i), res);
+				unsigned char uc= *i; // XX unicode
+				res= CONS(CHAR(uc), res);
 			}
 			return res;
 		}, arguments);
