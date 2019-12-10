@@ -269,4 +269,10 @@ int main () {
 	e("(.code (cons 20 (list)))");
 	e("(.code (list (list 10) 20))");
 	e("(.code cons)");
+
+	note("apply");
+	e("(apply + '())");
+	e("(apply - '(4 2 7))");
+	e("(apply - '(1 . 2))");
+	e("(apply - 5)");
 }

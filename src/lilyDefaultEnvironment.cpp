@@ -528,6 +528,13 @@ LilyListPtr lilyDefaultEnvironment() {
 				 return CHAR(uc);
 			 }
 		 });
+	DEFPRIM2(lilyApply, "apply",
+		 LilyCallable, proc, LilyList, args, {
+			 // XX TCO? (It does tail-call the cont? But
+			 // not the C++ stack *?*)
+			 auto argslist= XAS<LilyList>(args);
+			 return proc->call(&argslist, __ctx, __cont);
+		 });
 	return env;
 }
 

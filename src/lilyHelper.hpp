@@ -118,8 +118,8 @@ apply3(const char* procname,
 
 #define LAMBDA2(scmnamstr, T1, v1, T2, v2, body)			\
 	[&](LilyListPtr* ___lambdaN_vs,					\
-	    LilyListPtr*,						\
-	    LilyListPtr*) -> LilyObjectPtr {				\
+	    LilyListPtr* __ctx,						\
+	    LilyListPtr* __cont) -> LilyObjectPtr {			\
 		return apply2<T1,T2>(scmnamstr,				\
 				     [&](std::shared_ptr<T1> v1,	\
 					 std::shared_ptr<T2> v2)	\

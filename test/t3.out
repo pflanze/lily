@@ -351,3 +351,13 @@ Pair: (list 20)
 Pair: (list (list 10) 20)
 > (.code cons)
 Symbol: cons
+
+---- apply ----
+> (apply + '())
+Int64: 0
+> (apply - '(4 2 7))
+Int64: -5
+> (apply - '(1 . 2))
+ERR: improper list: 2
+> (apply - 5)
+ERR: not a list: 5
