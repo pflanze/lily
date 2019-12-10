@@ -98,45 +98,45 @@ apply3(const char* procname,
 
 
 #define LAMBDA0(scmnamstr, body)					\
-	[&](LilyListPtr* ___lambdaN_vs,					\
-	    LilyListPtr*,						\
-	    LilyListPtr*) -> LilyObjectPtr {				\
+	[&](LilyListPtr* __vs,						\
+	    LilyListPtr* __ctx,						\
+	    LilyListPtr* __cont) -> LilyObjectPtr {			\
 		return apply0(scmnamstr,				\
 			      [&]() -> LilyObjectPtr body,		\
-			      ___lambdaN_vs);				\
+			      __vs);					\
 	}
 
 #define LAMBDA1(scmnamstr, T1, v1, body)				\
-	[&](LilyListPtr* ___lambdaN_vs,					\
-	    LilyListPtr*,						\
-	    LilyListPtr*) -> LilyObjectPtr {				\
+	[&](LilyListPtr* __vs,						\
+	    LilyListPtr* __ctx,						\
+	    LilyListPtr* __cont) -> LilyObjectPtr {			\
 		return apply1<T1>(scmnamstr,				\
 				  [&](std::shared_ptr<T1> v1)		\
 				  -> LilyObjectPtr body,		\
-				  ___lambdaN_vs);			\
+				  __vs);				\
 	}
 
 #define LAMBDA2(scmnamstr, T1, v1, T2, v2, body)			\
-	[&](LilyListPtr* ___lambdaN_vs,					\
+	[&](LilyListPtr* __vs,						\
 	    LilyListPtr* __ctx,						\
 	    LilyListPtr* __cont) -> LilyObjectPtr {			\
 		return apply2<T1,T2>(scmnamstr,				\
 				     [&](std::shared_ptr<T1> v1,	\
 					 std::shared_ptr<T2> v2)	\
 				     -> LilyObjectPtr body,		\
-				     ___lambdaN_vs);			\
+				     __vs);				\
 	}
 
 #define LAMBDA3(scmnamstr, T1, v1, T2, v2, T3, v3, body)		\
-	[&](LilyListPtr* ___lambdaN_vs,					\
-	    LilyListPtr*,						\
-	    LilyListPtr*) -> LilyObjectPtr {				\
+	[&](LilyListPtr* __vs,						\
+	    LilyListPtr* __ctx,						\
+	    LilyListPtr* __cont) -> LilyObjectPtr {			\
 		return apply3<T1,T2,T3>(scmnamstr,			\
 					[&](std::shared_ptr<T1> v1,	\
 					    std::shared_ptr<T2> v2,	\
 					    std::shared_ptr<T3> v3)	\
 					-> LilyObjectPtr body,		\
-					___lambdaN_vs);			\
+					__vs);				\
 	}
 
 
