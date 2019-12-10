@@ -1,0 +1,64 @@
+#!/usr/bin/env perl
+
+use strict; use warnings; use warnings FATAL => 'uninitialized';
+
+use lib "/home/chrisperl/functional-perl/lib";
+use lib "/opt/functional-perl/lib";
+
+use FP::Repl;
+use Chj::xperlfunc ":all";
+use FP::IOStream ":all";
+use FP::Weak 'Keep';
+use FP::List;
+use Chj::xperlfunc 'xlocaltime';
+
+my ($maybe_version_argument)= @ARGV;
+
+my ($maybe_version)= $maybe_version_argument ? do {
+    my @r= $maybe_version_argument=~ m/^v?(\d+\.\d+\.\d+)\z/s
+        or die "invalid version number";
+    @r
+} : ();
+
+sub version_inc {
+    my ($v)= @_;
+    my @v= split /\./, $v;
+    $v[-1]= $v[-1] + 1;
+    join '.', @v
+}
+
+
+xxsystem "cj-git-status-is-clean";
+
+$ENV{INSIDE_EMACS}=1;
+xxsystem "make", "test";
+
+
+my $path= "Changes.md";
+
+my $lines= xfile_lines $path;
+
+my $version= $maybe_version // do {
+    $lines->first =~ m/v?(\d+\.\d+\.\d+)\b/s
+        or die "no match";
+    version_inc $1
+};
+
+print "Releasing version $version...";
+
+xfile_replace_lines $path, sub {
+    my ($lines)= @_;
+    my $lt= xlocaltime;
+    my $date= join("-", $lt->Year, $lt->Mon, $lt->mday);
+    cons("## $date v$version\n\n- \n\n",
+         $lines)
+};
+
+xxsystem "e", $path;
+xxsystem "git", "commit", "-a", "-m", "Release $version";
+
+xxsystem "git-sign", "v$version";
+
+xxsystem "g-push", "github", "master", "v$version";
+
+print "Done.\n";
