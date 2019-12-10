@@ -926,6 +926,8 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 // let unwrapped
 #define XLETU_AS(var, t, e) t* var= XUNWRAP_AS(t, e)
 #define XLETU(var, e) XLETU_AS(var, LilyObject, e)
+// How does XLETU make sense, will never throw an exception and is
+// thus the same as LETU ?
 
 
 
