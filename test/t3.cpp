@@ -222,8 +222,9 @@ int main () {
 	e("(string->list \"Hello\\0 World\\b\\a\\f\\t\\r\\n\")");
 	e("(list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe)");
 	e("(list->string (list #\\f #\\esc #\\return #\\x70))");
-	e("(list->string (list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe))");
-	e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")");
+	// XX disabled tests for unicode; revert commit to get back .out lines too
+	// e("(list->string (list #\\f #\\esc #\\return #\\xff #\\ufffe #\\U0001effe))");
+	// e("(string->list \"f\\33\\r\\377\\ufffe\\U0001effe\")");
 	e("(char->integer #\\xef)");
 	e("#\\xef");
 	e("(char->integer #\\uffff)");

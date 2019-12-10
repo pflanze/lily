@@ -263,10 +263,6 @@ Pair: (#\H #\e #\l #\l #\o #\nul #\space #\W #\o #\r #\l #\d #\backspace #\alarm
 Pair: (#\f #\esc #\return #\xff #\ufffe #\U0001effe)
 > (list->string (list #\f #\esc #\return #\p))
 String: "f\33\rp"
-> (list->string (list #\f #\esc #\return #\xff #\ufffe #\U0001effe))
-String: "f\33\r\377\ufffe\U0001effe"
-> (string->list "f\33\r\377\ufffe\U0001effe")
-Pair: (#\f #\esc #\return #\xff #\ufffe #\U0001effe)
 > (char->integer #\xef)
 Int64: 239
 > #\xef
