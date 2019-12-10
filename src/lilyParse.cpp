@@ -298,7 +298,6 @@ PR parseStringLike(Sm s,
 						}
 					}
 				}
-				WARN("seen char "<<c32);
 				str.push_back(c32); // XXX unicode
 				
 			} else {
