@@ -40,6 +40,22 @@ implementing custom threading approaches (obviating the need for
 manual continuation-passing style code (event handler chaining) as in
 traditional JavaScript).
 
+## Goals
+
+* easy to understand and maintain implementation
+* low latency
+* first-class lexical environments in some manner (run programs in an
+  environment that is tailored to what the programs should be allowed
+  to do)
+
+## Non-goals
+
+* raw speed (but there's an idea to maybe implement a translator from
+  Scheme programs to equivalent C++ code that is still working on the
+  same dynamic data types but saves the interpreter overhead (and then
+  possibly, with type annotations, to statically typed code), that
+  should speed up things quite a lot and should make libraries in
+  Scheme feasible)
 
 ## Status
 
@@ -62,6 +78,7 @@ A compiler that supports C++ 11 is required.
 installed.
 
 Lily has so far only been tested on Linux (Debian).
+
 
 ## Examples
 
