@@ -919,7 +919,7 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 	([&]() -> t* {							\
 		t* _XUNWRAP_AS_v= dynamic_cast<t*>(&*(e));		\
 		if (! _XUNWRAP_AS_v)					\
-			throw std::logic_error("can't unwrap ");	\
+			throwTypeError(STRINGIFY(t),(e));		\
 		return  _XUNWRAP_AS_v;					\
 	})()
 #define XLIST_UNWRAP(e) XUNWRAP_AS(LilyList,e)
