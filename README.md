@@ -64,9 +64,6 @@ traditional JavaScript).
   definitions are not implemented yet, thus local event handlers
   cannot be written in Lily yet.
 
-- `make test` shows broken tests for unicode handling that needs to be
-  done
-
 - See [TODO](TODO.md).
 
 
