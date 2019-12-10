@@ -295,7 +295,7 @@ static LilyObjectPtr lilySysAllocationCounts(LilyListPtr* arguments,
 	return apply0("sys:allocation-counts", []() {
 			auto a= lilyAllocationCount();
 			auto d= lilyDeallocationCount();
-			return CONS(INT(a), INT(d));
+			return LIST(INT(a), INT(d));
 		}, arguments);
 }
 
