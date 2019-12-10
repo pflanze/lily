@@ -1,3 +1,8 @@
+## 2019-12-10 v0.1.3
+
+- update Changes; automatic release script for maintainer
+- disable unicode tests so that the test suite succeeds
+
 ## 2019-12-10 v0.1.2
 
 - avoid undefined signed int overflow
