@@ -76,6 +76,10 @@ supports) on stdin and writes the result of its evaluation to stdout.
 You may want to install the `rlwrap` tool and call it as `rlwrap
 bin/examples/repl`.
 
+You can see what functions and syntax is implemented by looking at the
+definition of `lilyDefaultEnvironment()` in
+[src/lilyDefaultEnvironment.cpp](src/lilyDefaultEnvironment.cpp).
+
 Here's an example that embeds Lily in a Qt application (like the repl
 above, it reads Scheme 'command lines' on stdin and writes the result
 to stdout):
