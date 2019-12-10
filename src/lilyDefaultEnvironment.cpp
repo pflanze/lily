@@ -305,7 +305,6 @@ static LilyObjectPtr lilySysObjectCount(LilyListPtr* arguments,
 	return apply0("sys:object-count", []() {
 			auto a= lilyAllocationCount();
 			auto d= lilyDeallocationCount();
-			// XX check for overflowed variables I guess?
 			return INT(a-d);
 		}, arguments);
 }

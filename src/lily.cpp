@@ -18,8 +18,8 @@ LILY_DEFINE_FOR_ALL_OPCODES;
 
 
 #if LILY_MEMORY_STATISTICS
-int64_t lily_allocation_count;
-int64_t lily_deallocation_count;
+uint64_t lily_allocation_count;
+uint64_t lily_deallocation_count;
 
 #else
 

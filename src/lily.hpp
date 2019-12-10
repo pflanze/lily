@@ -85,14 +85,14 @@ namespace lily {
 
 #if LILY_MEMORY_STATISTICS
 // XX move this as well as all the constructors into lily.cpp?
-extern int64_t lily_allocation_count;
-extern int64_t lily_deallocation_count;
+extern uint64_t lily_allocation_count;
+extern uint64_t lily_deallocation_count;
 // /move
-inline int64_t lilyAllocationCount() { return lily_allocation_count; }
-inline int64_t lilyDeallocationCount() { return lily_deallocation_count; }
+inline uint64_t lilyAllocationCount() { return lily_allocation_count; }
+inline uint64_t lilyDeallocationCount() { return lily_deallocation_count; }
 #else
-inline int64_t lilyAllocationCount() { return -1; }
-inline int64_t lilyDeallocationCount() { return -1; }
+inline uint64_t lilyAllocationCount() { return 0; }
+inline uint64_t lilyDeallocationCount() { return 0; }
 #endif
 
 
