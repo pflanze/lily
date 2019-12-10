@@ -84,8 +84,14 @@ Lily has so far only been tested on Linux (Debian).
 
     $ make
     $ bin/examples/repl
-    (* 2 3) 
+    > (* 2 3)
     6
+    > +
+    #<native-procedure +>
+    > (apply + (map inc '(1 2 3)))
+    9
+    > (sys:allocation-counts)
+    (238 74)
 
 The repl binary will not exit until you hit ctl-d or ctl-c; it reads
 lines of Scheme code (of the part of Scheme that it currently
