@@ -40,6 +40,20 @@ implementing custom threading approaches (obviating the need for
 manual continuation-passing style code (event handler chaining) as in
 traditional JavaScript).
 
+## Why?
+
+Interfacing between Qt and non-C++ programming language
+implementations is apparently difficult enough to do natively that
+Python is about the only one that managed to do it. QML is often used
+nowadays, but it is being said that there's still functionality that
+needs to be accessed via the object (C++) API. Generating (and
+parsing) QML strings rather than S-expressions is more involved, hence
+Scheme is expected to allow closer integration across the
+pipe. Especially of course if Scheme is being used on both ends. The
+author also needed to get experience in creating a Scheme interpreter
+for other contexts. And he expects to get better debugging features
+out of Lily in due course than out of a JavaScript interpreter.
+
 ## Goals
 
 * easy to understand and maintain implementation
