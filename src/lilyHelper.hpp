@@ -96,11 +96,14 @@ apply3(const char* procname,
 }
 
 
+// this is ~gcc specific: disable warnings about *possibly unused*
+// variables
+#define UNUSED(t_and_var) __attribute__((unused)) t_and_var
 
 #define LAMBDA0(scmnamstr, body)					\
 	[&](LilyListPtr* __vs,						\
-	    LilyListPtr* __ctx,						\
-	    LilyListPtr* __cont) -> LilyObjectPtr {			\
+	    UNUSED(LilyListPtr* __ctx),					\
+	    UNUSED(LilyListPtr* __cont)) -> LilyObjectPtr {		\
 		return apply0(scmnamstr,				\
 			      [&]() -> LilyObjectPtr body,		\
 			      __vs);					\
@@ -108,8 +111,8 @@ apply3(const char* procname,
 
 #define LAMBDA1(scmnamstr, T1, v1, body)				\
 	[&](LilyListPtr* __vs,						\
-	    LilyListPtr* __ctx,						\
-	    LilyListPtr* __cont) -> LilyObjectPtr {			\
+	    UNUSED(LilyListPtr* __ctx),					\
+	    UNUSED(LilyListPtr* __cont)) -> LilyObjectPtr {		\
 		return apply1<T1>(scmnamstr,				\
 				  [&](std::shared_ptr<T1> v1)		\
 				  -> LilyObjectPtr body,		\
@@ -118,8 +121,8 @@ apply3(const char* procname,
 
 #define LAMBDA2(scmnamstr, T1, v1, T2, v2, body)			\
 	[&](LilyListPtr* __vs,						\
-	    LilyListPtr* __ctx,						\
-	    LilyListPtr* __cont) -> LilyObjectPtr {			\
+	    UNUSED(LilyListPtr* __ctx),					\
+	    UNUSED(LilyListPtr* __cont)) -> LilyObjectPtr {		\
 		return apply2<T1,T2>(scmnamstr,				\
 				     [&](std::shared_ptr<T1> v1,	\
 					 std::shared_ptr<T2> v2)	\
@@ -129,8 +132,8 @@ apply3(const char* procname,
 
 #define LAMBDA3(scmnamstr, T1, v1, T2, v2, T3, v3, body)		\
 	[&](LilyListPtr* __vs,						\
-	    LilyListPtr* __ctx,						\
-	    LilyListPtr* __cont) -> LilyObjectPtr {			\
+	    UNUSED(LilyListPtr* __ctx),					\
+	    UNUSED(LilyListPtr* __cont)) -> LilyObjectPtr {		\
 		return apply3<T1,T2,T3>(scmnamstr,			\
 					[&](std::shared_ptr<T1> v1,	\
 					    std::shared_ptr<T2> v2,	\
