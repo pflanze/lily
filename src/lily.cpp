@@ -1162,7 +1162,7 @@ LilyObjectPtr lily::improper_to_proper_map(
 		}, NIL, v);
 }
 
-// Cut off learing "Lily" from type names; does not handle unicode
+// Cut off leading "Lily" from type names; does not handle unicode
 // since there's no unicode used in those. XX will become obsolete
 // once using namespaces.
 static
