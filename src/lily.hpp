@@ -912,7 +912,7 @@ std::shared_ptr<T> XAS(LilyObjectPtr v) {
 	if (!res) throwTypeError(typeid(T).name(), v);
 	return res;
 }
-//#define XLET_AS(var, t, e) auto var= XAS<t>(e)
+#define XLET_AS(var, t, e) auto var= XAS<t>(e)
 
 
 

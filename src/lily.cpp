@@ -997,7 +997,7 @@ lily::eval(LilyObjectPtr code,
 			// arguments are used hence different
 			// continuation created.
 
-			LET_AS(frame, LilyContinuationFrame, cont->first());
+			XLET_AS(frame, LilyContinuationFrame, cont->first());
 			cont= cont->rest();
 			bool accIsHead= ! frame->maybeHead();
 			if (accIsHead) {
@@ -1030,7 +1030,7 @@ lily::eval(LilyObjectPtr code,
 			}
 			// pass_to_cont:
 			LilyObjectPtr head= accIsHead ? acc : frame->maybeHead();
-			LET_AS(expressions, LilyList, frame->expressions());
+			XLET_AS(expressions, LilyList, frame->expressions());
 			auto rvalues= accIsHead ? frame->rvalues()
 				: CONS(acc, frame->rvalues());
 			if (expressions->isNull()) {
