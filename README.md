@@ -89,6 +89,12 @@ out of Lily in due course than out of a JavaScript interpreter.
 
 - See [TODO](TODO.md).
 
+- The evaluation model (with explicit continuation handling) seems
+  applied messily and needs work. (How does a native procedure
+  suspend? Do multiple steps? Wrong API currently.)
+  
+  Possibly this will be worked out first in
+  [Ruly](https://github.com/pflanze/ruly.git).
 
 ## Requirements
 
