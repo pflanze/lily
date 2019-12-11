@@ -206,8 +206,7 @@ static LilyObjectPtr lilyLength(LilyListPtr* arguments,
 	return apply1ary("length", [&](LilyObjectPtr l) {
 			int64_t len= 0;
 			while (true) {
-				LET_AS(p, LilyPair, l);
-				if (p) {
+				IF_LET_AS(p, LilyPair, l) {
 					len++;
 					// ^ check overflow? 64bit int
 					// is pretty large though :)
@@ -216,8 +215,7 @@ static LilyObjectPtr lilyLength(LilyListPtr* arguments,
 					// instead (avoid
 					// refcounting)? Measure!
 				} else {
-					LET_AS(null, LilyNull, l);
-					if (null) {
+					IF_LET_AS(null, LilyNull, l) {
 						break;
 					} else {
 						throw std::logic_error
@@ -434,8 +432,7 @@ static LilyObjectPtr lilyDefine(LilyListPtr* es,
 		throw std::logic_error("define needs at least 1 argument");
 	// match 1st argument
 	auto var_or_pair= es0->car();
-	LET_AS(var, LilySymbol, var_or_pair);
-	if (var) {
+	IF_LET_AS(var, LilySymbol, var_or_pair) {
 		LET_AS(es1, LilyPair, es0->cdr());
 		if (!es1)
 			throw std::logic_error("define: if getting a symbol as 1st argument, need one more argument");
@@ -445,10 +442,8 @@ static LilyObjectPtr lilyDefine(LilyListPtr* es,
 		auto expr= es1->car();
 		// ç
 	}
-	LET_AS(bindform, LilyPair, var_or_pair);
-	if (bindform) {
-		LET_AS(var, LilySymbol, bindform->first());
-		if (var) {
+	IF_LET_AS(bindform, LilyPair, var_or_pair) {
+		IF_LET_AS(var, LilySymbol, bindform->first()) {
 			throw std::logic_error("XX functions not yet implemented");
 		} else {
 			throw std::logic_error(STR("define: expecting symbol, got: "
@@ -458,8 +453,7 @@ static LilyObjectPtr lilyDefine(LilyListPtr* es,
 
 	throw std::logic_error("define needs a symbol as the first argument");
 	const LilyObjectPtr& _es1= es0->cdr();
-	LET_AS(es1, LilyPair, _es1);
-	if (es1) {
+	IF_LET_AS(es1, LilyPair, _es1) {
 		//const LilyObjectPtr& 
 	} else {
 		// set variable to void (or remove it altogether?)

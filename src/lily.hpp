@@ -903,6 +903,7 @@ void throwTypeError(const char* tname, LilyObjectPtr v) noreturn;
 
 // casting without unwrapping
 #define LET_AS(var, t, e) auto var= std::dynamic_pointer_cast<t>(e)
+#define IF_LET_AS(var, t, e) auto var= std::dynamic_pointer_cast<t>(e); if (var)
 
 template <typename T>
 std::shared_ptr<T> XAS(LilyObjectPtr v) {

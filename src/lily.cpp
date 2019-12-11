@@ -1007,8 +1007,7 @@ lily::eval(LilyObjectPtr code,
 				// head. Now we know whether it is a
 				// function, macro or evaluator
 				// application.
-				LET_AS(evaluator, LilyNativeEvaluator, acc);
-				if (evaluator) {
+				IF_LET_AS(evaluator, LilyNativeEvaluator, acc) {
 					auto expressions= frame->expressions();
 					acc= evaluator->_eval
 						(&expressions, &ctx, &cont);
@@ -1018,8 +1017,7 @@ lily::eval(LilyObjectPtr code,
 					// pass acc to cont
 					goto next_cont;
 				}
-				LET_AS(expander, LilyMacroexpander, acc);
-				if (expander) {
+				IF_LET_AS(expander, LilyMacroexpander, acc) {
 					auto expressions= frame->expressions();
 					// XX missing a reference to
 					// the original surrounding
