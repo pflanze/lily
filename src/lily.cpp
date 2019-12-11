@@ -1002,8 +1002,8 @@ lily::eval(LilyObjectPtr code,
 			bool accIsHead= ! frame->maybeHead();
 			if (accIsHead) {
 				// acc contains the evaluated
-				// head. Now we know whether it is a
-				// function, macro or evaluator
+				// head. Now we can check whether it
+				// is a function, macro or evaluator
 				// application.
 				IF_LET_AS(evaluator, LilyNativeEvaluator, acc) {
 					auto expressions= frame->expressions();
