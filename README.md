@@ -67,7 +67,8 @@ out of Lily in due course than out of a JavaScript interpreter.
 
 * easy to understand and maintain implementation
 * low latency
-* macros (procedural)
+* macro expander library
+* small (fit anywhere?)
 
 ## Non-goals
 
