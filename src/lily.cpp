@@ -890,10 +890,10 @@ static
 LilyObjectPtr
 alistMaybeRef (LilyListPtr l, LilyObjectPtr key) {
 	while (! l->isNull()) {
-		LETU_AS(p, LilyPair, l->first());
+		LETU_AS(p, LilyPair, l->first()); // safe as l is a LilyListPtr
 		if (p->car() == key)
 			return p->cdr();
-		l= l->rest();
+		l= l->rest(); // throws exception if improper list
 	}
 	return NULL;
 }
@@ -927,7 +927,7 @@ lily::eval(LilyObjectPtr code,
 			throw std::logic_error("empty call");
 			break;
 		case LilyEvalOpcode::Pair: {
-			LETU_AS(p, LilyPair, code);
+			LETU_AS(p, LilyPair, code); // safe as just checked opcode
 			// Function, macro or evaluator (base syntax)
 			// application; the type of the head element
 			// determines which kind. Currently, given
