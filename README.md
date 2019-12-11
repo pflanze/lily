@@ -54,13 +54,20 @@ author also needed to get experience in creating a Scheme interpreter
 for other contexts. And he expects to get better debugging features
 out of Lily in due course than out of a JavaScript interpreter.
 
+## Features
+
+* first-class lexical environments in some manner (run programs in an
+  environment that is tailored to what the programs should be allowed
+  to do)
+* tail-call optimization and first-class continuations
+* exact integers and rationals (fixed 64 bit / 2*64 bit
+  representations), doubles
+
 ## Goals
 
 * easy to understand and maintain implementation
 * low latency
-* first-class lexical environments in some manner (run programs in an
-  environment that is tailored to what the programs should be allowed
-  to do)
+* macros (procedural)
 
 ## Non-goals
 
@@ -70,6 +77,7 @@ out of Lily in due course than out of a JavaScript interpreter.
   possibly, with type annotations, to statically typed code), that
   should speed up things quite a lot and should make libraries in
   Scheme feasible)
+* imaginary numbers, bignums
 
 ## Status
 
