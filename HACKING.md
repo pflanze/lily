@@ -50,7 +50,7 @@ Some guidance on how to work on the Lily system.
 
 * There are C++ functions and macros acting as constructors that
   mirror the functions with the same names in Scheme, like `LIST`,
-  `CONS`, etc.
+  `CONS`, etc. (see [src/lilyConstruct.hpp](src/lilyConstruct.hpp)).
   
     * Gotcha: Scheme calls the list null pointer `null`; but `NULL` is
       the C/C++ null pointer. So it's called `NIL` instead (like in
