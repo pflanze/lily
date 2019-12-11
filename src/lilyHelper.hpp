@@ -41,8 +41,7 @@ apply1(const char* procname,
        std::function<LilyObjectPtr(std::shared_ptr<A>)> proc,
        LilyListPtr* vs)
 {
-	LETU_AS(vs0, LilyPair, *vs);
-	if (vs0) {
+	IF_LETU_AS(vs0, LilyPair, *vs) {
 		if (UNWRAP_AS(LilyNull, vs0->cdr())) {
 			return proc(XAS<A>(vs0->car()));
 		}
@@ -57,10 +56,8 @@ apply2(const char* procname,
 				   std::shared_ptr<B>)> proc,
        LilyListPtr* vs)
 {
-	LETU_AS(vs0, LilyPair, *vs);
-	if (vs0) {
-		LETU_AS(vs1, LilyPair, vs0->cdr());
-		if (vs1) {
+	IF_LETU_AS(vs0, LilyPair, *vs) {
+		IF_LETU_AS(vs1, LilyPair, vs0->cdr()) {
 			if (UNWRAP_AS(LilyNull, vs1->cdr())) {
 				return proc(XAS<A>(vs0->car()),
 					    XAS<B>(vs1->car()));
@@ -78,12 +75,9 @@ apply3(const char* procname,
 				   std::shared_ptr<C>)> proc,
        LilyListPtr* vs)
 {
-	LETU_AS(vs0, LilyPair, *vs);
-	if (vs0) {
-		LETU_AS(vs1, LilyPair, vs0->cdr());
-		if (vs1) {
-			LETU_AS(vs2, LilyPair, vs1->cdr());
-			if (vs2) {
+	IF_LETU_AS(vs0, LilyPair, *vs) {
+		IF_LETU_AS(vs1, LilyPair, vs0->cdr()) {
+			IF_LETU_AS(vs2, LilyPair, vs1->cdr()) {
 				if (UNWRAP_AS(LilyNull, vs2->cdr())) {
 					return proc(XAS<A>(vs0->car()),
 						    XAS<B>(vs1->car()),

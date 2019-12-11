@@ -903,10 +903,8 @@ LilyObjectPtr
 lily::apply1ary(const char* procname,
 		std::function<LilyObjectPtr(LilyObjectPtr)> proc,
 		LilyListPtr* vs) {
-	LETU_AS(vs0, LilyPair, *vs);
-	if (vs0) {
-		LETU_AS(vs1, LilyNull, vs0->cdr());
-		if (vs1) {
+	IF_LETU_AS(vs0, LilyPair, *vs) {
+		IF_LETU_AS(vs1, LilyNull, vs0->cdr()) {
 			return proc(vs0->car());
 		}
 	}
@@ -1083,8 +1081,7 @@ LilyListPtr lily::reverse(LilyObjectPtr l) {
 
 bool lily::isList(LilyObjectPtr v) {
 	while (true) {
-		LETU_AS(vp, LilyPair, v);
-		if (vp)
+		IF_LETU_AS(vp, LilyPair, v)
 			v= vp->cdr();
 		else if (UNWRAP_AS(LilyNull, v))
 			return true;
@@ -1103,8 +1100,7 @@ LilyObjectPtr lily::fold_right(
 	std::function<LilyObjectPtr(LilyObjectPtr)> rec=
 		[&](LilyObjectPtr v) -> LilyObjectPtr {
 
-		LETU_AS(vp, LilyPair, v);
-		if (vp) {
+		IF_LETU_AS(vp, LilyPair, v) {
 			return fn(vp->car(),
 				  rec(vp->cdr()));
 		} else if (UNWRAP_AS(LilyNull, v)) {
@@ -1124,8 +1120,7 @@ LilyObjectPtr lily::improper_fold_right(
 	std::function<LilyObjectPtr(LilyObjectPtr)> rec=
 		[&](LilyObjectPtr v) -> LilyObjectPtr {
 
-		LETU_AS(vp, LilyPair, v);
-		if (vp) {
+		IF_LETU_AS(vp, LilyPair, v) {
 			return fn(vp->car(),
 				  rec(vp->cdr()));
 		} else if (UNWRAP_AS(LilyNull, v)) {

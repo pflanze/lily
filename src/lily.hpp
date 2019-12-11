@@ -896,6 +896,7 @@ public:
 #define LIST_UNWRAP(e) UNWRAP_AS(LilyList,e)
 // let unwrapped (or "unsafe")
 #define LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e)
+#define IF_LETU_AS(var, t, e) t* var= UNWRAP_AS(t, e); if (var) 
 //#define LETU(var, e) LETU_AS(var, LilyObject, e)
 
 

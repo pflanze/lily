@@ -162,12 +162,9 @@ LilyObjectPtr lilyCons(LilyListPtr* vs,
 		       LilyListPtr* _ctx,
 		       LilyListPtr* _cont) {
 	// WARN("cons: "<<show(vs));
-	LETU_AS(vs0, LilyPair, *vs);
-	if (vs0) {
-		LETU_AS(vs1, LilyPair, vs0->cdr());
-		if (vs1) {
-			LETU_AS(vs2, LilyNull, vs1->cdr());
-			if (vs2) {
+	IF_LETU_AS(vs0, LilyPair, *vs) {
+		IF_LETU_AS(vs1, LilyPair, vs0->cdr()) {
+			IF_LETU_AS(vs2, LilyNull, vs1->cdr()) {
 				return CONS(vs0->car(), vs1->car());
 			}
 		}

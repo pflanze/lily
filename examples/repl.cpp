@@ -18,8 +18,7 @@ int main (int argc, const char** argv) {
 		if (std::cin.eof())
 			break;
 		LilyObjectPtr expr= lilyParse(line, true); 
-		LETU_AS(err, LilyParseError, expr);
-		if (err) {
+		IF_LETU_AS(err, LilyParseError, expr) {
 			std::cout << "PARSE_ERR: " << err->what() << std::endl;
 		} else {
 			try {
