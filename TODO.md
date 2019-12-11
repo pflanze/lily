@@ -1,3 +1,7 @@
+# TODO
+
+## Various
+
 - use Qt strings directly: how?
 - handle unicode; with and without using Qt strings?
 - check `\0` handling
@@ -16,3 +20,12 @@
 - don't use C++ exceptions for Scheme errors, rather continuations and
   dynamic variables (and catch (and throw?) C++ exceptions at native
   boundaries)
+
+## Challenging
+
+- error handling: casting with XAS etc. throws exceptions, which is
+  fine currently that this is the only error handling mechanism. Once
+  Scheme has its own error handling mechanism, these usages have to be
+  split and converted into calling Scheme error handler (making a new
+  continuation and process it).
+
