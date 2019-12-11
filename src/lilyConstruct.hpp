@@ -41,9 +41,11 @@ namespace lilyConstruct {
 	}
 	// Does not simplify the fraction (use `Divide` from lily.hpp
 	// instead for that); currently unused.
+	/*
 	inline LilyFractional64Ptr FRACTIONAL(int64_t n, int64_t d) {
 		return LILY_NEW(LilyFractional64,(n,d));
 	}
+	*/
 	inline LilyDoublePtr DOUBLE(double a) {
 		return  LILY_NEW(LilyDouble,(a));
 	}
