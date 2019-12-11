@@ -36,12 +36,16 @@ Some guidance on how to work on the Lily system.
     * There are macros to get these low-level pointers in
       [lily.hpp](src/lily.hpp): `UNWRAP_AS`, `LIST_UNWRAP`, `LETU_AS`,
       which return/assign null pointers if the casting (type check)
-      fails, and the variants `XUNWRAP_AS`,`XLIST_UNWRAP`, `XLETU_AS`
-      which throw exceptions on casting errors.
-    * There's also the templated `XAS` function to convert from one
-      Ptr type to another without unwrapping. (This one uses
-      non-standardized type meta information instead of source
-      stringification; OTOH it works when itself used in templates.)
+      fails (as well as `IF_LETU_AS` which dispatches depending on the
+      check result, think of it as pattern matching), and the variants
+      `XUNWRAP_AS`,`XLIST_UNWRAP`, `XLETU_AS` which throw exceptions
+      on casting errors.
+      
+    * For just dynamic type handling without unwrapping, there's also
+      the templated `XAS` function. (This one uses non-standardized
+      type meta information instead of source stringification; OTOH it
+      works when itself used in templates.)  As well as `LET_AS` and
+      `IF_LET_AS`.
 
 * Currently C++ exceptions are used for signalling errors from Scheme
   operations; this is due to be changed to something that Scheme
