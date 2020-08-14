@@ -21,7 +21,7 @@ thread should the need arise). Event handlers running as Scheme code
 in Lily will thus not lead to UI jitter.
 
 For more complex or computation intensive operations, the code in the
-UI thread (Lily program or C++ via tha Lily library) will communicate
+UI thread (Lily program or C++ via the Lily library) will communicate
 with the main system. This model is similar to the approach taken in
 single-page web applications: the "main system" in this case is the
 server side (backend), whereas the "Lily program" corresponds to the
